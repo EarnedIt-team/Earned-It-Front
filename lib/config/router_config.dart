@@ -1,5 +1,9 @@
+import 'package:earned_it/views/login_view.dart';
+import 'package:earned_it/views/onboarding/onboarding_view.dart';
+import 'package:earned_it/views/sign_view.dart';
 import 'package:earned_it/views/splash_view.dart';
-import 'package:flutter/src/widgets/framework.dart';
+import 'package:flutter/widgets.dart';
+
 import 'package:go_router/go_router.dart';
 
 final GoRouter routes = GoRouter(
@@ -11,6 +15,22 @@ final GoRouter routes = GoRouter(
       path: '/',
       builder:
           (BuildContext context, GoRouterState state) => const SplashView(),
+    ),
+    // 온보딩 화면 (onboarding)
+    GoRoute(
+      path: '/onboarding',
+      builder:
+          (BuildContext context, GoRouterState state) => const OnboardingView(),
+    ),
+    // 회원가입 (sign)
+    GoRoute(
+      path: '/sign',
+      builder: (BuildContext context, GoRouterState state) => const SignView(),
+    ),
+    // 로그인 (login)
+    GoRoute(
+      path: '/login',
+      builder: (BuildContext context, GoRouterState state) => const LoginView(),
     ),
   ],
 );

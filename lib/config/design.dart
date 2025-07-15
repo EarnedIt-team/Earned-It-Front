@@ -13,7 +13,14 @@ extension ContextExtension on BuildContext {
   // 화면 높이의 특정 비율
   double height(double percent) => screenHeight * percent;
 
+  // 보통 폰트 크기
+  double get regularFont => screenWidth * 0.04;
+
+  // 중간 폰트 크기
   double get middleFont => screenWidth * 0.08;
+
+  // 중간 패딩 크기
+  double get middlePadding => screenHeight * 0.02;
 
   // // 패딩 (예: const EdgeInsets.symmetric(horizontal: context.width(0.05)))
   // EdgeInsets get horizontalPadding =>

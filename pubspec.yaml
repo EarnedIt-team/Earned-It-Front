@@ -26,14 +26,17 @@ flutter:
   assets:
     # - assets/
 
-  # fonts:
-  #   - family: Schyler
-  #     fonts:
-  #       - asset: fonts/Schyler-Regular.ttf
-  #       - asset: fonts/Schyler-Italic.ttf
-  #         style: italic
-  #   - family: Trajan Pro
-  #     fonts:
-  #       - asset: fonts/TrajanPro.ttf
-  #       - asset: fonts/TrajanPro_Bold.ttf
-  #         weight: 700
+  fonts:
+    - family: Mainfonts
+      fonts:
+        - asset: assets/font/WantedSans-Regular.ttf # 기본값
+        - asset: assets/font/WantedSans-Medium.ttf
+          weight: 500
+        - asset: assets/font/WantedSans-SemiBold.ttf
+          weight: 600
+        - asset: assets/font/WantedSans-Bold.ttf
+          weight: 700
+        - asset: assets/font/WantedSans-ExtraBold.ttf
+          weight: 800
+        - asset: assets/font/WantedSans-Black.ttf
+          weight: 900

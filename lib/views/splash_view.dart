@@ -11,6 +11,18 @@ class SplashView extends ConsumerStatefulWidget {
 class _SplashViewState extends ConsumerState<SplashView> {
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Image.asset("assets/images/time.png", fit: BoxFit.contain),
+            SizedBox(height: 30),
+            Text("언드잇!"),
+          ],
+        ),
+      ),
+    );
   }
 }

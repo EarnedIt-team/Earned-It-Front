@@ -1,3 +1,4 @@
+import 'package:earned_it/config/design.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -17,9 +18,20 @@ class _SplashViewState extends ConsumerState<SplashView> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Image.asset("assets/images/time.png", fit: BoxFit.contain),
-            SizedBox(height: 30),
-            Text("언드잇!"),
+            Image.asset(
+              "assets/images/time.png",
+              fit: BoxFit.contain,
+              width: context.width(0.3),
+              height: context.height(0.3),
+            ),
+            SizedBox(height: context.height(0.005)),
+            Text(
+              "Earned !t",
+              style: TextStyle(
+                fontSize: context.middleFont,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ],
         ),
       ),

@@ -1,6 +1,7 @@
 import 'package:earned_it/config/design.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 class LoginView extends ConsumerStatefulWidget {
   const LoginView({super.key});
@@ -77,7 +78,9 @@ class _LoginViewState extends ConsumerState<LoginView> {
                             ),
                             // 비밀번호 찾기
                             TextButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                context.push("/forgot_password");
+                              },
                               child: const Text("비밀번호 찾기"),
                             ),
                           ],
@@ -108,16 +111,21 @@ class _LoginViewState extends ConsumerState<LoginView> {
                         Column(
                           spacing: context.height(0.015),
                           children: [
-                            const Row(
+                            Row(
                               children: [
-                                Expanded(child: Divider()),
+                                const Expanded(child: Divider()),
                                 Padding(
-                                  padding: EdgeInsets.symmetric(
+                                  padding: const EdgeInsets.symmetric(
                                     horizontal: 10.0,
                                   ),
-                                  child: Text("소셜 계정으로 간편하게 로그인"),
+                                  child: Text(
+                                    "소셜 계정으로 간편하게 로그인",
+                                    style: TextStyle(
+                                      fontSize: context.smallFont,
+                                    ),
+                                  ),
                                 ),
-                                Expanded(child: Divider()),
+                                const Expanded(child: Divider()),
                               ],
                             ),
                             Row(

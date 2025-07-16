@@ -13,6 +13,9 @@ extension ContextExtension on BuildContext {
   // 화면 높이의 특정 비율
   double height(double percent) => screenHeight * percent;
 
+  // 작은 폰트 크기
+  double get smallFont => screenWidth * 0.03;
+
   // 보통 폰트 크기
   double get regularFont => screenWidth * 0.04;
 

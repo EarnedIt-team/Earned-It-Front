@@ -11,7 +11,16 @@ class LoginView extends ConsumerStatefulWidget {
 }
 
 class _LoginViewState extends ConsumerState<LoginView> {
+  final TextEditingController _idTextController = TextEditingController();
+  final TextEditingController _passwordTextController = TextEditingController();
   bool _isObscurePassword = true;
+
+  @override
+  void dispose() {
+    _idTextController.dispose();
+    _passwordTextController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -54,11 +63,15 @@ class _LoginViewState extends ConsumerState<LoginView> {
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: <Widget>[
                             // 아이디
-                            const TextField(
-                              decoration: InputDecoration(labelText: "아이디"),
+                            TextField(
+                              controller: _idTextController,
+                              decoration: const InputDecoration(
+                                labelText: "아이디",
+                              ),
                             ),
                             // 비밀번호
                             TextField(
+                              controller: _passwordTextController,
                               obscureText: _isObscurePassword,
                               decoration: InputDecoration(
                                 labelText: "비밀번호",

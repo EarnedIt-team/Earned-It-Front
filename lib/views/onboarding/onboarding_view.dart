@@ -91,11 +91,9 @@ class _OnboardingViewState extends State<OnboardingView> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.green,
                         padding: EdgeInsets.symmetric(
-                          vertical: context.height(0.015),
+                          vertical: context.buttonPadding,
                         ),
-                        textStyle: TextStyle(
-                          fontSize: context.regularFont,
-                        ), // 텍스트 크기 반응형
+                        textStyle: TextStyle(fontSize: context.regularFont),
                       ),
                       onPressed: () {
                         context.go("/sign");
@@ -114,9 +112,7 @@ class _OnboardingViewState extends State<OnboardingView> {
                         context.go("/login");
                       },
                       style: TextButton.styleFrom(
-                        textStyle: TextStyle(
-                          fontSize: context.regularFont,
-                        ), // 텍스트 크기 반응형
+                        textStyle: TextStyle(fontSize: context.regularFont),
                       ),
                       child: const Text("기존 계정으로 로그인"),
                     ),

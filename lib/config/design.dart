@@ -22,6 +22,12 @@ extension ContextExtension on BuildContext {
   // 중간 패딩 크기
   double get middlePadding => screenHeight * 0.02;
 
+  // 로그인 화면 패딩 크기
+  double get loginPadding => screenHeight * 0.04;
+
+  // 버튼 패딩 크기
+  double get buttonPadding => screenHeight * 0.015;
+
   // // 패딩 (예: const EdgeInsets.symmetric(horizontal: context.width(0.05)))
   // EdgeInsets get horizontalPadding =>
   //     EdgeInsets.symmetric(horizontal: screenWidth * 0.05);

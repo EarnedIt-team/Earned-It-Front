@@ -18,7 +18,12 @@ class MyApp extends StatelessWidget {
     return MaterialApp.router(
       debugShowCheckedModeBanner: false, // 디버그 배너
       // 라이트 모드
-      theme: ThemeData(fontFamily: 'Mainfonts', brightness: Brightness.light),
+      theme: ThemeData(
+        appBarTheme: const AppBarTheme(backgroundColor: Colors.white),
+        scaffoldBackgroundColor: Colors.white,
+        fontFamily: 'Mainfonts',
+        brightness: Brightness.light,
+      ),
       routerConfig: routes,
     );
   }

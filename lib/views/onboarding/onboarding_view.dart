@@ -96,7 +96,7 @@ class _OnboardingViewState extends State<OnboardingView> {
                         textStyle: TextStyle(fontSize: context.regularFont),
                       ),
                       onPressed: () {
-                        context.go("/sign");
+                        context.push("/sign");
                       },
                       child: const Text(
                         "회원가입",

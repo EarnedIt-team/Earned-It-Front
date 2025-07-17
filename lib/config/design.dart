@@ -31,6 +31,9 @@ extension ContextExtension on BuildContext {
   // 버튼 패딩 크기
   double get buttonPadding => screenHeight * 0.015;
 
+  // 성공 컬러
+  Color get successColor => Colors.green;
+
   // // 패딩 (예: const EdgeInsets.symmetric(horizontal: context.width(0.05)))
   // EdgeInsets get horizontalPadding =>
   //     EdgeInsets.symmetric(horizontal: screenWidth * 0.05);

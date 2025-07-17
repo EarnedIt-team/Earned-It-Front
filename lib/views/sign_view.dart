@@ -169,7 +169,11 @@ class _SignViewState extends State<SignView> {
         // 회원가입 버튼
         bottomNavigationBar: SafeArea(
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: context.middlePadding),
+            padding: EdgeInsets.only(
+              left: context.middlePadding,
+              right: context.middlePadding,
+              bottom: context.height(0.01),
+            ),
             child: SizedBox(
               width: double.infinity,
               child: ElevatedButton(

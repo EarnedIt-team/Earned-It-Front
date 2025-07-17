@@ -1,7 +1,9 @@
 import 'dart:async';
 
 import 'package:earned_it/config/design.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SignView extends StatefulWidget {
   const SignView({super.key});
@@ -18,6 +20,7 @@ class _SignViewState extends State<SignView> {
   bool _isObscurePassword = true; // 비밀번호 숨기기
   bool _isAvailablePassword = false; // 사용가능한 비밀 번호
   bool _isChechPassword = false; // 비밀번호 재확인 여부
+  bool _isAgreedToTerms = false; // 서비스 이용 약관 동의 여부
 
   Timer? _codeTimer; // 인증 코드 타이머
   int startTime = 900; // 시작 시간 (15분)
@@ -70,6 +73,14 @@ class _SignViewState extends State<SignView> {
     }
   }
 
+  // 사용자 약관 동의 web
+  Future<void> _launchUrl() async {
+    final Uri url = Uri.parse('https://github.com/EarnedIt-team');
+    if (!await launchUrl(url)) {
+      throw Exception('Could not launch $url');
+    }
+  }
+
   @override
   void dispose() {
     _emailController.dispose();
@@ -104,11 +115,52 @@ class _SignViewState extends State<SignView> {
               spacing: context.height(0.03),
               children: <Widget>[
                 signTextField("아이디"),
+                // 인증 요청시,
                 _isRequestAuth
                     ? signTextField("이메일 인증")
                     : const SizedBox.shrink(),
                 signTextField("비밀번호"),
                 signTextField("비밀번호 재확인"),
+                Row(
+                  children: <Widget>[
+                    Checkbox(
+                      value: _isAgreedToTerms,
+                      onChanged: (bool? value) {
+                        setState(() {
+                          _isAgreedToTerms = value ?? false;
+                        });
+                      },
+                    ),
+                    // 서비스 이용 약관 체크
+                    Text.rich(
+                      TextSpan(
+                        children: <InlineSpan>[
+                          TextSpan(
+                            text: "서비스 이용 약관",
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                              decoration: TextDecoration.underline, // 밑줄 추가
+                              decorationColor: Colors.grey,
+                              height: 1.5,
+                            ),
+                            recognizer:
+                                TapGestureRecognizer()
+                                  ..onTap = () {
+                                    _launchUrl(); // 사용자 약관 동의 web
+                                  },
+                          ),
+                          const TextSpan(
+                            text: "에 동의합니다.",
+                            style: TextStyle(
+                              color: Colors.black, // 일반 텍스트 색상
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ],
             ),
           ),
@@ -123,7 +175,8 @@ class _SignViewState extends State<SignView> {
                 onPressed:
                     _isSuccessfulCode &&
                             _isAvailablePassword &&
-                            _isChechPassword
+                            _isChechPassword &&
+                            _isAgreedToTerms
                         ? () {}
                         : null,
                 child: const Text("동의하고 회원가입"),

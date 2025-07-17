@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:earned_it/config/design.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:toastification/toastification.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class SignView extends StatefulWidget {
@@ -229,6 +230,15 @@ class _SignViewState extends State<SignView> {
                               _isRequestAuth = true; // 인증 요청
 
                               startTimer(); // 타이머 시작
+
+                              // 이메일 인증 번호 전송 toastMessage
+                              toastification.show(
+                                alignment: Alignment.topCenter,
+                                style: ToastificationStyle.simple,
+                                context: context,
+                                title: const Text("해당 이메일로 인증 코드를 전송했습니다."),
+                                autoCloseDuration: const Duration(seconds: 3),
+                              );
                             });
                           },
                           child: const Text("인증 요청"),

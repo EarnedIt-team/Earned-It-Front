@@ -24,13 +24,32 @@ class LoginViewModel extends Notifier<LoginState> {
     _idTextController = TextEditingController();
     _passwordTextController = TextEditingController();
 
-    // Notifier가 dispose될 때 컨트롤러도 함께 dispose
+    // 컨트롤러에 리스너 추가하여 텍스트 변경 시 상태 업데이트
+    _idTextController.addListener(_updateLoginButtonState);
+    _passwordTextController.addListener(_updateLoginButtonState);
+
     ref.onDispose(() {
+      _idTextController.removeListener(_updateLoginButtonState); // 리스너 제거
+      _passwordTextController.removeListener(_updateLoginButtonState); // 리스너 제거
       _idTextController.dispose();
       _passwordTextController.dispose();
     });
 
-    return const LoginState(); // 초기 상태 반환
+    return const LoginState();
+  }
+
+  // 로그인 버튼 활성화 상태를 결정하는 게터
+  bool get isLoginButtonEnabled {
+    return _idTextController.text.isNotEmpty &&
+        _passwordTextController.text.isNotEmpty;
+  }
+
+  // 텍스트 필드 변경 시 호출될 내부 메서드
+  void _updateLoginButtonState() {
+    state = state.copyWith(
+      isIdValid: _idTextController.text.isNotEmpty,
+      isPasswordValid: _passwordTextController.text.isNotEmpty,
+    );
   }
 
   /// 비밀번호 숨김/보임 상태를 토글합니다.

@@ -33,7 +33,8 @@ class LoginView extends ConsumerWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
+                          children: <Widget>[
+                            // 메인 로고
                             Text(
                               "Earned !t",
                               style: TextStyle(
@@ -42,6 +43,7 @@ class LoginView extends ConsumerWidget {
                               ),
                             ),
                             SizedBox(height: context.height(0.07)),
+                            // 아이디 & 비밀번호
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: <Widget>[
@@ -68,6 +70,7 @@ class LoginView extends ConsumerWidget {
                                     ),
                                   ),
                                 ),
+                                // 에러 메시지
                                 if (loginState.errorMessage != null)
                                   Padding(
                                     padding: const EdgeInsets.only(top: 8.0),
@@ -76,6 +79,7 @@ class LoginView extends ConsumerWidget {
                                       style: const TextStyle(color: Colors.red),
                                     ),
                                   ),
+                                // 비밀번호 찾기
                                 TextButton(
                                   onPressed: () {
                                     context.push("/forgot_password");
@@ -85,10 +89,15 @@ class LoginView extends ConsumerWidget {
                               ],
                             ),
                             SizedBox(height: context.height(0.02)),
+                            // 로그인
                             SizedBox(
                               width: double.infinity,
                               child: ElevatedButton(
-                                onPressed: () => loginNotifier.login(context),
+                                onPressed:
+                                    loginState.isIdValid &&
+                                            loginState.isPasswordValid
+                                        ? () => loginNotifier.login(context)
+                                        : null,
                                 style: ElevatedButton.styleFrom(
                                   padding: EdgeInsets.symmetric(
                                     vertical: context.buttonPadding,
@@ -101,10 +110,11 @@ class LoginView extends ConsumerWidget {
                               ),
                             ),
                             SizedBox(height: context.height(0.08)),
+                            // SNS 로그인
                             Column(
-                              children: [
+                              children: <Widget>[
                                 Row(
-                                  children: [
+                                  children: <Widget>[
                                     const Expanded(child: Divider()),
                                     Padding(
                                       padding: const EdgeInsets.symmetric(
@@ -121,9 +131,10 @@ class LoginView extends ConsumerWidget {
                                   ],
                                 ),
                                 SizedBox(height: context.height(0.015)),
+                                // 애플, 카카오
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
+                                  children: <Widget>[
                                     ElevatedButton(
                                       onPressed:
                                           () => loginNotifier.signInWithApple(

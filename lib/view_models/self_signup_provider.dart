@@ -1,6 +1,6 @@
 // lib/features/auth/sign_up/viewmodels/sign_up_view_model.dart
 import 'dart:async';
-import 'package:earned_it/models/login/self_signup_state.dart';
+import 'package:earned_it/models/signup/self_signup_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:toastification/toastification.dart';

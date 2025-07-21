@@ -37,9 +37,9 @@ class AppleLoginService {
       // Apple 로그인 실패 시 오류 처리
       print('Apple 로그인 실패: ${e.code} - ${e.message}');
       if (e.code == AuthorizationErrorCode.canceled) {
-        print('사용자가 로그인을 취소했습니다.');
+        throw Exception('로그인을 취소했습니다.');
       } else if (e.code == AuthorizationErrorCode.notHandled) {
-        print('Apple 로그인 요청을 처리할 수 없습니다. (예: iOS 13 미만 기기)');
+        throw Exception('로그인을 처리할 수 없습니다.');
       }
       throw Exception('Apple 로그인 실패: ${e.message}');
     } catch (e) {

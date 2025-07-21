@@ -32,6 +32,9 @@ flutter:
 
   assets:
     - assets/images/time.png
+    - assets/images/kakao_login.png
+    - assets/images/apple_login_light.png
+    - assets/images/apple_login_dark.png
 
   fonts:
     - family: Mainfonts

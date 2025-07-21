@@ -10,7 +10,8 @@ class AppleLoginService {
           AppleIDAuthorizationScopes.email, // 이메일
           // AppleIDAuthorizationScopes.fullName, // 이름은 사용하지 않음
         ],
-        // Web에서 실행시 필요
+        // (Android & Web)에서 실행 시 필요.
+        // Android 같은 경우에는, 백앤드 서버 콜백이 필요로 하기 때문
         // webAuthenticationOptions:
         //     kIsWeb
         //         ? WebAuthenticationOptions(

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:earned_it/config/design.dart';
 import 'package:earned_it/view_models/login_provider.dart'; // import 경로 확인
 import 'package:flutter/material.dart';
@@ -124,31 +126,68 @@ class LoginView extends ConsumerWidget {
                                         "소셜 계정으로 간편하게 로그인",
                                         style: TextStyle(
                                           fontSize: context.smallFont,
+                                          fontWeight: FontWeight.bold,
                                         ),
                                       ),
                                     ),
                                     const Expanded(child: Divider()),
                                   ],
                                 ),
-                                SizedBox(height: context.height(0.015)),
-                                // 애플, 카카오
+                                SizedBox(height: context.height(0.025)),
+                                // apple, kakao button
                                 Row(
+                                  spacing: context.height(0.025),
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: <Widget>[
-                                    ElevatedButton(
-                                      onPressed:
-                                          () => loginNotifier.signInWithApple(
-                                            context,
+                                    // apple button
+                                    // 25.07.21 애플 로그인은 IOS 한정
+                                    if (Platform.isIOS)
+                                      ElevatedButton(
+                                        onPressed:
+                                            () => loginNotifier.signInWithApple(
+                                              context,
+                                            ),
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: Colors.white,
+                                          foregroundColor: Colors.black,
+                                          elevation: 0,
+                                          shape: const CircleBorder(),
+                                          padding: EdgeInsets.zero,
+                                          minimumSize: Size.fromRadius(
+                                            context.height(0.025),
                                           ),
-                                      child: const Text("애플"),
-                                    ),
-                                    SizedBox(width: context.height(0.015)),
+                                        ),
+                                        child: ClipOval(
+                                          child: Image.asset(
+                                            'assets/images/apple_login_light.png',
+                                            fit: BoxFit.cover,
+                                            scale: context.height(0.006),
+                                          ),
+                                        ),
+                                      ),
+                                    // kakao button
                                     ElevatedButton(
                                       onPressed:
                                           () => loginNotifier.signInWithKakao(
                                             context,
                                           ),
-                                      child: const Text("카카오"),
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.white,
+                                        foregroundColor: Colors.black,
+                                        elevation: 0,
+                                        shape: const CircleBorder(),
+                                        padding: EdgeInsets.zero,
+                                        minimumSize: Size.fromRadius(
+                                          context.height(0.025),
+                                        ),
+                                      ),
+                                      child: ClipOval(
+                                        child: Image.asset(
+                                          'assets/images/kakao_login.png',
+                                          fit: BoxFit.cover,
+                                          scale: context.height(0.006),
+                                        ),
+                                      ),
                                     ),
                                   ],
                                 ),

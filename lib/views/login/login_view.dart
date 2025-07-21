@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:earned_it/config/design.dart';
 import 'package:earned_it/view_models/login_provider.dart'; // import 경로 확인
 import 'package:flutter/material.dart';
@@ -33,7 +35,8 @@ class LoginView extends ConsumerWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
+                          children: <Widget>[
+                            // 메인 로고
                             Text(
                               "Earned !t",
                               style: TextStyle(
@@ -42,6 +45,7 @@ class LoginView extends ConsumerWidget {
                               ),
                             ),
                             SizedBox(height: context.height(0.07)),
+                            // 아이디 & 비밀번호
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: <Widget>[
@@ -68,6 +72,7 @@ class LoginView extends ConsumerWidget {
                                     ),
                                   ),
                                 ),
+                                // 에러 메시지
                                 if (loginState.errorMessage != null)
                                   Padding(
                                     padding: const EdgeInsets.only(top: 8.0),
@@ -76,6 +81,7 @@ class LoginView extends ConsumerWidget {
                                       style: const TextStyle(color: Colors.red),
                                     ),
                                   ),
+                                // 비밀번호 찾기
                                 TextButton(
                                   onPressed: () {
                                     context.push("/forgot_password");
@@ -85,10 +91,15 @@ class LoginView extends ConsumerWidget {
                               ],
                             ),
                             SizedBox(height: context.height(0.02)),
+                            // 로그인
                             SizedBox(
                               width: double.infinity,
                               child: ElevatedButton(
-                                onPressed: () => loginNotifier.login(context),
+                                onPressed:
+                                    loginState.isIdValid &&
+                                            loginState.isPasswordValid
+                                        ? () => loginNotifier.login(context)
+                                        : null,
                                 style: ElevatedButton.styleFrom(
                                   padding: EdgeInsets.symmetric(
                                     vertical: context.buttonPadding,
@@ -101,10 +112,11 @@ class LoginView extends ConsumerWidget {
                               ),
                             ),
                             SizedBox(height: context.height(0.08)),
+                            // SNS 로그인
                             Column(
-                              children: [
+                              children: <Widget>[
                                 Row(
-                                  children: [
+                                  children: <Widget>[
                                     const Expanded(child: Divider()),
                                     Padding(
                                       padding: const EdgeInsets.symmetric(
@@ -114,30 +126,68 @@ class LoginView extends ConsumerWidget {
                                         "소셜 계정으로 간편하게 로그인",
                                         style: TextStyle(
                                           fontSize: context.smallFont,
+                                          fontWeight: FontWeight.bold,
                                         ),
                                       ),
                                     ),
                                     const Expanded(child: Divider()),
                                   ],
                                 ),
-                                SizedBox(height: context.height(0.015)),
+                                SizedBox(height: context.height(0.025)),
+                                // apple, kakao button
                                 Row(
+                                  spacing: context.height(0.025),
                                   mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    ElevatedButton(
-                                      onPressed:
-                                          () => loginNotifier.signInWithApple(
-                                            context,
+                                  children: <Widget>[
+                                    // apple button
+                                    // 25.07.21 애플 로그인은 IOS 한정
+                                    if (Platform.isIOS)
+                                      ElevatedButton(
+                                        onPressed:
+                                            () => loginNotifier.signInWithApple(
+                                              context,
+                                            ),
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: Colors.white,
+                                          foregroundColor: Colors.black,
+                                          elevation: 0,
+                                          shape: const CircleBorder(),
+                                          padding: EdgeInsets.zero,
+                                          minimumSize: Size.fromRadius(
+                                            context.height(0.025),
                                           ),
-                                      child: const Text("애플"),
-                                    ),
-                                    SizedBox(width: context.height(0.015)),
+                                        ),
+                                        child: ClipOval(
+                                          child: Image.asset(
+                                            'assets/images/apple_login_light.png',
+                                            fit: BoxFit.cover,
+                                            scale: context.height(0.006),
+                                          ),
+                                        ),
+                                      ),
+                                    // kakao button
                                     ElevatedButton(
                                       onPressed:
                                           () => loginNotifier.signInWithKakao(
                                             context,
                                           ),
-                                      child: const Text("카카오"),
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.white,
+                                        foregroundColor: Colors.black,
+                                        elevation: 0,
+                                        shape: const CircleBorder(),
+                                        padding: EdgeInsets.zero,
+                                        minimumSize: Size.fromRadius(
+                                          context.height(0.025),
+                                        ),
+                                      ),
+                                      child: ClipOval(
+                                        child: Image.asset(
+                                          'assets/images/kakao_login.png',
+                                          fit: BoxFit.cover,
+                                          scale: context.height(0.006),
+                                        ),
+                                      ),
                                     ),
                                   ],
                                 ),

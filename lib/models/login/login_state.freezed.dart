@@ -16,7 +16,9 @@ mixin _$LoginState {
 
  bool get isObscurePassword;// 비밀번호 숨김 여부
  bool get isLoading;// 로그인 진행 중 상태
- String? get errorMessage;
+ String? get errorMessage;// 에러 메시지
+ bool get isIdValid;// ID 유효성 상태 추가
+ bool get isPasswordValid;
 /// Create a copy of LoginState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -27,16 +29,16 @@ $LoginStateCopyWith<LoginState> get copyWith => _$LoginStateCopyWithImpl<LoginSt
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is LoginState&&(identical(other.isObscurePassword, isObscurePassword) || other.isObscurePassword == isObscurePassword)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is LoginState&&(identical(other.isObscurePassword, isObscurePassword) || other.isObscurePassword == isObscurePassword)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage)&&(identical(other.isIdValid, isIdValid) || other.isIdValid == isIdValid)&&(identical(other.isPasswordValid, isPasswordValid) || other.isPasswordValid == isPasswordValid));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,isObscurePassword,isLoading,errorMessage);
+int get hashCode => Object.hash(runtimeType,isObscurePassword,isLoading,errorMessage,isIdValid,isPasswordValid);
 
 @override
 String toString() {
-  return 'LoginState(isObscurePassword: $isObscurePassword, isLoading: $isLoading, errorMessage: $errorMessage)';
+  return 'LoginState(isObscurePassword: $isObscurePassword, isLoading: $isLoading, errorMessage: $errorMessage, isIdValid: $isIdValid, isPasswordValid: $isPasswordValid)';
 }
 
 
@@ -47,7 +49,7 @@ abstract mixin class $LoginStateCopyWith<$Res>  {
   factory $LoginStateCopyWith(LoginState value, $Res Function(LoginState) _then) = _$LoginStateCopyWithImpl;
 @useResult
 $Res call({
- bool isObscurePassword, bool isLoading, String? errorMessage
+ bool isObscurePassword, bool isLoading, String? errorMessage, bool isIdValid, bool isPasswordValid
 });
 
 
@@ -64,12 +66,14 @@ class _$LoginStateCopyWithImpl<$Res>
 
 /// Create a copy of LoginState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? isObscurePassword = null,Object? isLoading = null,Object? errorMessage = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? isObscurePassword = null,Object? isLoading = null,Object? errorMessage = freezed,Object? isIdValid = null,Object? isPasswordValid = null,}) {
   return _then(_self.copyWith(
 isObscurePassword: null == isObscurePassword ? _self.isObscurePassword : isObscurePassword // ignore: cast_nullable_to_non_nullable
 as bool,isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
 as bool,errorMessage: freezed == errorMessage ? _self.errorMessage : errorMessage // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,isIdValid: null == isIdValid ? _self.isIdValid : isIdValid // ignore: cast_nullable_to_non_nullable
+as bool,isPasswordValid: null == isPasswordValid ? _self.isPasswordValid : isPasswordValid // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 
@@ -154,10 +158,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool isObscurePassword,  bool isLoading,  String? errorMessage)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool isObscurePassword,  bool isLoading,  String? errorMessage,  bool isIdValid,  bool isPasswordValid)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _LoginState() when $default != null:
-return $default(_that.isObscurePassword,_that.isLoading,_that.errorMessage);case _:
+return $default(_that.isObscurePassword,_that.isLoading,_that.errorMessage,_that.isIdValid,_that.isPasswordValid);case _:
   return orElse();
 
 }
@@ -175,10 +179,10 @@ return $default(_that.isObscurePassword,_that.isLoading,_that.errorMessage);case
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool isObscurePassword,  bool isLoading,  String? errorMessage)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool isObscurePassword,  bool isLoading,  String? errorMessage,  bool isIdValid,  bool isPasswordValid)  $default,) {final _that = this;
 switch (_that) {
 case _LoginState():
-return $default(_that.isObscurePassword,_that.isLoading,_that.errorMessage);case _:
+return $default(_that.isObscurePassword,_that.isLoading,_that.errorMessage,_that.isIdValid,_that.isPasswordValid);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -195,10 +199,10 @@ return $default(_that.isObscurePassword,_that.isLoading,_that.errorMessage);case
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool isObscurePassword,  bool isLoading,  String? errorMessage)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool isObscurePassword,  bool isLoading,  String? errorMessage,  bool isIdValid,  bool isPasswordValid)?  $default,) {final _that = this;
 switch (_that) {
 case _LoginState() when $default != null:
-return $default(_that.isObscurePassword,_that.isLoading,_that.errorMessage);case _:
+return $default(_that.isObscurePassword,_that.isLoading,_that.errorMessage,_that.isIdValid,_that.isPasswordValid);case _:
   return null;
 
 }
@@ -210,7 +214,7 @@ return $default(_that.isObscurePassword,_that.isLoading,_that.errorMessage);case
 
 
 class _LoginState implements LoginState {
-  const _LoginState({this.isObscurePassword = true, this.isLoading = false, this.errorMessage = null});
+  const _LoginState({this.isObscurePassword = true, this.isLoading = false, this.errorMessage = null, this.isIdValid = false, this.isPasswordValid = false});
   
 
 @override@JsonKey() final  bool isObscurePassword;
@@ -218,6 +222,10 @@ class _LoginState implements LoginState {
 @override@JsonKey() final  bool isLoading;
 // 로그인 진행 중 상태
 @override@JsonKey() final  String? errorMessage;
+// 에러 메시지
+@override@JsonKey() final  bool isIdValid;
+// ID 유효성 상태 추가
+@override@JsonKey() final  bool isPasswordValid;
 
 /// Create a copy of LoginState
 /// with the given fields replaced by the non-null parameter values.
@@ -229,16 +237,16 @@ _$LoginStateCopyWith<_LoginState> get copyWith => __$LoginStateCopyWithImpl<_Log
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _LoginState&&(identical(other.isObscurePassword, isObscurePassword) || other.isObscurePassword == isObscurePassword)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _LoginState&&(identical(other.isObscurePassword, isObscurePassword) || other.isObscurePassword == isObscurePassword)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage)&&(identical(other.isIdValid, isIdValid) || other.isIdValid == isIdValid)&&(identical(other.isPasswordValid, isPasswordValid) || other.isPasswordValid == isPasswordValid));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,isObscurePassword,isLoading,errorMessage);
+int get hashCode => Object.hash(runtimeType,isObscurePassword,isLoading,errorMessage,isIdValid,isPasswordValid);
 
 @override
 String toString() {
-  return 'LoginState(isObscurePassword: $isObscurePassword, isLoading: $isLoading, errorMessage: $errorMessage)';
+  return 'LoginState(isObscurePassword: $isObscurePassword, isLoading: $isLoading, errorMessage: $errorMessage, isIdValid: $isIdValid, isPasswordValid: $isPasswordValid)';
 }
 
 
@@ -249,7 +257,7 @@ abstract mixin class _$LoginStateCopyWith<$Res> implements $LoginStateCopyWith<$
   factory _$LoginStateCopyWith(_LoginState value, $Res Function(_LoginState) _then) = __$LoginStateCopyWithImpl;
 @override @useResult
 $Res call({
- bool isObscurePassword, bool isLoading, String? errorMessage
+ bool isObscurePassword, bool isLoading, String? errorMessage, bool isIdValid, bool isPasswordValid
 });
 
 
@@ -266,12 +274,14 @@ class __$LoginStateCopyWithImpl<$Res>
 
 /// Create a copy of LoginState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? isObscurePassword = null,Object? isLoading = null,Object? errorMessage = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? isObscurePassword = null,Object? isLoading = null,Object? errorMessage = freezed,Object? isIdValid = null,Object? isPasswordValid = null,}) {
   return _then(_LoginState(
 isObscurePassword: null == isObscurePassword ? _self.isObscurePassword : isObscurePassword // ignore: cast_nullable_to_non_nullable
 as bool,isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
 as bool,errorMessage: freezed == errorMessage ? _self.errorMessage : errorMessage // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,isIdValid: null == isIdValid ? _self.isIdValid : isIdValid // ignore: cast_nullable_to_non_nullable
+as bool,isPasswordValid: null == isPasswordValid ? _self.isPasswordValid : isPasswordValid // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 

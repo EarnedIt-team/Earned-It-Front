@@ -1,3 +1,4 @@
+import 'package:earned_it/views/home/home_view.dart';
 import 'package:earned_it/views/login/forgot_password_view.dart';
 import 'package:earned_it/views/login/login_view.dart';
 import 'package:earned_it/views/onboarding/onboarding_view.dart';
@@ -39,6 +40,11 @@ final GoRouter routes = GoRouter(
       builder:
           (BuildContext context, GoRouterState state) =>
               const ForgotPasswordView(),
+    ),
+    // 메인화면 (home)
+    GoRoute(
+      path: '/home',
+      builder: (BuildContext context, GoRouterState state) => const HomeView(),
     ),
   ],
 );

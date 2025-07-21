@@ -1,7 +1,12 @@
 import 'package:earned_it/models/login/login_state.dart';
+import 'package:earned_it/services/login/apple_login_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:toastification/toastification.dart';
+
+// appleLogin provider
+final appleLoginServiceProvider = Provider((ref) => AppleLoginService());
 
 final loginViewModelProvider = NotifierProvider<LoginViewModel, LoginState>(
   LoginViewModel.new,
@@ -19,13 +24,32 @@ class LoginViewModel extends Notifier<LoginState> {
     _idTextController = TextEditingController();
     _passwordTextController = TextEditingController();
 
-    // Notifier가 dispose될 때 컨트롤러도 함께 dispose
+    // 컨트롤러에 리스너 추가하여 텍스트 변경 시 상태 업데이트
+    _idTextController.addListener(_updateLoginButtonState);
+    _passwordTextController.addListener(_updateLoginButtonState);
+
     ref.onDispose(() {
+      _idTextController.removeListener(_updateLoginButtonState); // 리스너 제거
+      _passwordTextController.removeListener(_updateLoginButtonState); // 리스너 제거
       _idTextController.dispose();
       _passwordTextController.dispose();
     });
 
-    return const LoginState(); // 초기 상태 반환
+    return const LoginState();
+  }
+
+  // 로그인 버튼 활성화 상태를 결정하는 게터
+  bool get isLoginButtonEnabled {
+    return _idTextController.text.isNotEmpty &&
+        _passwordTextController.text.isNotEmpty;
+  }
+
+  // 텍스트 필드 변경 시 호출될 내부 메서드
+  void _updateLoginButtonState() {
+    state = state.copyWith(
+      isIdValid: _idTextController.text.isNotEmpty,
+      isPasswordValid: _passwordTextController.text.isNotEmpty,
+    );
   }
 
   /// 비밀번호 숨김/보임 상태를 토글합니다.
@@ -55,7 +79,6 @@ class LoginViewModel extends Notifier<LoginState> {
         autoCloseDuration: const Duration(seconds: 2),
       );
       // 로그인 성공 후 메인 페이지 등으로 이동 (GoRouter 사용 예시)
-      // context.go('/');
       print("로그인 성공: $id");
     } else {
       // 로그인 실패
@@ -68,10 +91,39 @@ class LoginViewModel extends Notifier<LoginState> {
   }
 
   /// SNS 로그인 (애플)
-  void signInWithApple(BuildContext context) {
-    // 실제 애플 로그인 로직 구현
+  Future<void> signInWithApple(BuildContext context) async {
     print("애플 로그인");
-    // 예: 서버에 인증 요청 후, 로그인 성공 시 state 업데이트 및 페이지 이동
+    state = state.copyWith(isLoading: true, errorMessage: null);
+
+    try {
+      final appleService = ref.read(appleLoginServiceProvider);
+      await appleService.login();
+
+      // 로그인 성공 처리 (예: 서버에서 토큰을 받아오고 사용자 상태 업데이트)
+      state = state.copyWith(isLoading: false, errorMessage: null);
+      toastification.show(
+        context: context,
+        title: const Text("애플 로그인 성공!"),
+        type: ToastificationType.success,
+        autoCloseDuration: const Duration(seconds: 2),
+      );
+      // 성공 후 다음 화면으로 이동
+      context.go('/home');
+    } catch (e) {
+      // Exception 문구 제거
+      String errorMessage = e.toString();
+      if (errorMessage.startsWith('Exception: ')) {
+        errorMessage = errorMessage.substring('Exception: '.length);
+      }
+      state = state.copyWith(isLoading: false);
+      toastification.show(
+        context: context,
+        title: const Text("애플 로그인 실패"),
+        description: Text(errorMessage),
+        type: ToastificationType.error,
+        autoCloseDuration: const Duration(seconds: 3),
+      );
+    }
   }
 
   /// SNS 로그인 (카카오)

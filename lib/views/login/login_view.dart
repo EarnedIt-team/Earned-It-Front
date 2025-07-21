@@ -98,7 +98,10 @@ class LoginView extends ConsumerWidget {
                                 onPressed:
                                     loginState.isIdValid &&
                                             loginState.isPasswordValid
-                                        ? () => loginNotifier.login(context)
+                                        ? () {
+                                          FocusScope.of(context).unfocus();
+                                          loginNotifier.login(context);
+                                        }
                                         : null,
                                 style: ElevatedButton.styleFrom(
                                   padding: EdgeInsets.symmetric(

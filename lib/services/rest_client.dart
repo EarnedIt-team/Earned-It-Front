@@ -8,6 +8,7 @@ part 'rest_client.g.dart';
 abstract class RestClient {
   factory RestClient(Dio dio, {String baseUrl}) = _RestClient;
 
+  // 이메일 인증 번호 전송 API
   @POST("/api/auth/email/send")
   Future<ApiResponse> sendEmail(@Query('email') String email);
 }

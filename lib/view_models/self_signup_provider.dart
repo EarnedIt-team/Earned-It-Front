@@ -10,10 +10,12 @@ import 'package:url_launcher/url_launcher.dart';
 
 // SignUpState를 관리하는 NotifierProvider
 final signUpViewModelProvider =
-    NotifierProvider<SignUpViewModel, SelfSignupState>(SignUpViewModel.new);
+    NotifierProvider.autoDispose<SignUpViewModel, SelfSignupState>(
+      SignUpViewModel.new,
+    );
 
 // 회원가입 (서버)
-class SignUpViewModel extends Notifier<SelfSignupState> {
+class SignUpViewModel extends AutoDisposeNotifier<SelfSignupState> {
   Timer? _codeTimer;
   final RegExp emailRegExp = RegExp(r'^[a-zA-Z0-9@.]+$'); // 이메일 유효성
   final RegExp passwordRegExp = RegExp(
@@ -83,7 +85,7 @@ class SignUpViewModel extends Notifier<SelfSignupState> {
 
     startTimer(); // 타이머 시작
 
-    // 이메일 인증 번호 전송 api
+    // 이메일 인증 번호 전송 API
     final ApiResponse response = await restClient.sendEmail(
       _emailController.text,
     );

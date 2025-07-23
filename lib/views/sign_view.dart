@@ -39,9 +39,11 @@ class SignView extends ConsumerWidget {
                   controller:
                       signUpNotifier.emailController, // Notifier의 컨트롤러 사용
                   onChanged: signUpNotifier.onEmailChanged,
+                  readOnly: signUpState.isSuccessfulCode,
                   suffixIcon:
                       signUpNotifier.emailController.text.isNotEmpty &&
-                              signUpState.isAvailableID
+                              signUpState.isAvailableID &&
+                              !signUpState.isSuccessfulCode
                           ? TextButton(
                             onPressed:
                                 () => signUpNotifier.requestEmail(context),
@@ -55,6 +57,18 @@ class SignView extends ConsumerWidget {
                           : null,
                   keyboardType: TextInputType.emailAddress,
                   hintText: "ex) email@example.com",
+                  helperWidget:
+                      signUpState.isSuccessfulCode
+                          ? Row(
+                            children: <Widget>[
+                              Icon(Icons.check, color: context.successColor),
+                              Text(
+                                " 사용 가능한 이메일입니다.",
+                                style: TextStyle(color: context.successColor),
+                              ),
+                            ],
+                          )
+                          : null,
                 ),
                 SizedBox(height: context.height(0.03)),
 
@@ -79,7 +93,7 @@ class SignView extends ConsumerWidget {
                                     color: context.successColor,
                                   ),
                                   Text(
-                                    "이메일 인증이 완료되었습니다.",
+                                    " 이메일 인증이 완료되었습니다.",
                                     style: TextStyle(
                                       color: context.successColor,
                                     ),

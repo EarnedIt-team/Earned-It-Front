@@ -8,6 +8,7 @@ class ApiResponse<T> {
   final String? status;
   final int? statusCode;
   final String? code; // 성공, 실패 여부
+  final String? message; // 응답 메시지
   final T? data; // 제네릭 타입
   final ApiError? error;
 
@@ -15,6 +16,7 @@ class ApiResponse<T> {
     this.status,
     this.statusCode,
     this.code,
+    this.message,
     required this.data,
     this.error,
   }); // required 제거

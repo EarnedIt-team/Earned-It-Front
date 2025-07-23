@@ -44,7 +44,7 @@ class SignView extends ConsumerWidget {
                               signUpState.isAvailableID
                           ? TextButton(
                             onPressed:
-                                () => signUpNotifier.requestAuth(context),
+                                () => signUpNotifier.requestEmail(context),
                             child: const Text("인증 요청"),
                           )
                           : null,

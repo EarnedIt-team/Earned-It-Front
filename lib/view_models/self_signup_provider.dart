@@ -1,8 +1,8 @@
-// lib/features/auth/sign_up/viewmodels/sign_up_view_model.dart
 import 'dart:async';
-import 'package:earned_it/main.dart';
+import 'package:earned_it/config/exception.dart';
 import 'package:earned_it/models/api_response.dart';
 import 'package:earned_it/models/signup/self_signup_state.dart';
+import 'package:earned_it/services/auth/signup_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:toastification/toastification.dart';
@@ -28,6 +28,9 @@ class SignUpViewModel extends AutoDisposeNotifier<SelfSignupState> {
   late final TextEditingController _passwordController;
   late final TextEditingController _checkPasswordController;
 
+  // SignUpService 인스턴스를 저장할 필드
+  late final SignUpService _signUpService;
+
   // 입력 컨트롤러
   TextEditingController get emailController => _emailController;
   TextEditingController get agreeCodeController => _agreeCodeController;
@@ -36,6 +39,8 @@ class SignUpViewModel extends AutoDisposeNotifier<SelfSignupState> {
 
   @override
   SelfSignupState build() {
+    _signUpService = ref.read(signUpServiceProvider);
+
     // 컨트롤러 초기화
     _emailController = TextEditingController();
     _agreeCodeController = TextEditingController();
@@ -72,32 +77,46 @@ class SignUpViewModel extends AutoDisposeNotifier<SelfSignupState> {
   }
 
   // 이메일 인증 요청
-  Future<void> requestAuth(BuildContext context) async {
+  Future<void> requestEmail(BuildContext context) async {
     FocusScope.of(context).unfocus(); // 키보드 내리기
 
-    // 이메일 인증 관련 초기화
-    state = state.copyWith(
-      isSuccessfulCode: false,
-      isAvailableCode: false,
-      isRequestAuth: true, // 인증 요청 상태로 변경
-    );
-    _agreeCodeController.clear();
+    try {
+      // 이메일 인증 번호 전송 API
+      await _signUpService.sendEmailAuthCode(_emailController.text);
 
-    startTimer(); // 타이머 시작
+      state = state.copyWith(
+        isSuccessfulCode: false,
+        isAvailableCode: false,
+        isRequestAuth: true, // 인증 요청 상태로 변경
+      );
+      _agreeCodeController.clear(); // 인증 코드 textfield 초기화
 
-    // 이메일 인증 번호 전송 API
-    final ApiResponse response = await restClient.sendEmail(
-      _emailController.text,
-    );
+      startTimer(); // 타이머 시작
 
-    // 이메일 인증 번호 전송 toastMessage
-    toastification.show(
-      alignment: Alignment.topCenter,
-      style: ToastificationStyle.simple,
-      context: context,
-      title: const Text("해당 이메일로 인증 코드를 전송했습니다."),
-      autoCloseDuration: const Duration(seconds: 3),
-    );
+      // 이메일 인증 번호 전송 toastMessage
+      toastification.show(
+        alignment: Alignment.topCenter,
+        style: ToastificationStyle.simple,
+        context: context,
+        title: const Text("해당 이메일로 인증 코드를 전송했습니다."),
+        autoCloseDuration: const Duration(seconds: 3),
+      );
+    } catch (e) {
+      // 인증 요청 상태 초기화
+      state = state.copyWith(
+        isSuccessfulCode: false,
+        isAvailableCode: false,
+        isRequestAuth: false,
+      );
+      // 이메일 인증 번호 전송 toastMessage
+      toastification.show(
+        alignment: Alignment.topCenter,
+        style: ToastificationStyle.simple,
+        context: context,
+        title: Text(e.toDisplayString()),
+        autoCloseDuration: const Duration(seconds: 3),
+      );
+    }
   }
 
   // 인증 코드 입력 변경 시

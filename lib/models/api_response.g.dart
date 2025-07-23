@@ -11,7 +11,8 @@ ApiResponse<T> _$ApiResponseFromJson<T>(
   T Function(Object? json) fromJsonT,
 ) => ApiResponse<T>(
   status: json['status'] as String?,
-  code: (json['code'] as num?)?.toInt(),
+  statusCode: (json['statusCode'] as num?)?.toInt(),
+  code: json['code'] as String?,
   data: _$nullableGenericFromJson(json['data'], fromJsonT),
   error:
       json['error'] == null
@@ -24,6 +25,7 @@ Map<String, dynamic> _$ApiResponseToJson<T>(
   Object? Function(T value) toJsonT,
 ) => <String, dynamic>{
   'status': instance.status,
+  'statusCode': instance.statusCode,
   'code': instance.code,
   'data': _$nullableGenericToJson(instance.data, toJsonT),
   'error': instance.error,

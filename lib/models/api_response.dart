@@ -6,11 +6,18 @@ part 'api_response.g.dart';
 @JsonSerializable(genericArgumentFactories: true)
 class ApiResponse<T> {
   final String? status;
-  final int? code;
+  final int? statusCode;
+  final String? code; // 성공, 실패 여부
   final T? data; // 제네릭 타입
   final ApiError? error;
 
-  ApiResponse({this.status, this.code, this.data, this.error}); // required 제거
+  ApiResponse({
+    this.status,
+    this.statusCode,
+    this.code,
+    required this.data,
+    this.error,
+  }); // required 제거
 
   factory ApiResponse.fromJson(
     Map<String, dynamic> json,

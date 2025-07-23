@@ -1,5 +1,7 @@
 // lib/features/auth/sign_up/viewmodels/sign_up_view_model.dart
 import 'dart:async';
+import 'package:earned_it/main.dart';
+import 'package:earned_it/models/api_response.dart';
 import 'package:earned_it/models/signup/self_signup_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -68,7 +70,7 @@ class SignUpViewModel extends Notifier<SelfSignupState> {
   }
 
   // 이메일 인증 요청
-  void requestAuth(BuildContext context) {
+  Future<void> requestAuth(BuildContext context) async {
     FocusScope.of(context).unfocus(); // 키보드 내리기
 
     // 이메일 인증 관련 초기화
@@ -80,6 +82,11 @@ class SignUpViewModel extends Notifier<SelfSignupState> {
     _agreeCodeController.clear();
 
     startTimer(); // 타이머 시작
+
+    // 이메일 인증 번호 전송 api
+    final ApiResponse response = await restClient.sendEmail(
+      _emailController.text,
+    );
 
     // 이메일 인증 번호 전송 toastMessage
     toastification.show(

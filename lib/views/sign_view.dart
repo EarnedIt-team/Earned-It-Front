@@ -109,17 +109,16 @@ class SignView extends ConsumerWidget {
                                       TextButton(
                                         onPressed:
                                             signUpState.startTime <= 895
-                                                ? () =>
-                                                    signUpNotifier.startTimer()
+                                                ? () => signUpNotifier
+                                                    .requestEmail(context)
                                                 : null,
                                         child: const Text("재전송"),
                                       ),
                                       TextButton(
                                         onPressed:
                                             signUpState.isAvailableCode
-                                                ? () =>
-                                                    signUpNotifier
-                                                        .verifyAuthCode()
+                                                ? () => signUpNotifier
+                                                    .verifyAuthCode(context)
                                                 : null,
                                         child: const Text("코드 확인"),
                                       ),

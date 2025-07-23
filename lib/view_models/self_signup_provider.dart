@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:earned_it/config/exception.dart';
-import 'package:earned_it/models/api_response.dart';
 import 'package:earned_it/models/signup/self_signup_state.dart';
 import 'package:earned_it/services/auth/signup_service.dart';
 import 'package:flutter/material.dart';
@@ -78,10 +77,16 @@ class SignUpViewModel extends AutoDisposeNotifier<SelfSignupState> {
 
   // 이메일 인증 요청
   Future<void> requestEmail(BuildContext context) async {
+    _codeTimer?.cancel(); // 타이머 초기화
     FocusScope.of(context).unfocus(); // 키보드 내리기
+    state = state.copyWith(
+      isSuccessfulCode: false,
+      isAvailableCode: false,
+      isRequestAuth: false, // 인증 요청 상태 초기화
+    );
 
     try {
-      // 이메일 인증 번호 전송 API
+      // 이메일 인증 코드 요청 API
       await _signUpService.sendEmailAuthCode(_emailController.text);
 
       state = state.copyWith(
@@ -102,13 +107,12 @@ class SignUpViewModel extends AutoDisposeNotifier<SelfSignupState> {
         autoCloseDuration: const Duration(seconds: 3),
       );
     } catch (e) {
-      // 인증 요청 상태 초기화
+      _codeTimer?.cancel(); // 타이머 초기화
       state = state.copyWith(
         isSuccessfulCode: false,
         isAvailableCode: false,
-        isRequestAuth: false,
+        isRequestAuth: false, // 인증 요청 상태 초기화
       );
-      // 이메일 인증 번호 전송 toastMessage
       toastification.show(
         alignment: Alignment.topCenter,
         style: ToastificationStyle.simple,
@@ -121,18 +125,31 @@ class SignUpViewModel extends AutoDisposeNotifier<SelfSignupState> {
 
   // 인증 코드 입력 변경 시
   void onAuthCodeChanged(String value) {
-    state = state.copyWith(
-      isAvailableCode: value.isNotEmpty, // 코드 유효성은 실제 백엔드 통신 후 판단
-    );
+    state = state.copyWith(isAvailableCode: value.isNotEmpty);
   }
 
-  // 인증 코드 확인 (가정: 백엔드 통신 필요)
-  void verifyAuthCode() {
-    // 실제로는 여기서 백엔드에 인증 코드 유효성 검사 요청
-    // 성공 시
-    _codeTimer?.cancel(); // 타이머 취소
-    state = state.copyWith(isSuccessfulCode: true);
-    // 실패 시 isSuccessfulCode: false 유지 또는 에러 메시지
+  // 인증 코드 확인
+  Future<void> verifyAuthCode(BuildContext context) async {
+    FocusScope.of(context).unfocus(); // 키보드 내리기
+
+    try {
+      // 인증 코드 확인 API
+      await _signUpService.verifyEmail(
+        _emailController.text,
+        _agreeCodeController.text,
+      );
+      _codeTimer?.cancel(); // 타이머 취소
+      state = state.copyWith(isSuccessfulCode: true);
+    } catch (e) {
+      state = state.copyWith(isSuccessfulCode: false);
+      toastification.show(
+        alignment: Alignment.topCenter,
+        style: ToastificationStyle.simple,
+        context: context,
+        title: Text(e.toDisplayString()),
+        autoCloseDuration: const Duration(seconds: 3),
+      );
+    }
   }
 
   // 비밀번호 입력 변경 시

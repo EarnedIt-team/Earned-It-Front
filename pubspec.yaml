@@ -21,6 +21,9 @@ dependencies:
   kakao_flutter_sdk: ^1.9.7+3
   flutter_dotenv: ^5.2.1
   flutter_config: ^2.0.2
+  retrofit: ^4.6.0
+  logger: ^2.6.1
+  json_annotation: ^4.9.0
 
 dev_dependencies:
   flutter_test:
@@ -28,6 +31,7 @@ dev_dependencies:
 
   flutter_lints: ^5.0.0
   build_runner: ^2.5.4
+  json_serializable: ^6.9.5
 
 flutter:
 

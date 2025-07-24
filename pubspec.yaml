@@ -20,7 +20,7 @@ dependencies:
   sign_in_with_apple: ^7.0.1
   kakao_flutter_sdk: ^1.9.7+3
   flutter_dotenv: ^5.2.1
-  flutter_config: ^2.0.2
+  # flutter_config: ^2.0.2
   retrofit: ^4.6.0
   logger: ^2.6.1
   json_annotation: ^4.9.0

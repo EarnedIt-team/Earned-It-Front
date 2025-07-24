@@ -2,8 +2,10 @@ import 'package:earned_it/config/exception.dart';
 import 'package:earned_it/models/login/login_state.dart';
 import 'package:earned_it/services/auth/apple_login_service.dart';
 import 'package:earned_it/services/auth/kakao_login_service.dart';
+import 'package:earned_it/services/auth/login_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:go_router/go_router.dart';
 import 'package:toastification/toastification.dart';
 
@@ -20,11 +22,16 @@ class LoginViewModel extends Notifier<LoginState> {
   late final TextEditingController _idTextController;
   late final TextEditingController _passwordTextController;
 
+  // loginService 인스턴스를 저장할 필드
+  late final LoginService _loginService;
+
   TextEditingController get idTextController => _idTextController;
   TextEditingController get passwordTextController => _passwordTextController;
 
   @override
   LoginState build() {
+    _loginService = ref.read(loginServiceProvider);
+
     _idTextController = TextEditingController();
     _passwordTextController = TextEditingController();
 
@@ -61,36 +68,79 @@ class LoginViewModel extends Notifier<LoginState> {
     state = state.copyWith(isObscurePassword: !state.isObscurePassword);
   }
 
-  /// 로그인 버튼 클릭 시 호출됩니다.
+  /// 자체 로그인
   Future<void> login(BuildContext context) async {
     // 로딩 상태 시작
     state = state.copyWith(isLoading: true, errorMessage: null);
 
-    final String id = _idTextController.text;
-    final String password = _passwordTextController.text;
+    try {
+      // 자체 로그인 API
+      final response = await _loginService.selfLogin(
+        _idTextController.text,
+        _passwordTextController.text,
+      );
 
-    // 실제 로그인 API 호출 로직 (예: HTTP 요청)
-    // 여기서는 간단히 2초 지연 후 성공/실패를 가정합니다.
-    await Future.delayed(const Duration(seconds: 2));
+      state = state.copyWith(isLoading: false);
 
-    if (id == "test@example.com" && password == "Password123!") {
-      // 로그인 성공
-      state = state.copyWith(isLoading: false, errorMessage: null);
+      final String accessToken = response.data['accessToken'] as String;
+      final String refreshToken = response.data['refreshToken'] as String;
+
+      // accessToken과 refreshToken을 secure storage에 저장
+      await const FlutterSecureStorage().write(
+        key: 'accessToken',
+        value: accessToken,
+      );
+      await const FlutterSecureStorage().write(
+        key: 'refreshToken',
+        value: refreshToken,
+      );
+
+      print("accessToken 과 refreshToken 을 저장했습니다.");
+
+      context.go('/home');
+    } catch (e) {
+      state = state.copyWith(isLoading: false);
       toastification.show(
+        alignment: Alignment.topCenter,
+        style: ToastificationStyle.simple,
         context: context,
-        title: const Text("로그인 성공!"),
-        type: ToastificationType.success,
-        autoCloseDuration: const Duration(seconds: 2),
+        title: Text(e.toDisplayString()),
+        autoCloseDuration: const Duration(seconds: 3),
       );
-      // 로그인 성공 후 메인 페이지 등으로 이동 (GoRouter 사용 예시)
-      print("로그인 성공: $id");
-    } else {
-      // 로그인 실패
-      state = state.copyWith(
-        isLoading: false,
-        errorMessage: "아이디 또는 비밀번호가 올바르지 않습니다.",
+    }
+  }
+
+  /// 자동 로그인
+  Future<void> autoLogin(BuildContext context, String token) async {
+    try {
+      // 토큰 검증 API
+      final response = await _loginService.checkToken(token);
+
+      final String accessToken = response.data['accessToken'] as String;
+      final String refreshToken = response.data['refreshToken'] as String;
+
+      // accessToken과 refreshToken을 secure storage에 저장
+      await const FlutterSecureStorage().write(
+        key: 'accessToken',
+        value: accessToken,
       );
-      print("로그인 실패");
+      await const FlutterSecureStorage().write(
+        key: 'refreshToken',
+        value: refreshToken,
+      );
+
+      print("accessToken 과 refreshToken 을 갱신했습니다.");
+
+      context.go("/home");
+    } catch (e) {
+      context.go("/login");
+      toastification.show(
+        alignment: Alignment.topCenter,
+        style: ToastificationStyle.simple,
+        context: context,
+        title: Text(e.toDisplayString()),
+        autoCloseDuration: const Duration(seconds: 3),
+      );
     }
   }
 

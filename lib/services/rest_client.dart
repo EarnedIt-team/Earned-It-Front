@@ -8,15 +8,24 @@ part 'rest_client.g.dart';
 abstract class RestClient {
   factory RestClient(Dio dio, {String baseUrl}) = _RestClient;
 
-  // 이메일 인증 코드 요청 API
+  /// 이메일 인증 코드 요청 API
   @POST("/api/auth/email/send")
   Future<ApiResponse> sendEmail(@Query('email') String email);
 
-  // 인증 코드 검사 API
+  /// 인증 코드 검사 API
   @POST("/api/auth/email/verify")
   Future<ApiResponse> verifyEmail(@Body() Map<String, String> body);
 
-  // 회원가입 API
+  /// 회원가입 API
   @POST("/api/auth/signup")
   Future<ApiResponse> signUpUser(@Body() Map<String, dynamic> body);
+
+  /// 로그인 API (자체 로그인)
+  @POST("/api/auth/signin")
+  Future<ApiResponse> selflogin(@Body() Map<String, String> body);
+
+  /// 로그인 연장 API (토큰 검사 및 재발행)
+  /// 해당 API는 "자동 로그인"과 토큰 재발행을 위한 용도입니다.
+  @POST("/api/auth/refresh")
+  Future<ApiResponse> checkToken(@Header("Authorization") String token);
 }

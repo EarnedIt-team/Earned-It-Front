@@ -67,36 +67,33 @@ class LoginViewModel extends Notifier<LoginState> {
     state = state.copyWith(isObscurePassword: !state.isObscurePassword);
   }
 
-  /// 로그인 버튼 클릭 시 호출됩니다.
+  /// 자체 로그인
   Future<void> login(BuildContext context) async {
     // 로딩 상태 시작
     state = state.copyWith(isLoading: true, errorMessage: null);
 
-    final String id = _idTextController.text;
-    final String password = _passwordTextController.text;
+    try {
+      // 자체 로그인 API
+      final response = await _loginService.selfLogin(
+        _idTextController.text,
+        _passwordTextController.text,
+      );
 
-    // 실제 로그인 API 호출 로직 (예: HTTP 요청)
-    // 여기서는 간단히 2초 지연 후 성공/실패를 가정합니다.
-    await Future.delayed(const Duration(seconds: 2));
+      state = state.copyWith(isLoading: false);
 
-    if (id == "test@example.com" && password == "Password123!") {
-      // 로그인 성공
-      state = state.copyWith(isLoading: false, errorMessage: null);
+      print("accessToken : ${response.data['accessToken']}");
+      print("refreshToken : ${response.data['refreshToken']}");
+
+      context.go('/home');
+    } catch (e) {
+      state = state.copyWith(isLoading: false);
       toastification.show(
+        alignment: Alignment.topCenter,
+        style: ToastificationStyle.simple,
         context: context,
-        title: const Text("로그인 성공!"),
-        type: ToastificationType.success,
-        autoCloseDuration: const Duration(seconds: 2),
+        title: Text(e.toDisplayString()),
+        autoCloseDuration: const Duration(seconds: 3),
       );
-      // 로그인 성공 후 메인 페이지 등으로 이동 (GoRouter 사용 예시)
-      print("로그인 성공: $id");
-    } else {
-      // 로그인 실패
-      state = state.copyWith(
-        isLoading: false,
-        errorMessage: "아이디 또는 비밀번호가 올바르지 않습니다.",
-      );
-      print("로그인 실패");
     }
   }
 

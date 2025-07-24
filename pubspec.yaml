@@ -20,14 +20,20 @@ dependencies:
   sign_in_with_apple: ^7.0.1
   kakao_flutter_sdk: ^1.9.7+3
   flutter_dotenv: ^5.2.1
-  flutter_config: ^2.0.2
+  # flutter_config: ^2.0.2
+  retrofit: ^4.6.0
+  logger: ^2.6.1
+  json_annotation: ^4.9.0
+  dio: ^5.8.0+1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
   flutter_lints: ^5.0.0
+  retrofit_generator:
   build_runner: ^2.5.4
+  json_serializable: ^6.9.5
 
 flutter:
 

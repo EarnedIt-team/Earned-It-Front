@@ -1,17 +1,21 @@
-// lib/features/auth/sign_up/viewmodels/sign_up_view_model.dart
 import 'dart:async';
+import 'package:earned_it/config/exception.dart';
 import 'package:earned_it/models/signup/self_signup_state.dart';
+import 'package:earned_it/services/auth/signup_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:toastification/toastification.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 // SignUpState를 관리하는 NotifierProvider
 final signUpViewModelProvider =
-    NotifierProvider<SignUpViewModel, SelfSignupState>(SignUpViewModel.new);
+    NotifierProvider.autoDispose<SignUpViewModel, SelfSignupState>(
+      SignUpViewModel.new,
+    );
 
 // 회원가입 (서버)
-class SignUpViewModel extends Notifier<SelfSignupState> {
+class SignUpViewModel extends AutoDisposeNotifier<SelfSignupState> {
   Timer? _codeTimer;
   final RegExp emailRegExp = RegExp(r'^[a-zA-Z0-9@.]+$'); // 이메일 유효성
   final RegExp passwordRegExp = RegExp(
@@ -24,6 +28,9 @@ class SignUpViewModel extends Notifier<SelfSignupState> {
   late final TextEditingController _passwordController;
   late final TextEditingController _checkPasswordController;
 
+  // SignUpService 인스턴스를 저장할 필드
+  late final SignUpService _signUpService;
+
   // 입력 컨트롤러
   TextEditingController get emailController => _emailController;
   TextEditingController get agreeCodeController => _agreeCodeController;
@@ -32,6 +39,8 @@ class SignUpViewModel extends Notifier<SelfSignupState> {
 
   @override
   SelfSignupState build() {
+    _signUpService = ref.read(signUpServiceProvider);
+
     // 컨트롤러 초기화
     _emailController = TextEditingController();
     _agreeCodeController = TextEditingController();
@@ -68,43 +77,84 @@ class SignUpViewModel extends Notifier<SelfSignupState> {
   }
 
   // 이메일 인증 요청
-  void requestAuth(BuildContext context) {
+  Future<void> requestEmail(BuildContext context) async {
+    _codeTimer?.cancel(); // 타이머 초기화
     FocusScope.of(context).unfocus(); // 키보드 내리기
-
-    // 이메일 인증 관련 초기화
     state = state.copyWith(
       isSuccessfulCode: false,
       isAvailableCode: false,
-      isRequestAuth: true, // 인증 요청 상태로 변경
-    );
-    _agreeCodeController.clear();
+      isRequestAuth: false,
+      isProgress: true,
+    ); // 인증 요청 상태 초기화
 
-    startTimer(); // 타이머 시작
+    try {
+      // 이메일 인증 코드 요청 API
+      await _signUpService.sendEmailAuthCode(_emailController.text);
 
-    // 이메일 인증 번호 전송 toastMessage
-    toastification.show(
-      alignment: Alignment.topCenter,
-      style: ToastificationStyle.simple,
-      context: context,
-      title: const Text("해당 이메일로 인증 코드를 전송했습니다."),
-      autoCloseDuration: const Duration(seconds: 3),
-    );
+      state = state.copyWith(
+        isSuccessfulCode: false,
+        isAvailableCode: false,
+        isRequestAuth: true,
+        isProgress: false,
+      ); // 인증 요청 상태로 변경
+      _agreeCodeController.clear(); // 인증 코드 textfield 초기화
+
+      startTimer(); // 타이머 시작
+
+      // 이메일 인증 번호 전송 toastMessage
+      toastification.show(
+        alignment: Alignment.topCenter,
+        style: ToastificationStyle.simple,
+        context: context,
+        title: const Text("해당 이메일로 인증 코드를 전송했습니다."),
+        autoCloseDuration: const Duration(seconds: 3),
+      );
+    } catch (e) {
+      _codeTimer?.cancel(); // 타이머 초기화
+      state = state.copyWith(
+        isSuccessfulCode: false,
+        isAvailableCode: false,
+        isRequestAuth: false,
+        isProgress: false,
+      ); // 인증 요청 상태 초기화
+      toastification.show(
+        alignment: Alignment.topCenter,
+        style: ToastificationStyle.simple,
+        context: context,
+        title: Text(e.toDisplayString()),
+        autoCloseDuration: const Duration(seconds: 3),
+      );
+    }
   }
 
   // 인증 코드 입력 변경 시
   void onAuthCodeChanged(String value) {
-    state = state.copyWith(
-      isAvailableCode: value.isNotEmpty, // 코드 유효성은 실제 백엔드 통신 후 판단
-    );
+    state = state.copyWith(isAvailableCode: value.isNotEmpty);
   }
 
-  // 인증 코드 확인 (가정: 백엔드 통신 필요)
-  void verifyAuthCode() {
-    // 실제로는 여기서 백엔드에 인증 코드 유효성 검사 요청
-    // 성공 시
-    _codeTimer?.cancel(); // 타이머 취소
-    state = state.copyWith(isSuccessfulCode: true);
-    // 실패 시 isSuccessfulCode: false 유지 또는 에러 메시지
+  // 인증 코드 확인
+  Future<void> verifyAuthCode(BuildContext context) async {
+    FocusScope.of(context).unfocus(); // 키보드 내리기
+    state = state.copyWith(isSuccessfulCode: false, isProgress: true);
+
+    try {
+      // 인증 코드 확인 API
+      await _signUpService.verifyEmail(
+        _emailController.text,
+        _agreeCodeController.text,
+      );
+      _codeTimer?.cancel(); // 타이머 취소
+      state = state.copyWith(isSuccessfulCode: true, isProgress: false);
+    } catch (e) {
+      state = state.copyWith(isSuccessfulCode: false, isProgress: false);
+      toastification.show(
+        alignment: Alignment.topCenter,
+        style: ToastificationStyle.simple,
+        context: context,
+        title: Text(e.toDisplayString()),
+        autoCloseDuration: const Duration(seconds: 3),
+      );
+    }
   }
 
   // 비밀번호 입력 변경 시
@@ -134,24 +184,39 @@ class SignUpViewModel extends Notifier<SelfSignupState> {
   }
 
   // 회원가입 버튼 클릭 시
-  void signUp(BuildContext context) {
+  Future<void> signUp(BuildContext context) async {
     // 모든 유효성 검사가 통과되었을 때
     if (state.isSuccessfulCode &&
         state.isAvailablePassword &&
         state.isCheckPassword &&
         state.isAgreedToTerms) {
-      // 실제 회원가입 API 호출 로직 (예: Dio, http 사용)
-      print("회원가입 정보:");
-      print("이메일: ${_emailController.text}");
-      print("비밀번호: ${_passwordController.text}");
-      // 성공/실패에 따른 UI 처리 (예: 네비게이션, 토스트 메시지)
-      toastification.show(
-        alignment: Alignment.topCenter,
-        style: ToastificationStyle.simple,
-        context: context,
-        title: const Text("회원가입 성공!"),
-        autoCloseDuration: const Duration(seconds: 3),
-      );
+      try {
+        state = state.copyWith(isProgress: true);
+        // 회원가입 API
+        await _signUpService.signUp(
+          _emailController.text,
+          _passwordController.text,
+        );
+
+        state = state.copyWith(isProgress: false);
+        toastification.show(
+          alignment: Alignment.topCenter,
+          style: ToastificationStyle.simple,
+          context: context,
+          title: const Text("회원가입 성공!"),
+          autoCloseDuration: const Duration(seconds: 3),
+        );
+        context.go("/login"); // 로그인 페이지로 이동
+      } catch (e) {
+        state = state.copyWith(isProgress: false);
+        toastification.show(
+          alignment: Alignment.topCenter,
+          style: ToastificationStyle.simple,
+          context: context,
+          title: Text(e.toDisplayString()),
+          autoCloseDuration: const Duration(seconds: 3),
+        );
+      }
     } else {
       toastification.show(
         alignment: Alignment.topCenter,

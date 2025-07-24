@@ -1,8 +1,8 @@
 import 'package:earned_it/views/home/home_view.dart';
-import 'package:earned_it/views/login/forgot_password_view.dart';
-import 'package:earned_it/views/login/login_view.dart';
+import 'package:earned_it/views/auth/login/forgot_password_view.dart';
+import 'package:earned_it/views/auth/login/login_view.dart';
 import 'package:earned_it/views/onboarding/onboarding_view.dart';
-import 'package:earned_it/views/sign_view.dart';
+import 'package:earned_it/views/auth/signup/sign_view.dart';
 import 'package:earned_it/views/splash_view.dart';
 import 'package:flutter/widgets.dart';
 

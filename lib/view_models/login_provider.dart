@@ -1,6 +1,7 @@
+import 'package:earned_it/config/exception.dart';
 import 'package:earned_it/models/login/login_state.dart';
-import 'package:earned_it/services/login/apple_login_service.dart';
-import 'package:earned_it/services/login/kakao_login_service.dart';
+import 'package:earned_it/services/auth/apple_login_service.dart';
+import 'package:earned_it/services/auth/kakao_login_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -113,16 +114,11 @@ class LoginViewModel extends Notifier<LoginState> {
       // 성공 후 다음 화면으로 이동
       context.go('/home');
     } catch (e) {
-      // Exception 문구 제거
-      String errorMessage = e.toString();
-      if (errorMessage.startsWith('Exception: ')) {
-        errorMessage = errorMessage.substring('Exception: '.length);
-      }
       state = state.copyWith(isLoading: false);
       toastification.show(
         context: context,
         title: const Text("애플 로그인 실패"),
-        description: Text(errorMessage),
+        description: Text(e.toDisplayString()),
         type: ToastificationType.error,
         autoCloseDuration: const Duration(seconds: 3),
       );

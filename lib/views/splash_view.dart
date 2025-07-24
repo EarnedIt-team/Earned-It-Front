@@ -1,7 +1,13 @@
 import 'package:earned_it/config/design.dart';
+import 'package:earned_it/view_models/login_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:go_router/go_router.dart';
+
+final secureStorageProvider = Provider<FlutterSecureStorage>((ref) {
+  return const FlutterSecureStorage();
+});
 
 class SplashView extends ConsumerStatefulWidget {
   const SplashView({super.key});
@@ -14,17 +20,33 @@ class _SplashViewState extends ConsumerState<SplashView> {
   @override
   void initState() {
     super.initState();
-    _navigateToOnboarding(); // 온보딩 이동
+    // 위젯이 빌드된 후 토큰 확인 및 네비게이션을 스케줄링
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkTokenAndNavigate();
+    });
   }
 
-  // 온보딩 이동
-  void _navigateToOnboarding() async {
-    // 2초 대기
+  // 토큰 확인 및 화면 전환 함수
+  Future<void> _checkTokenAndNavigate() async {
+    // 2초 대기 (스플래시 화면 표시 시간)
     await Future.delayed(const Duration(seconds: 2));
 
-    // 위젯이 여전히 마운트되어 있는지 확인 (화면이 전환되기 전에 위젯이 dispose될 수 있으므로)
-    if (mounted) {
-      // GoRouter를 사용하여 온보딩 화면으로 이동
+    // 위젯이 여전히 마운트되어 있는지 확인 (화면 전환 전에 위젯이 dispose될 수 있으므로)
+    if (!mounted) {
+      return; // 마운트되지 않았다면 더 이상 진행하지 않음
+    }
+
+    // Riverpod을 통해 FlutterSecureStorage 인스턴스 가져오기
+    final storage = ref.read(secureStorageProvider);
+    // refreshToken 불러오기
+    String? token = await storage.read(key: 'refreshToken');
+
+    if (token != null && token.isNotEmpty) {
+      // refreshToken이 존재하면 autoLogin 호출
+      // loginViewModelProvider를 읽어와서 autoLogin 메서드를 호출합니다.
+      ref.read(loginViewModelProvider.notifier).autoLogin(context, token);
+    } else {
+      // refreshToken이 없거나 비어있으면 온보딩 화면으로 이동
       context.go("/onboarding");
     }
   }

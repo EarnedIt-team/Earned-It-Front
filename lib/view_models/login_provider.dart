@@ -5,6 +5,7 @@ import 'package:earned_it/services/auth/kakao_login_service.dart';
 import 'package:earned_it/services/auth/login_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:go_router/go_router.dart';
 import 'package:toastification/toastification.dart';
 
@@ -81,12 +82,43 @@ class LoginViewModel extends Notifier<LoginState> {
 
       state = state.copyWith(isLoading: false);
 
-      print("accessToken : ${response.data['accessToken']}");
-      print("refreshToken : ${response.data['refreshToken']}");
+      final String accessToken = response.data['accessToken'] as String;
+      final String refreshToken = response.data['refreshToken'] as String;
+
+      // accessToken과 refreshToken을 secure storage에 저장
+      await const FlutterSecureStorage().write(
+        key: 'accessToken',
+        value: accessToken,
+      );
+      await const FlutterSecureStorage().write(
+        key: 'refreshToken',
+        value: refreshToken,
+      );
+
+      print("accessToken 과 refreshToken 을 저장했습니다.");
 
       context.go('/home');
     } catch (e) {
       state = state.copyWith(isLoading: false);
+      toastification.show(
+        alignment: Alignment.topCenter,
+        style: ToastificationStyle.simple,
+        context: context,
+        title: Text(e.toDisplayString()),
+        autoCloseDuration: const Duration(seconds: 3),
+      );
+    }
+  }
+
+  /// 자동 로그인
+  Future<void> autoLogin(BuildContext context, String token) async {
+    try {
+      // 토큰 검증 API
+      final response = await _loginService.checkToken(token);
+
+      context.go("/home");
+    } catch (e) {
+      context.go("/login");
       toastification.show(
         alignment: Alignment.topCenter,
         style: ToastificationStyle.simple,

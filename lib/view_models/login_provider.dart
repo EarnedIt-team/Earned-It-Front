@@ -116,6 +116,21 @@ class LoginViewModel extends Notifier<LoginState> {
       // 토큰 검증 API
       final response = await _loginService.checkToken(token);
 
+      final String accessToken = response.data['accessToken'] as String;
+      final String refreshToken = response.data['refreshToken'] as String;
+
+      // accessToken과 refreshToken을 secure storage에 저장
+      await const FlutterSecureStorage().write(
+        key: 'accessToken',
+        value: accessToken,
+      );
+      await const FlutterSecureStorage().write(
+        key: 'refreshToken',
+        value: refreshToken,
+      );
+
+      print("accessToken 과 refreshToken 을 갱신했습니다.");
+
       context.go("/home");
     } catch (e) {
       context.go("/login");

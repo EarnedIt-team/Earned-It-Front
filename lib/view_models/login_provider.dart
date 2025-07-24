@@ -2,6 +2,7 @@ import 'package:earned_it/config/exception.dart';
 import 'package:earned_it/models/login/login_state.dart';
 import 'package:earned_it/services/auth/apple_login_service.dart';
 import 'package:earned_it/services/auth/kakao_login_service.dart';
+import 'package:earned_it/services/auth/login_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -20,11 +21,16 @@ class LoginViewModel extends Notifier<LoginState> {
   late final TextEditingController _idTextController;
   late final TextEditingController _passwordTextController;
 
+  // loginService 인스턴스를 저장할 필드
+  late final LoginService _loginService;
+
   TextEditingController get idTextController => _idTextController;
   TextEditingController get passwordTextController => _passwordTextController;
 
   @override
   LoginState build() {
+    _loginService = ref.read(loginServiceProvider);
+
     _idTextController = TextEditingController();
     _passwordTextController = TextEditingController();
 

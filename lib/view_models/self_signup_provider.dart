@@ -4,6 +4,7 @@ import 'package:earned_it/models/signup/self_signup_state.dart';
 import 'package:earned_it/services/auth/signup_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:toastification/toastification.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -82,8 +83,9 @@ class SignUpViewModel extends AutoDisposeNotifier<SelfSignupState> {
     state = state.copyWith(
       isSuccessfulCode: false,
       isAvailableCode: false,
-      isRequestAuth: false, // 인증 요청 상태 초기화
-    );
+      isRequestAuth: false,
+      isProgress: true,
+    ); // 인증 요청 상태 초기화
 
     try {
       // 이메일 인증 코드 요청 API
@@ -92,8 +94,9 @@ class SignUpViewModel extends AutoDisposeNotifier<SelfSignupState> {
       state = state.copyWith(
         isSuccessfulCode: false,
         isAvailableCode: false,
-        isRequestAuth: true, // 인증 요청 상태로 변경
-      );
+        isRequestAuth: true,
+        isProgress: false,
+      ); // 인증 요청 상태로 변경
       _agreeCodeController.clear(); // 인증 코드 textfield 초기화
 
       startTimer(); // 타이머 시작
@@ -111,8 +114,9 @@ class SignUpViewModel extends AutoDisposeNotifier<SelfSignupState> {
       state = state.copyWith(
         isSuccessfulCode: false,
         isAvailableCode: false,
-        isRequestAuth: false, // 인증 요청 상태 초기화
-      );
+        isRequestAuth: false,
+        isProgress: false,
+      ); // 인증 요청 상태 초기화
       toastification.show(
         alignment: Alignment.topCenter,
         style: ToastificationStyle.simple,
@@ -131,6 +135,7 @@ class SignUpViewModel extends AutoDisposeNotifier<SelfSignupState> {
   // 인증 코드 확인
   Future<void> verifyAuthCode(BuildContext context) async {
     FocusScope.of(context).unfocus(); // 키보드 내리기
+    state = state.copyWith(isSuccessfulCode: false, isProgress: true);
 
     try {
       // 인증 코드 확인 API
@@ -139,9 +144,9 @@ class SignUpViewModel extends AutoDisposeNotifier<SelfSignupState> {
         _agreeCodeController.text,
       );
       _codeTimer?.cancel(); // 타이머 취소
-      state = state.copyWith(isSuccessfulCode: true);
+      state = state.copyWith(isSuccessfulCode: true, isProgress: false);
     } catch (e) {
-      state = state.copyWith(isSuccessfulCode: false);
+      state = state.copyWith(isSuccessfulCode: false, isProgress: false);
       toastification.show(
         alignment: Alignment.topCenter,
         style: ToastificationStyle.simple,
@@ -179,24 +184,39 @@ class SignUpViewModel extends AutoDisposeNotifier<SelfSignupState> {
   }
 
   // 회원가입 버튼 클릭 시
-  void signUp(BuildContext context) {
+  Future<void> signUp(BuildContext context) async {
     // 모든 유효성 검사가 통과되었을 때
     if (state.isSuccessfulCode &&
         state.isAvailablePassword &&
         state.isCheckPassword &&
         state.isAgreedToTerms) {
-      // 실제 회원가입 API 호출 로직 (예: Dio, http 사용)
-      print("회원가입 정보:");
-      print("이메일: ${_emailController.text}");
-      print("비밀번호: ${_passwordController.text}");
-      // 성공/실패에 따른 UI 처리 (예: 네비게이션, 토스트 메시지)
-      toastification.show(
-        alignment: Alignment.topCenter,
-        style: ToastificationStyle.simple,
-        context: context,
-        title: const Text("회원가입 성공!"),
-        autoCloseDuration: const Duration(seconds: 3),
-      );
+      try {
+        state = state.copyWith(isProgress: true);
+        // 회원가입 API
+        await _signUpService.signUp(
+          _emailController.text,
+          _passwordController.text,
+        );
+
+        state = state.copyWith(isProgress: false);
+        toastification.show(
+          alignment: Alignment.topCenter,
+          style: ToastificationStyle.simple,
+          context: context,
+          title: const Text("회원가입 성공!"),
+          autoCloseDuration: const Duration(seconds: 3),
+        );
+        context.go("/login"); // 로그인 페이지로 이동
+      } catch (e) {
+        state = state.copyWith(isProgress: false);
+        toastification.show(
+          alignment: Alignment.topCenter,
+          style: ToastificationStyle.simple,
+          context: context,
+          title: Text(e.toDisplayString()),
+          autoCloseDuration: const Duration(seconds: 3),
+        );
+      }
     } else {
       toastification.show(
         alignment: Alignment.topCenter,

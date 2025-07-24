@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:earned_it/config/design.dart';
 import 'package:earned_it/view_models/login_provider.dart'; // import 경로 확인
+import 'package:earned_it/views/loading_overlay_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -207,14 +208,7 @@ class LoginView extends ConsumerWidget {
 
             // 로딩 오버레이 (로그인 시도)
             if (loginState.isLoading) // isLoading이 true일 때만 표시
-              Positioned.fill(
-                child: Container(
-                  color: Colors.black.withValues(alpha: 0.5), // 불투명도 50% 검은색 배경
-                  child: const Center(
-                    child: CircularProgressIndicator(color: Colors.white),
-                  ),
-                ),
-              ),
+              overlayView(),
           ],
         ),
       ),

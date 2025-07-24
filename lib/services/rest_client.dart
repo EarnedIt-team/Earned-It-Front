@@ -15,4 +15,8 @@ abstract class RestClient {
   // 인증 코드 검사 API
   @POST("/api/auth/email/verify")
   Future<ApiResponse> verifyEmail(@Body() Map<String, String> body);
+
+  // 회원가입 API
+  @POST("/api/auth/signup")
+  Future<ApiResponse> signUpUser(@Body() Map<String, dynamic> body);
 }

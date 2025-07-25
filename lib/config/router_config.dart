@@ -3,6 +3,7 @@ import 'package:earned_it/views/auth/login/forgot_password_view.dart';
 import 'package:earned_it/views/auth/login/login_view.dart';
 import 'package:earned_it/views/onboarding/onboarding_view.dart';
 import 'package:earned_it/views/auth/signup/sign_view.dart';
+import 'package:earned_it/views/setting/set_salary_view.dart';
 import 'package:earned_it/views/splash_view.dart';
 import 'package:flutter/widgets.dart';
 
@@ -45,6 +46,12 @@ final GoRouter routes = GoRouter(
     GoRoute(
       path: '/home',
       builder: (BuildContext context, GoRouterState state) => const HomeView(),
+    ),
+    // 월 수익 설정 (setSalary)
+    GoRoute(
+      path: '/setSalary',
+      builder:
+          (BuildContext context, GoRouterState state) => const SetSalaryView(),
     ),
   ],
 );

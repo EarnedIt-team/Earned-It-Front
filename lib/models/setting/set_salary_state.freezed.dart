@@ -14,9 +14,8 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$SetSalaryState {
 
- String get salaryText;// 실제 TextField에 표시되는 텍스트 (예: "2,000,000원")
- int get selectedDay;// 선택된 월급날짜 (일)
- bool get isButtonEnabled;
+ String get salaryText; int get selectedDay; bool get isButtonEnabled; bool get isLoading;// API 호출 중 로딩 상태
+ String get errorMessage;
 /// Create a copy of SetSalaryState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -27,16 +26,16 @@ $SetSalaryStateCopyWith<SetSalaryState> get copyWith => _$SetSalaryStateCopyWith
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SetSalaryState&&(identical(other.salaryText, salaryText) || other.salaryText == salaryText)&&(identical(other.selectedDay, selectedDay) || other.selectedDay == selectedDay)&&(identical(other.isButtonEnabled, isButtonEnabled) || other.isButtonEnabled == isButtonEnabled));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SetSalaryState&&(identical(other.salaryText, salaryText) || other.salaryText == salaryText)&&(identical(other.selectedDay, selectedDay) || other.selectedDay == selectedDay)&&(identical(other.isButtonEnabled, isButtonEnabled) || other.isButtonEnabled == isButtonEnabled)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,salaryText,selectedDay,isButtonEnabled);
+int get hashCode => Object.hash(runtimeType,salaryText,selectedDay,isButtonEnabled,isLoading,errorMessage);
 
 @override
 String toString() {
-  return 'SetSalaryState(salaryText: $salaryText, selectedDay: $selectedDay, isButtonEnabled: $isButtonEnabled)';
+  return 'SetSalaryState(salaryText: $salaryText, selectedDay: $selectedDay, isButtonEnabled: $isButtonEnabled, isLoading: $isLoading, errorMessage: $errorMessage)';
 }
 
 
@@ -47,7 +46,7 @@ abstract mixin class $SetSalaryStateCopyWith<$Res>  {
   factory $SetSalaryStateCopyWith(SetSalaryState value, $Res Function(SetSalaryState) _then) = _$SetSalaryStateCopyWithImpl;
 @useResult
 $Res call({
- String salaryText, int selectedDay, bool isButtonEnabled
+ String salaryText, int selectedDay, bool isButtonEnabled, bool isLoading, String errorMessage
 });
 
 
@@ -64,12 +63,14 @@ class _$SetSalaryStateCopyWithImpl<$Res>
 
 /// Create a copy of SetSalaryState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? salaryText = null,Object? selectedDay = null,Object? isButtonEnabled = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? salaryText = null,Object? selectedDay = null,Object? isButtonEnabled = null,Object? isLoading = null,Object? errorMessage = null,}) {
   return _then(_self.copyWith(
 salaryText: null == salaryText ? _self.salaryText : salaryText // ignore: cast_nullable_to_non_nullable
 as String,selectedDay: null == selectedDay ? _self.selectedDay : selectedDay // ignore: cast_nullable_to_non_nullable
 as int,isButtonEnabled: null == isButtonEnabled ? _self.isButtonEnabled : isButtonEnabled // ignore: cast_nullable_to_non_nullable
-as bool,
+as bool,isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
+as bool,errorMessage: null == errorMessage ? _self.errorMessage : errorMessage // ignore: cast_nullable_to_non_nullable
+as String,
   ));
 }
 
@@ -154,10 +155,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String salaryText,  int selectedDay,  bool isButtonEnabled)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String salaryText,  int selectedDay,  bool isButtonEnabled,  bool isLoading,  String errorMessage)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _SetSalaryState() when $default != null:
-return $default(_that.salaryText,_that.selectedDay,_that.isButtonEnabled);case _:
+return $default(_that.salaryText,_that.selectedDay,_that.isButtonEnabled,_that.isLoading,_that.errorMessage);case _:
   return orElse();
 
 }
@@ -175,10 +176,10 @@ return $default(_that.salaryText,_that.selectedDay,_that.isButtonEnabled);case _
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String salaryText,  int selectedDay,  bool isButtonEnabled)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String salaryText,  int selectedDay,  bool isButtonEnabled,  bool isLoading,  String errorMessage)  $default,) {final _that = this;
 switch (_that) {
 case _SetSalaryState():
-return $default(_that.salaryText,_that.selectedDay,_that.isButtonEnabled);case _:
+return $default(_that.salaryText,_that.selectedDay,_that.isButtonEnabled,_that.isLoading,_that.errorMessage);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -195,10 +196,10 @@ return $default(_that.salaryText,_that.selectedDay,_that.isButtonEnabled);case _
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String salaryText,  int selectedDay,  bool isButtonEnabled)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String salaryText,  int selectedDay,  bool isButtonEnabled,  bool isLoading,  String errorMessage)?  $default,) {final _that = this;
 switch (_that) {
 case _SetSalaryState() when $default != null:
-return $default(_that.salaryText,_that.selectedDay,_that.isButtonEnabled);case _:
+return $default(_that.salaryText,_that.selectedDay,_that.isButtonEnabled,_that.isLoading,_that.errorMessage);case _:
   return null;
 
 }
@@ -210,14 +211,15 @@ return $default(_that.salaryText,_that.selectedDay,_that.isButtonEnabled);case _
 
 
 class _SetSalaryState implements SetSalaryState {
-  const _SetSalaryState({this.salaryText = '', this.selectedDay = 1, this.isButtonEnabled = false});
+  const _SetSalaryState({this.salaryText = '', this.selectedDay = 1, this.isButtonEnabled = false, this.isLoading = false, this.errorMessage = ''});
   
 
 @override@JsonKey() final  String salaryText;
-// 실제 TextField에 표시되는 텍스트 (예: "2,000,000원")
 @override@JsonKey() final  int selectedDay;
-// 선택된 월급날짜 (일)
 @override@JsonKey() final  bool isButtonEnabled;
+@override@JsonKey() final  bool isLoading;
+// API 호출 중 로딩 상태
+@override@JsonKey() final  String errorMessage;
 
 /// Create a copy of SetSalaryState
 /// with the given fields replaced by the non-null parameter values.
@@ -229,16 +231,16 @@ _$SetSalaryStateCopyWith<_SetSalaryState> get copyWith => __$SetSalaryStateCopyW
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SetSalaryState&&(identical(other.salaryText, salaryText) || other.salaryText == salaryText)&&(identical(other.selectedDay, selectedDay) || other.selectedDay == selectedDay)&&(identical(other.isButtonEnabled, isButtonEnabled) || other.isButtonEnabled == isButtonEnabled));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SetSalaryState&&(identical(other.salaryText, salaryText) || other.salaryText == salaryText)&&(identical(other.selectedDay, selectedDay) || other.selectedDay == selectedDay)&&(identical(other.isButtonEnabled, isButtonEnabled) || other.isButtonEnabled == isButtonEnabled)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,salaryText,selectedDay,isButtonEnabled);
+int get hashCode => Object.hash(runtimeType,salaryText,selectedDay,isButtonEnabled,isLoading,errorMessage);
 
 @override
 String toString() {
-  return 'SetSalaryState(salaryText: $salaryText, selectedDay: $selectedDay, isButtonEnabled: $isButtonEnabled)';
+  return 'SetSalaryState(salaryText: $salaryText, selectedDay: $selectedDay, isButtonEnabled: $isButtonEnabled, isLoading: $isLoading, errorMessage: $errorMessage)';
 }
 
 
@@ -249,7 +251,7 @@ abstract mixin class _$SetSalaryStateCopyWith<$Res> implements $SetSalaryStateCo
   factory _$SetSalaryStateCopyWith(_SetSalaryState value, $Res Function(_SetSalaryState) _then) = __$SetSalaryStateCopyWithImpl;
 @override @useResult
 $Res call({
- String salaryText, int selectedDay, bool isButtonEnabled
+ String salaryText, int selectedDay, bool isButtonEnabled, bool isLoading, String errorMessage
 });
 
 
@@ -266,12 +268,14 @@ class __$SetSalaryStateCopyWithImpl<$Res>
 
 /// Create a copy of SetSalaryState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? salaryText = null,Object? selectedDay = null,Object? isButtonEnabled = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? salaryText = null,Object? selectedDay = null,Object? isButtonEnabled = null,Object? isLoading = null,Object? errorMessage = null,}) {
   return _then(_SetSalaryState(
 salaryText: null == salaryText ? _self.salaryText : salaryText // ignore: cast_nullable_to_non_nullable
 as String,selectedDay: null == selectedDay ? _self.selectedDay : selectedDay // ignore: cast_nullable_to_non_nullable
 as int,isButtonEnabled: null == isButtonEnabled ? _self.isButtonEnabled : isButtonEnabled // ignore: cast_nullable_to_non_nullable
-as bool,
+as bool,isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
+as bool,errorMessage: null == errorMessage ? _self.errorMessage : errorMessage // ignore: cast_nullable_to_non_nullable
+as String,
   ));
 }
 

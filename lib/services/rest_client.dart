@@ -27,5 +27,13 @@ abstract class RestClient {
   /// 로그인 연장 API (토큰 검사 및 재발행)
   /// 해당 API는 "자동 로그인"과 토큰 재발행을 위한 용도입니다.
   @POST("/api/auth/refresh")
-  Future<ApiResponse> checkToken(@Header("Authorization") String token);
+  Future<ApiResponse> checkToken(@Header("Authorization") String refreshtoken);
+
+  /// 월 수익 설정 API
+  @POST("/api/profile/salary")
+  Future<ApiResponse> setSalary(
+    @Query("userId") String userId,
+    @Header("Authorization") String accesstoken,
+    @Body() Map<String, int> body,
+  );
 }

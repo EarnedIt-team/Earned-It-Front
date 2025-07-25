@@ -37,17 +37,17 @@ class LoginService {
   }
 
   /// 발행되어있는 토큰을 서버에서 검증합니다.
-  Future<ApiResponse> checkToken(String token) async {
+  Future<ApiResponse> checkToken(String refreshToken) async {
     try {
-      String refreshToken = "Bearer $token";
+      String token = "Bearer $refreshToken";
       final ApiResponse response = await _restClient.checkToken(refreshToken);
       // 통신은 성공했지만, 처리가 되지 않았을 때
       if (response.code != "SUCCESS") {
-        throw Exception(response.message);
+        throw Exception("토큰이 만료되어 사용자 정보를 제거합니다.");
       }
       return response;
-      // 400 에러 등
     } on DioException catch (e) {
+      // 400 에러 등
       throw Exception(e.response!.data["message"]);
     } catch (e) {
       // DioException이 아닌 다른 예외 발생 시 (네트워크 연결 끊김 등)

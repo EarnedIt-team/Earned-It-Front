@@ -1,54 +1,105 @@
-// lib/viewmodels/set_salary_viewmodel.dart
+import 'package:dio/dio.dart';
+import 'package:earned_it/config/exception.dart';
 import 'package:earned_it/models/setting/set_salary_state.dart';
+import 'package:earned_it/services/auth/login_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter/material.dart'; // TextEditingController를 위해 임포트
+import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:earned_it/services/setting_service.dart';
+import 'package:toastification/toastification.dart';
 
-// StateNotifierProvider 정의
+// NotifierProvider.autoDispose 정의
 final setSalaryViewModelProvider =
-    StateNotifierProvider.autoDispose<SetSalaryViewModel, SetSalaryState>((
-      ref,
-    ) {
-      final viewModel = SetSalaryViewModel();
-      // ViewModel이 생성될 때 컨트롤러 리스너 설정
-      viewModel._salaryController.addListener(() {
-        viewModel._formatSalaryInput(); // 월 급여 포맷팅
-        viewModel._updateButtonState(); // 버튼 활성화 상태 업데이트
-      });
-      // ViewModel이 dispose될 때 컨트롤러도 dispose되도록 설정
-      ref.onDispose(() {
-        viewModel._salaryController.dispose();
-        viewModel._paydayController.dispose();
-      });
-      return viewModel;
-    });
+    NotifierProvider.autoDispose<SetSalaryViewModel, SetSalaryState>(
+      SetSalaryViewModel.new,
+    );
 
-class SetSalaryViewModel extends StateNotifier<SetSalaryState> {
-  SetSalaryViewModel() : super(const SetSalaryState()) {
-    // 초기화 시 컨트롤러에 초기 값 반영
-    _salaryController.text = state.salaryText;
-    _paydayController.text =
-        state.selectedDay > 0 ? '매 달 ${state.selectedDay}일' : '';
-    _updateButtonState(); // 초기 버튼 상태 설정
-  }
+class SetSalaryViewModel extends AutoDisposeNotifier<SetSalaryState> {
+  // 컨트롤러 Notifier 내부 관리
+  late final TextEditingController _salaryController;
+  late final TextEditingController _paydayController;
 
-  // TextEditingController 인스턴스들을 ViewModel 내에서 관리
-  final TextEditingController _salaryController = TextEditingController();
-  final TextEditingController _paydayController = TextEditingController();
+  // 서비스 인스턴스
+  late final LoginService _loginService;
+  late final SettingService _settingService;
+  final FlutterSecureStorage _storage = const FlutterSecureStorage();
 
-  // 외부에서 컨트롤러에 접근할 수 있도록 Getter 제공
+  // 입력 컨트롤러 Getter (UI에서 사용)
   TextEditingController get salaryController => _salaryController;
   TextEditingController get paydayController => _paydayController;
 
   final NumberFormat _numberFormat = NumberFormat('#,###', 'ko_KR');
 
-  // 월 급여 텍스트 업데이트 및 포맷팅
+  @override
+  SetSalaryState build() {
+    _loginService = ref.read(loginServiceProvider);
+    _settingService = ref.read(settingServiceProvider);
+
+    // 컨트롤러 초기화 (여기서는 아직 state의 초기값이 사용되지 않음)
+    _salaryController = TextEditingController();
+    _paydayController = TextEditingController();
+
+    // Notifier가 dispose될 때 컨트롤러도 함께 dispose
+    ref.onDispose(() {
+      _salaryController.dispose();
+      _paydayController.dispose();
+    });
+
+    // 컨트롤러 리스너 설정
+    // 리스너는 컨트롤러 텍스트 변경 시 포맷팅 및 상태 업데이트를 트리거합니다.
+    _salaryController.addListener(_onSalaryControllerChanged);
+    // _paydayController는 직접 입력되지 않으므로 리스너는 필요 없고,
+    // _selectedDay 업데이트 시 _updateButtonState()가 호출됩니다.
+
+    // 초기 상태 반환. 이때 state는 기본값 SelfSalaryState()가 됩니다.
+    final initialState = const SetSalaryState();
+
+    // 초기 상태를 컨트롤러에 반영 (state가 초기화된 후)
+    // WidgetsBinding.instance.addPostFrameCallback 사용하지 않고,
+    // 컨트롤러를 먼저 초기화하고, build 메서드가 반환한 state를 기반으로
+    // 리스너가 첫 업데이트를 처리하도록 하는 것이 더 Flutter 스럽습니다.
+    // 하지만, 최초 로드 시 컨트롤러 텍스트를 명시적으로 설정하려면
+    // `state`가 빌드된 이후에 수행되어야 합니다.
+    // 여기서는 `_updateControllersFromState`를 추가하여 명시적으로 동기화합니다.
+    _updateControllersFromState(initialState);
+
+    // 초기 버튼 상태 설정 (initialState를 기반으로)
+    _updateButtonState(initialState);
+
+    return initialState;
+  }
+
+  // _salaryController의 text 변화를 감지하는 리스너
+  void _onSalaryControllerChanged() {
+    _formatSalaryInput(); // 월 급여 포맷팅
+    _updateButtonState(state); // 버튼 활성화 상태 업데이트
+  }
+
+  // ViewModel의 상태를 기반으로 컨트롤러 텍스트를 업데이트하는 내부 도우미 함수
+  void _updateControllersFromState(SetSalaryState currentState) {
+    if (_salaryController.text != currentState.salaryText) {
+      _salaryController.value = TextEditingValue(
+        text: currentState.salaryText,
+        selection: TextSelection.collapsed(
+          offset:
+              currentState.salaryText.length -
+              (currentState.salaryText.endsWith('원') ? 1 : 0),
+        ),
+      );
+    }
+    final String paydayDisplayText =
+        currentState.selectedDay > 0 ? '매 달 ${currentState.selectedDay}일' : '';
+    if (_paydayController.text != paydayDisplayText) {
+      _paydayController.text = paydayDisplayText;
+    }
+  }
+
   void _formatSalaryInput() {
     String text = _salaryController.text;
     if (text.isEmpty) {
-      // 텍스트가 비어있으면 상태도 초기화
       if (state.salaryText.isNotEmpty) {
-        // 불필요한 setState 방지
         state = state.copyWith(salaryText: '');
       }
       return;
@@ -73,8 +124,7 @@ class SetSalaryViewModel extends StateNotifier<SetSalaryState> {
       formattedText = '';
     }
 
-    // 포맷팅된 텍스트가 현재 컨트롤러 텍스트와 다를 경우에만 업데이트
-    // 이렇게 하지 않으면 무한 루프에 빠질 수 있습니다.
+    // 컨트롤러 텍스트를 직접 업데이트할 때 무한 루프 방지
     if (_salaryController.text != formattedText) {
       _salaryController.value = TextEditingValue(
         text: formattedText,
@@ -83,12 +133,9 @@ class SetSalaryViewModel extends StateNotifier<SetSalaryState> {
         ),
       );
     }
-    // 상태 업데이트: TextField의 텍스트가 이미 ViewModel의 상태가 됩니다.
-    // 여기서는 굳이 state.copyWith(salaryText: _salaryController.text);를 할 필요가 없습니다.
-    // 왜냐하면 _salaryController.text 자체가 formattedText이기 때문입니다.
-    // 하지만, _updateButtonState를 호출하기 위해 필요할 수 있습니다.
+    // 상태 업데이트: TextField의 텍스트가 ViewModel의 상태가 됩니다.
+    // 불필요한 state 업데이트 방지
     if (state.salaryText != _salaryController.text) {
-      // 상태가 실제 컨트롤러 텍스트와 다를 경우만 업데이트
       state = state.copyWith(salaryText: _salaryController.text);
     }
   }
@@ -96,33 +143,95 @@ class SetSalaryViewModel extends StateNotifier<SetSalaryState> {
   // 월급날짜 업데이트
   void updateSelectedDay(int day) {
     state = state.copyWith(selectedDay: day);
-    _paydayController.text = '매 달 ${state.selectedDay}일'; // 컨트롤러 텍스트 업데이트
-    _updateButtonState(); // 상태 업데이트 후 버튼 활성화 상태 갱신
+    // 상태가 업데이트되면 컨트롤러 텍스트도 업데이트
+    _updateControllersFromState(state);
+    _updateButtonState(state); // 상태 업데이트 후 버튼 활성화 상태 갱신
   }
 
   // 버튼 활성화 상태 업데이트 (내부 로직)
-  void _updateButtonState() {
+  void _updateButtonState(SetSalaryState currentState) {
     final String cleanSalaryText = _salaryController.text
         .replaceAll('원', '')
         .replaceAll(RegExp(r'[^0-9]'), '');
-    final bool isEnabled = cleanSalaryText.isNotEmpty && state.selectedDay > 0;
-    if (state.isButtonEnabled != isEnabled) {
-      // 불필요한 setState 방지
-      state = state.copyWith(isButtonEnabled: isEnabled);
+    final bool isEnabled =
+        cleanSalaryText.isNotEmpty && currentState.selectedDay > 0;
+    if (currentState.isButtonEnabled != isEnabled) {
+      state = currentState.copyWith(isButtonEnabled: isEnabled);
     }
   }
 
   // 설정 완료 버튼 클릭 로직
-  void completeSetup() {
+  Future<void> completeSetup(BuildContext context) async {
+    // 로딩 상태 시작 및 에러 메시지 초기화
+    state = state.copyWith(isLoading: true, errorMessage: '');
+
     final String rawSalary = _salaryController.text.replaceAll(
       RegExp(r'[^0-9]'),
       '',
     );
-    final int? salary = int.tryParse(rawSalary);
+    final int? salaryAmount = int.tryParse(rawSalary);
     final int paydayDay = state.selectedDay;
 
-    print('최종 월 급여: $salary, 최종 월급날짜 (일): $paydayDay');
+    try {
+      final String? accessToken = await _storage.read(key: 'accessToken');
+      final String? userId = await _storage.read(key: 'userId');
 
-    // TODO: 실제 저장 로직 구현
+      // 월 급여 설정 API
+      final response = await _settingService.setSalary(
+        userId!,
+        "Bearer $accessToken",
+        salaryAmount!,
+        paydayDay,
+      );
+
+      print('월 급여 설정 완료: ${response.data}');
+      state = state.copyWith(isLoading: false, errorMessage: '');
+
+      toastification.show(
+        alignment: Alignment.topCenter,
+        style: ToastificationStyle.simple,
+        context: context,
+        title: Text("초당 수익 : ${response.data['amountPerSec']}"),
+        autoCloseDuration: const Duration(seconds: 3),
+      );
+
+      context.pop();
+    } on DioException catch (e) {
+      state = state.copyWith(isLoading: false); // 로딩 상태 해제
+
+      if (e.response?.data['code'] == "AUTH_REQUIRED") {
+        print("토큰이 만료되어 재발급합니다.");
+        final String? refreshToken = await _storage.read(key: 'refreshToken');
+        try {
+          await _loginService.checkToken(refreshToken!);
+          toastification.show(
+            alignment: Alignment.topCenter,
+            style: ToastificationStyle.simple,
+            context: context,
+            title: const Text("잠시 후, 다시 시도해주세요."),
+            autoCloseDuration: const Duration(seconds: 3),
+          );
+        } catch (e) {
+          context.go('/login');
+          toastification.show(
+            alignment: Alignment.topCenter,
+            style: ToastificationStyle.simple,
+            context: context,
+            title: const Text("다시 로그인해주세요."),
+            autoCloseDuration: const Duration(seconds: 3),
+          );
+        }
+      }
+    } catch (e) {
+      print('월 급여 설정 중 에러 발생: $e');
+      state = state.copyWith(isLoading: false);
+      toastification.show(
+        alignment: Alignment.topCenter,
+        style: ToastificationStyle.simple,
+        context: context,
+        title: Text(e.toDisplayString()),
+        autoCloseDuration: const Duration(seconds: 3),
+      );
+    }
   }
 }

@@ -18,7 +18,11 @@ class KakaoLoginService {
       User user = await UserApi.instance.me();
       // 서버로 유저 정보 전송하여 데이터베이스에 저장하기
       AccessTokenInfo tokenInfo = await UserApi.instance.accessTokenInfo();
-      print("토큰 값 : ${tokenInfo.id}");
+      // print("토큰 값 : ${tokenInfo.id}");
+
+      final OAuthToken? tokens =
+          await TokenManagerProvider.instance.manager.getToken();
+      print("토큰 : ${tokens?.accessToken}");
     } catch (e) {
       if (e is PlatformException && e.code == 'CANCELED') {
         throw Exception('로그인을 취소했습니다.');

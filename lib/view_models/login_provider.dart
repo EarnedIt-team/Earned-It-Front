@@ -84,6 +84,7 @@ class LoginViewModel extends Notifier<LoginState> {
 
       final String accessToken = response.data['accessToken'] as String;
       final String refreshToken = response.data['refreshToken'] as String;
+      final String userId = (response.data['userId'] as int).toString();
 
       // accessToken과 refreshToken을 secure storage에 저장
       await const FlutterSecureStorage().write(
@@ -94,8 +95,10 @@ class LoginViewModel extends Notifier<LoginState> {
         key: 'refreshToken',
         value: refreshToken,
       );
+      // userId를 secure storage에 저장
+      await const FlutterSecureStorage().write(key: 'userId', value: userId);
 
-      print("accessToken 과 refreshToken 을 저장했습니다.");
+      print("token과 userId를 저장했습니다.");
 
       context.go('/home');
     } catch (e) {
@@ -133,7 +136,12 @@ class LoginViewModel extends Notifier<LoginState> {
 
       context.go("/home");
     } catch (e) {
-      context.go("/login");
+      // 사용자 정보 제거
+      await const FlutterSecureStorage().delete(key: 'accessToken');
+      await const FlutterSecureStorage().delete(key: 'refreshToken');
+      await const FlutterSecureStorage().delete(key: 'userId');
+      print("토큰을 갱신할수없어서, 사용자 정보를 제거했습니다.");
+      context.go('/login');
       toastification.show(
         alignment: Alignment.topCenter,
         style: ToastificationStyle.simple,

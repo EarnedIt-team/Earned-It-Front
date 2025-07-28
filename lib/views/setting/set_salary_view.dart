@@ -109,7 +109,7 @@ class SetSalaryView extends ConsumerWidget {
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Stack(
-        children: [
+        children: <Widget>[
           Scaffold(
             resizeToAvoidBottomInset: true,
             appBar: AppBar(title: const Text("월 수익 설정"), centerTitle: false),
@@ -128,9 +128,13 @@ class SetSalaryView extends ConsumerWidget {
                       controller:
                           viewModel.salaryController, // ViewModel의 컨트롤러 사용
                       keyboardType: TextInputType.number,
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         labelText: '월 급여',
                         hintText: '월 급여를 입력하세요 (예: 2,000,000원)',
+                        suffixText:
+                            viewModel.salaryController.text.isNotEmpty
+                                ? '원'
+                                : null,
                       ),
                       // onChanged는 이제 필요 없음. 컨트롤러 리스너가 모든 포맷팅 및 상태 업데이트를 처리
                     ),

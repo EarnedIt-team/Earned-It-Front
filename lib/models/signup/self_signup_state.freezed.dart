@@ -16,6 +16,7 @@ mixin _$SelfSignupState {
 
 // 기본값 지정 시 @Default(false) 사용
  bool get isAvailableID; bool get isRequestAuth; bool get isAvailableCode; bool get isSuccessfulCode; bool get isObscurePassword;// 비밀번호 기본값은 숨김
+ bool get isObscurePasswordCheck;// 비밀번호 재확인 기본값은 숨김
  bool get isAvailablePassword; bool get isCheckPassword; bool get isAgreedToTerms; bool get isProgress;// 서버 통신 유무
  int get startTime;
 /// Create a copy of SelfSignupState
@@ -28,16 +29,16 @@ $SelfSignupStateCopyWith<SelfSignupState> get copyWith => _$SelfSignupStateCopyW
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SelfSignupState&&(identical(other.isAvailableID, isAvailableID) || other.isAvailableID == isAvailableID)&&(identical(other.isRequestAuth, isRequestAuth) || other.isRequestAuth == isRequestAuth)&&(identical(other.isAvailableCode, isAvailableCode) || other.isAvailableCode == isAvailableCode)&&(identical(other.isSuccessfulCode, isSuccessfulCode) || other.isSuccessfulCode == isSuccessfulCode)&&(identical(other.isObscurePassword, isObscurePassword) || other.isObscurePassword == isObscurePassword)&&(identical(other.isAvailablePassword, isAvailablePassword) || other.isAvailablePassword == isAvailablePassword)&&(identical(other.isCheckPassword, isCheckPassword) || other.isCheckPassword == isCheckPassword)&&(identical(other.isAgreedToTerms, isAgreedToTerms) || other.isAgreedToTerms == isAgreedToTerms)&&(identical(other.isProgress, isProgress) || other.isProgress == isProgress)&&(identical(other.startTime, startTime) || other.startTime == startTime));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SelfSignupState&&(identical(other.isAvailableID, isAvailableID) || other.isAvailableID == isAvailableID)&&(identical(other.isRequestAuth, isRequestAuth) || other.isRequestAuth == isRequestAuth)&&(identical(other.isAvailableCode, isAvailableCode) || other.isAvailableCode == isAvailableCode)&&(identical(other.isSuccessfulCode, isSuccessfulCode) || other.isSuccessfulCode == isSuccessfulCode)&&(identical(other.isObscurePassword, isObscurePassword) || other.isObscurePassword == isObscurePassword)&&(identical(other.isObscurePasswordCheck, isObscurePasswordCheck) || other.isObscurePasswordCheck == isObscurePasswordCheck)&&(identical(other.isAvailablePassword, isAvailablePassword) || other.isAvailablePassword == isAvailablePassword)&&(identical(other.isCheckPassword, isCheckPassword) || other.isCheckPassword == isCheckPassword)&&(identical(other.isAgreedToTerms, isAgreedToTerms) || other.isAgreedToTerms == isAgreedToTerms)&&(identical(other.isProgress, isProgress) || other.isProgress == isProgress)&&(identical(other.startTime, startTime) || other.startTime == startTime));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,isAvailableID,isRequestAuth,isAvailableCode,isSuccessfulCode,isObscurePassword,isAvailablePassword,isCheckPassword,isAgreedToTerms,isProgress,startTime);
+int get hashCode => Object.hash(runtimeType,isAvailableID,isRequestAuth,isAvailableCode,isSuccessfulCode,isObscurePassword,isObscurePasswordCheck,isAvailablePassword,isCheckPassword,isAgreedToTerms,isProgress,startTime);
 
 @override
 String toString() {
-  return 'SelfSignupState(isAvailableID: $isAvailableID, isRequestAuth: $isRequestAuth, isAvailableCode: $isAvailableCode, isSuccessfulCode: $isSuccessfulCode, isObscurePassword: $isObscurePassword, isAvailablePassword: $isAvailablePassword, isCheckPassword: $isCheckPassword, isAgreedToTerms: $isAgreedToTerms, isProgress: $isProgress, startTime: $startTime)';
+  return 'SelfSignupState(isAvailableID: $isAvailableID, isRequestAuth: $isRequestAuth, isAvailableCode: $isAvailableCode, isSuccessfulCode: $isSuccessfulCode, isObscurePassword: $isObscurePassword, isObscurePasswordCheck: $isObscurePasswordCheck, isAvailablePassword: $isAvailablePassword, isCheckPassword: $isCheckPassword, isAgreedToTerms: $isAgreedToTerms, isProgress: $isProgress, startTime: $startTime)';
 }
 
 
@@ -48,7 +49,7 @@ abstract mixin class $SelfSignupStateCopyWith<$Res>  {
   factory $SelfSignupStateCopyWith(SelfSignupState value, $Res Function(SelfSignupState) _then) = _$SelfSignupStateCopyWithImpl;
 @useResult
 $Res call({
- bool isAvailableID, bool isRequestAuth, bool isAvailableCode, bool isSuccessfulCode, bool isObscurePassword, bool isAvailablePassword, bool isCheckPassword, bool isAgreedToTerms, bool isProgress, int startTime
+ bool isAvailableID, bool isRequestAuth, bool isAvailableCode, bool isSuccessfulCode, bool isObscurePassword, bool isObscurePasswordCheck, bool isAvailablePassword, bool isCheckPassword, bool isAgreedToTerms, bool isProgress, int startTime
 });
 
 
@@ -65,13 +66,14 @@ class _$SelfSignupStateCopyWithImpl<$Res>
 
 /// Create a copy of SelfSignupState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? isAvailableID = null,Object? isRequestAuth = null,Object? isAvailableCode = null,Object? isSuccessfulCode = null,Object? isObscurePassword = null,Object? isAvailablePassword = null,Object? isCheckPassword = null,Object? isAgreedToTerms = null,Object? isProgress = null,Object? startTime = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? isAvailableID = null,Object? isRequestAuth = null,Object? isAvailableCode = null,Object? isSuccessfulCode = null,Object? isObscurePassword = null,Object? isObscurePasswordCheck = null,Object? isAvailablePassword = null,Object? isCheckPassword = null,Object? isAgreedToTerms = null,Object? isProgress = null,Object? startTime = null,}) {
   return _then(_self.copyWith(
 isAvailableID: null == isAvailableID ? _self.isAvailableID : isAvailableID // ignore: cast_nullable_to_non_nullable
 as bool,isRequestAuth: null == isRequestAuth ? _self.isRequestAuth : isRequestAuth // ignore: cast_nullable_to_non_nullable
 as bool,isAvailableCode: null == isAvailableCode ? _self.isAvailableCode : isAvailableCode // ignore: cast_nullable_to_non_nullable
 as bool,isSuccessfulCode: null == isSuccessfulCode ? _self.isSuccessfulCode : isSuccessfulCode // ignore: cast_nullable_to_non_nullable
 as bool,isObscurePassword: null == isObscurePassword ? _self.isObscurePassword : isObscurePassword // ignore: cast_nullable_to_non_nullable
+as bool,isObscurePasswordCheck: null == isObscurePasswordCheck ? _self.isObscurePasswordCheck : isObscurePasswordCheck // ignore: cast_nullable_to_non_nullable
 as bool,isAvailablePassword: null == isAvailablePassword ? _self.isAvailablePassword : isAvailablePassword // ignore: cast_nullable_to_non_nullable
 as bool,isCheckPassword: null == isCheckPassword ? _self.isCheckPassword : isCheckPassword // ignore: cast_nullable_to_non_nullable
 as bool,isAgreedToTerms: null == isAgreedToTerms ? _self.isAgreedToTerms : isAgreedToTerms // ignore: cast_nullable_to_non_nullable
@@ -162,10 +164,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool isAvailableID,  bool isRequestAuth,  bool isAvailableCode,  bool isSuccessfulCode,  bool isObscurePassword,  bool isAvailablePassword,  bool isCheckPassword,  bool isAgreedToTerms,  bool isProgress,  int startTime)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool isAvailableID,  bool isRequestAuth,  bool isAvailableCode,  bool isSuccessfulCode,  bool isObscurePassword,  bool isObscurePasswordCheck,  bool isAvailablePassword,  bool isCheckPassword,  bool isAgreedToTerms,  bool isProgress,  int startTime)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _SelfSignupState() when $default != null:
-return $default(_that.isAvailableID,_that.isRequestAuth,_that.isAvailableCode,_that.isSuccessfulCode,_that.isObscurePassword,_that.isAvailablePassword,_that.isCheckPassword,_that.isAgreedToTerms,_that.isProgress,_that.startTime);case _:
+return $default(_that.isAvailableID,_that.isRequestAuth,_that.isAvailableCode,_that.isSuccessfulCode,_that.isObscurePassword,_that.isObscurePasswordCheck,_that.isAvailablePassword,_that.isCheckPassword,_that.isAgreedToTerms,_that.isProgress,_that.startTime);case _:
   return orElse();
 
 }
@@ -183,10 +185,10 @@ return $default(_that.isAvailableID,_that.isRequestAuth,_that.isAvailableCode,_t
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool isAvailableID,  bool isRequestAuth,  bool isAvailableCode,  bool isSuccessfulCode,  bool isObscurePassword,  bool isAvailablePassword,  bool isCheckPassword,  bool isAgreedToTerms,  bool isProgress,  int startTime)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool isAvailableID,  bool isRequestAuth,  bool isAvailableCode,  bool isSuccessfulCode,  bool isObscurePassword,  bool isObscurePasswordCheck,  bool isAvailablePassword,  bool isCheckPassword,  bool isAgreedToTerms,  bool isProgress,  int startTime)  $default,) {final _that = this;
 switch (_that) {
 case _SelfSignupState():
-return $default(_that.isAvailableID,_that.isRequestAuth,_that.isAvailableCode,_that.isSuccessfulCode,_that.isObscurePassword,_that.isAvailablePassword,_that.isCheckPassword,_that.isAgreedToTerms,_that.isProgress,_that.startTime);case _:
+return $default(_that.isAvailableID,_that.isRequestAuth,_that.isAvailableCode,_that.isSuccessfulCode,_that.isObscurePassword,_that.isObscurePasswordCheck,_that.isAvailablePassword,_that.isCheckPassword,_that.isAgreedToTerms,_that.isProgress,_that.startTime);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -203,10 +205,10 @@ return $default(_that.isAvailableID,_that.isRequestAuth,_that.isAvailableCode,_t
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool isAvailableID,  bool isRequestAuth,  bool isAvailableCode,  bool isSuccessfulCode,  bool isObscurePassword,  bool isAvailablePassword,  bool isCheckPassword,  bool isAgreedToTerms,  bool isProgress,  int startTime)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool isAvailableID,  bool isRequestAuth,  bool isAvailableCode,  bool isSuccessfulCode,  bool isObscurePassword,  bool isObscurePasswordCheck,  bool isAvailablePassword,  bool isCheckPassword,  bool isAgreedToTerms,  bool isProgress,  int startTime)?  $default,) {final _that = this;
 switch (_that) {
 case _SelfSignupState() when $default != null:
-return $default(_that.isAvailableID,_that.isRequestAuth,_that.isAvailableCode,_that.isSuccessfulCode,_that.isObscurePassword,_that.isAvailablePassword,_that.isCheckPassword,_that.isAgreedToTerms,_that.isProgress,_that.startTime);case _:
+return $default(_that.isAvailableID,_that.isRequestAuth,_that.isAvailableCode,_that.isSuccessfulCode,_that.isObscurePassword,_that.isObscurePasswordCheck,_that.isAvailablePassword,_that.isCheckPassword,_that.isAgreedToTerms,_that.isProgress,_that.startTime);case _:
   return null;
 
 }
@@ -218,7 +220,7 @@ return $default(_that.isAvailableID,_that.isRequestAuth,_that.isAvailableCode,_t
 
 
 class _SelfSignupState implements SelfSignupState {
-  const _SelfSignupState({this.isAvailableID = false, this.isRequestAuth = false, this.isAvailableCode = false, this.isSuccessfulCode = false, this.isObscurePassword = true, this.isAvailablePassword = false, this.isCheckPassword = false, this.isAgreedToTerms = false, this.isProgress = false, this.startTime = 900});
+  const _SelfSignupState({this.isAvailableID = false, this.isRequestAuth = false, this.isAvailableCode = false, this.isSuccessfulCode = false, this.isObscurePassword = true, this.isObscurePasswordCheck = true, this.isAvailablePassword = false, this.isCheckPassword = false, this.isAgreedToTerms = false, this.isProgress = false, this.startTime = 900});
   
 
 // 기본값 지정 시 @Default(false) 사용
@@ -228,6 +230,8 @@ class _SelfSignupState implements SelfSignupState {
 @override@JsonKey() final  bool isSuccessfulCode;
 @override@JsonKey() final  bool isObscurePassword;
 // 비밀번호 기본값은 숨김
+@override@JsonKey() final  bool isObscurePasswordCheck;
+// 비밀번호 재확인 기본값은 숨김
 @override@JsonKey() final  bool isAvailablePassword;
 @override@JsonKey() final  bool isCheckPassword;
 @override@JsonKey() final  bool isAgreedToTerms;
@@ -245,16 +249,16 @@ _$SelfSignupStateCopyWith<_SelfSignupState> get copyWith => __$SelfSignupStateCo
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SelfSignupState&&(identical(other.isAvailableID, isAvailableID) || other.isAvailableID == isAvailableID)&&(identical(other.isRequestAuth, isRequestAuth) || other.isRequestAuth == isRequestAuth)&&(identical(other.isAvailableCode, isAvailableCode) || other.isAvailableCode == isAvailableCode)&&(identical(other.isSuccessfulCode, isSuccessfulCode) || other.isSuccessfulCode == isSuccessfulCode)&&(identical(other.isObscurePassword, isObscurePassword) || other.isObscurePassword == isObscurePassword)&&(identical(other.isAvailablePassword, isAvailablePassword) || other.isAvailablePassword == isAvailablePassword)&&(identical(other.isCheckPassword, isCheckPassword) || other.isCheckPassword == isCheckPassword)&&(identical(other.isAgreedToTerms, isAgreedToTerms) || other.isAgreedToTerms == isAgreedToTerms)&&(identical(other.isProgress, isProgress) || other.isProgress == isProgress)&&(identical(other.startTime, startTime) || other.startTime == startTime));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SelfSignupState&&(identical(other.isAvailableID, isAvailableID) || other.isAvailableID == isAvailableID)&&(identical(other.isRequestAuth, isRequestAuth) || other.isRequestAuth == isRequestAuth)&&(identical(other.isAvailableCode, isAvailableCode) || other.isAvailableCode == isAvailableCode)&&(identical(other.isSuccessfulCode, isSuccessfulCode) || other.isSuccessfulCode == isSuccessfulCode)&&(identical(other.isObscurePassword, isObscurePassword) || other.isObscurePassword == isObscurePassword)&&(identical(other.isObscurePasswordCheck, isObscurePasswordCheck) || other.isObscurePasswordCheck == isObscurePasswordCheck)&&(identical(other.isAvailablePassword, isAvailablePassword) || other.isAvailablePassword == isAvailablePassword)&&(identical(other.isCheckPassword, isCheckPassword) || other.isCheckPassword == isCheckPassword)&&(identical(other.isAgreedToTerms, isAgreedToTerms) || other.isAgreedToTerms == isAgreedToTerms)&&(identical(other.isProgress, isProgress) || other.isProgress == isProgress)&&(identical(other.startTime, startTime) || other.startTime == startTime));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,isAvailableID,isRequestAuth,isAvailableCode,isSuccessfulCode,isObscurePassword,isAvailablePassword,isCheckPassword,isAgreedToTerms,isProgress,startTime);
+int get hashCode => Object.hash(runtimeType,isAvailableID,isRequestAuth,isAvailableCode,isSuccessfulCode,isObscurePassword,isObscurePasswordCheck,isAvailablePassword,isCheckPassword,isAgreedToTerms,isProgress,startTime);
 
 @override
 String toString() {
-  return 'SelfSignupState(isAvailableID: $isAvailableID, isRequestAuth: $isRequestAuth, isAvailableCode: $isAvailableCode, isSuccessfulCode: $isSuccessfulCode, isObscurePassword: $isObscurePassword, isAvailablePassword: $isAvailablePassword, isCheckPassword: $isCheckPassword, isAgreedToTerms: $isAgreedToTerms, isProgress: $isProgress, startTime: $startTime)';
+  return 'SelfSignupState(isAvailableID: $isAvailableID, isRequestAuth: $isRequestAuth, isAvailableCode: $isAvailableCode, isSuccessfulCode: $isSuccessfulCode, isObscurePassword: $isObscurePassword, isObscurePasswordCheck: $isObscurePasswordCheck, isAvailablePassword: $isAvailablePassword, isCheckPassword: $isCheckPassword, isAgreedToTerms: $isAgreedToTerms, isProgress: $isProgress, startTime: $startTime)';
 }
 
 
@@ -265,7 +269,7 @@ abstract mixin class _$SelfSignupStateCopyWith<$Res> implements $SelfSignupState
   factory _$SelfSignupStateCopyWith(_SelfSignupState value, $Res Function(_SelfSignupState) _then) = __$SelfSignupStateCopyWithImpl;
 @override @useResult
 $Res call({
- bool isAvailableID, bool isRequestAuth, bool isAvailableCode, bool isSuccessfulCode, bool isObscurePassword, bool isAvailablePassword, bool isCheckPassword, bool isAgreedToTerms, bool isProgress, int startTime
+ bool isAvailableID, bool isRequestAuth, bool isAvailableCode, bool isSuccessfulCode, bool isObscurePassword, bool isObscurePasswordCheck, bool isAvailablePassword, bool isCheckPassword, bool isAgreedToTerms, bool isProgress, int startTime
 });
 
 
@@ -282,13 +286,14 @@ class __$SelfSignupStateCopyWithImpl<$Res>
 
 /// Create a copy of SelfSignupState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? isAvailableID = null,Object? isRequestAuth = null,Object? isAvailableCode = null,Object? isSuccessfulCode = null,Object? isObscurePassword = null,Object? isAvailablePassword = null,Object? isCheckPassword = null,Object? isAgreedToTerms = null,Object? isProgress = null,Object? startTime = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? isAvailableID = null,Object? isRequestAuth = null,Object? isAvailableCode = null,Object? isSuccessfulCode = null,Object? isObscurePassword = null,Object? isObscurePasswordCheck = null,Object? isAvailablePassword = null,Object? isCheckPassword = null,Object? isAgreedToTerms = null,Object? isProgress = null,Object? startTime = null,}) {
   return _then(_SelfSignupState(
 isAvailableID: null == isAvailableID ? _self.isAvailableID : isAvailableID // ignore: cast_nullable_to_non_nullable
 as bool,isRequestAuth: null == isRequestAuth ? _self.isRequestAuth : isRequestAuth // ignore: cast_nullable_to_non_nullable
 as bool,isAvailableCode: null == isAvailableCode ? _self.isAvailableCode : isAvailableCode // ignore: cast_nullable_to_non_nullable
 as bool,isSuccessfulCode: null == isSuccessfulCode ? _self.isSuccessfulCode : isSuccessfulCode // ignore: cast_nullable_to_non_nullable
 as bool,isObscurePassword: null == isObscurePassword ? _self.isObscurePassword : isObscurePassword // ignore: cast_nullable_to_non_nullable
+as bool,isObscurePasswordCheck: null == isObscurePasswordCheck ? _self.isObscurePasswordCheck : isObscurePasswordCheck // ignore: cast_nullable_to_non_nullable
 as bool,isAvailablePassword: null == isAvailablePassword ? _self.isAvailablePassword : isAvailablePassword // ignore: cast_nullable_to_non_nullable
 as bool,isCheckPassword: null == isCheckPassword ? _self.isCheckPassword : isCheckPassword // ignore: cast_nullable_to_non_nullable
 as bool,isAgreedToTerms: null == isAgreedToTerms ? _self.isAgreedToTerms : isAgreedToTerms // ignore: cast_nullable_to_non_nullable

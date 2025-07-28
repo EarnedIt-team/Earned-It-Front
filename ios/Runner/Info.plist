@@ -24,14 +24,13 @@
 	<string>????</string>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
-	<!-- 카카오톡 설정 추가 -->
+	<!-- 카카오톡 -->
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<!-- 카카오톡 설정 추가 -->
-				<string>kakao$(KAKAO_API_KEY)</string>
+				<string>kakao2a9ee004ee7306161ecd093df53629b0</string>
 			</array>
 		</dict>
 	</array>

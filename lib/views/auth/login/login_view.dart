@@ -46,14 +46,14 @@ class LoginView extends ConsumerWidget {
                               ),
                             ),
                             SizedBox(height: context.height(0.07)),
-                            // 아이디 & 비밀번호
+                            // 이메일 & 비밀번호
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: <Widget>[
                                 TextField(
                                   controller: loginNotifier.idTextController,
                                   decoration: const InputDecoration(
-                                    labelText: "아이디",
+                                    labelText: "이메일",
                                   ),
                                 ),
                                 TextField(
@@ -82,12 +82,24 @@ class LoginView extends ConsumerWidget {
                                       style: const TextStyle(color: Colors.red),
                                     ),
                                   ),
-                                // 비밀번호 찾기
-                                TextButton(
-                                  onPressed: () {
-                                    context.push("/forgot_password");
-                                  },
-                                  child: const Text("비밀번호 찾기"),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: <Widget>[
+                                    // 회원가입으로 이동
+                                    TextButton(
+                                      onPressed: () {
+                                        context.push("/sign");
+                                      },
+                                      child: const Text("회원가입"),
+                                    ),
+                                    // 비밀번호 찾기
+                                    TextButton(
+                                      onPressed: () {
+                                        context.push("/forgot_password");
+                                      },
+                                      child: const Text("비밀번호 찾기"),
+                                    ),
+                                  ],
                                 ),
                               ],
                             ),

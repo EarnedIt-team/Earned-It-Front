@@ -178,6 +178,13 @@ class SignUpViewModel extends AutoDisposeNotifier<SelfSignupState> {
     state = state.copyWith(isObscurePassword: !state.isObscurePassword);
   }
 
+  // 비밀번호 재확인 숨기기/보이기 토글
+  void toggleObscurePasswordCheck() {
+    state = state.copyWith(
+      isObscurePasswordCheck: !state.isObscurePasswordCheck,
+    );
+  }
+
   // 서비스 이용 약관 동의 변경 시
   void onAgreedToTermsChanged(bool? value) {
     state = state.copyWith(isAgreedToTerms: value ?? false);

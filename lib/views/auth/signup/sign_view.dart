@@ -30,6 +30,7 @@ class SignView extends ConsumerWidget {
               padding: EdgeInsets.symmetric(horizontal: context.middlePadding),
               child: SingleChildScrollView(
                 padding: EdgeInsets.only(
+                  top: context.height(0.01),
                   bottom:
                       MediaQuery.of(context).padding.bottom +
                       context.height(0.15),
@@ -39,7 +40,7 @@ class SignView extends ConsumerWidget {
                     // 아이디 입력 필드
                     _buildSignTextField(
                       context,
-                      "아이디",
+                      "이메일",
                       controller:
                           signUpNotifier.emailController, // Notifier의 컨트롤러 사용
                       onChanged: signUpNotifier.onEmailChanged,
@@ -173,7 +174,7 @@ class SignView extends ConsumerWidget {
                               : Icons.visibility,
                         ),
                       ),
-                      hintText: "영대문자, 특수문자, 숫자 포함 8~12자",
+                      hintText: "영문 대문자, 특수문자, 숫자 포함 8~12자",
                       helperWidget:
                           signUpState.isAvailablePassword
                               ? Row(
@@ -208,9 +209,10 @@ class SignView extends ConsumerWidget {
                               .checkPasswordController, // Notifier의 컨트롤러 사용
                       onChanged: signUpNotifier.onCheckPasswordChanged,
                       obscureText: true,
-                      hintText: "영대문자, 특수문자, 숫자 포함 8~12자",
+                      hintText: "영문 대문자, 특수문자, 숫자 포함 8~12자",
                       helperWidget:
-                          signUpState.isCheckPassword
+                          signUpNotifier.passwordController.text.isNotEmpty &&
+                                  signUpState.isCheckPassword
                               ? Row(
                                 children: <Widget>[
                                   Icon(
@@ -232,7 +234,7 @@ class SignView extends ConsumerWidget {
                                       .text
                                       .isNotEmpty &&
                                   !signUpState.isCheckPassword
-                              ? "비밀번호가 다릅니다."
+                              ? "8~12자 이내로, 영문 대문자, 특수문자, 숫자를 포함해야 합니다."
                               : null,
                     ),
                     SizedBox(height: context.height(0.03)),
@@ -340,6 +342,7 @@ class SignView extends ConsumerWidget {
             suffixIcon: suffixIcon,
             helper: helperWidget,
             errorText: errorText,
+            errorMaxLines: 2,
           ),
         ),
       ],

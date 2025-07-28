@@ -3,7 +3,6 @@ import 'package:earned_it/view_models/set_Salary_provider.dart';
 import 'package:earned_it/views/loading_overlay_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class SetSalaryView extends ConsumerWidget {

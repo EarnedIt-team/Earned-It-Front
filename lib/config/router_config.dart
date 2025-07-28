@@ -1,6 +1,7 @@
 import 'package:earned_it/views/home/home_view.dart';
 import 'package:earned_it/views/auth/login/forgot_password_view.dart';
 import 'package:earned_it/views/auth/login/login_view.dart';
+import 'package:earned_it/views/navigation_view.dart';
 import 'package:earned_it/views/onboarding/onboarding_view.dart';
 import 'package:earned_it/views/auth/signup/sign_view.dart';
 import 'package:earned_it/views/setting/set_salary_view.dart';
@@ -42,9 +43,15 @@ final GoRouter routes = GoRouter(
           (BuildContext context, GoRouterState state) =>
               const ForgotPasswordView(),
     ),
-    // 메인화면 (home)
+    // 홈 화면 (home)
     GoRoute(
       path: '/home',
+      builder:
+          (BuildContext context, GoRouterState state) => const NavigationView(),
+    ),
+    // 메인화면 (main)
+    GoRoute(
+      path: '/main',
       builder: (BuildContext context, GoRouterState state) => const HomeView(),
     ),
     // 월 수익 설정 (setSalary)

@@ -48,21 +48,12 @@ class SetSalaryViewModel extends AutoDisposeNotifier<SetSalaryState> {
     });
 
     // 컨트롤러 리스너 설정
-    // 리스너는 컨트롤러 텍스트 변경 시 포맷팅 및 상태 업데이트를 트리거합니다.
     _salaryController.addListener(_onSalaryControllerChanged);
-    // _paydayController는 직접 입력되지 않으므로 리스너는 필요 없고,
-    // _selectedDay 업데이트 시 _updateButtonState()가 호출됩니다.
 
-    // 초기 상태 반환. 이때 state는 기본값 SelfSalaryState()가 됩니다.
+    // 초기 상태 반환.
     final initialState = const SetSalaryState();
 
     // 초기 상태를 컨트롤러에 반영 (state가 초기화된 후)
-    // WidgetsBinding.instance.addPostFrameCallback 사용하지 않고,
-    // 컨트롤러를 먼저 초기화하고, build 메서드가 반환한 state를 기반으로
-    // 리스너가 첫 업데이트를 처리하도록 하는 것이 더 Flutter 스럽습니다.
-    // 하지만, 최초 로드 시 컨트롤러 텍스트를 명시적으로 설정하려면
-    // `state`가 빌드된 이후에 수행되어야 합니다.
-    // 여기서는 `_updateControllersFromState`를 추가하여 명시적으로 동기화합니다.
     _updateControllersFromState(initialState);
 
     // 초기 버튼 상태 설정 (initialState를 기반으로)

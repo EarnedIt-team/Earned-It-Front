@@ -20,7 +20,7 @@ class LoginView extends ConsumerWidget {
       child: Scaffold(
         resizeToAvoidBottomInset: true,
         body: Stack(
-          children: [
+          children: <Widget>[
             SafeArea(
               child: SingleChildScrollView(
                 child: ConstrainedBox(

@@ -208,7 +208,15 @@ class SignView extends ConsumerWidget {
                           signUpNotifier
                               .checkPasswordController, // Notifier의 컨트롤러 사용
                       onChanged: signUpNotifier.onCheckPasswordChanged,
-                      obscureText: true,
+                      obscureText: signUpState.isObscurePasswordCheck,
+                      suffixIcon: IconButton(
+                        onPressed: signUpNotifier.toggleObscurePasswordCheck,
+                        icon: Icon(
+                          signUpState.isObscurePasswordCheck
+                              ? Icons.visibility_off
+                              : Icons.visibility,
+                        ),
+                      ),
                       hintText: "영문 대문자, 특수문자, 숫자 포함 8~12자",
                       helperWidget:
                           signUpNotifier.passwordController.text.isNotEmpty &&

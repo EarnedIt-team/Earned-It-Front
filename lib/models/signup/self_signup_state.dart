@@ -11,6 +11,7 @@ abstract class SelfSignupState with _$SelfSignupState {
     @Default(false) bool isAvailableCode,
     @Default(false) bool isSuccessfulCode,
     @Default(true) bool isObscurePassword, // 비밀번호 기본값은 숨김
+    @Default(true) bool isObscurePasswordCheck, // 비밀번호 재확인 기본값은 숨김
     @Default(false) bool isAvailablePassword,
     @Default(false) bool isCheckPassword,
     @Default(false) bool isAgreedToTerms,

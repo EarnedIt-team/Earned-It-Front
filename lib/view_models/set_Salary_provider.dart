@@ -175,23 +175,21 @@ class SetSalaryViewModel extends AutoDisposeNotifier<SetSalaryState> {
       print('월 급여 설정 완료: ${response.data}');
       state = state.copyWith(isLoading: false, errorMessage: '');
 
-      final double amountPerSec = response.data['amountPerSec'];
-      final String formattedAmount = amountPerSec.toStringAsFixed(2);
-
-      // 초당 수익 업데이트
+      // 유저 정보 업데이트
       ref
           .read(userProvider.notifier)
           .updateSalaryInfo(
-            newMonthlySalary: salaryAmount,
-            newPayday: paydayDay,
-            newEarningsPerSecond: amountPerSec,
+            newMonthlySalary: response.data['amount'], // 월 급여
+            newPayday: response.data['payday'], // 월급날
+            newEarningsPerSecond: response.data['amountPerSec'], // 초당 수익
           );
 
       toastification.show(
         alignment: Alignment.topCenter,
         style: ToastificationStyle.simple,
+        type: ToastificationType.success,
         context: context,
-        title: Text("초당 수익 : $formattedAmount원"),
+        title: const Text("월 수익이 설정되었습니다."),
         autoCloseDuration: const Duration(seconds: 3),
       );
 

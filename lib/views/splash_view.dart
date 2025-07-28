@@ -59,20 +59,8 @@ class _SplashViewState extends ConsumerState<SplashView> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            Image.asset(
-              "assets/images/time.png",
-              fit: BoxFit.contain,
-              width: context.width(0.3),
-              height: context.height(0.3),
-            ),
             SizedBox(height: context.height(0.005)),
-            Text(
-              "Earned !t",
-              style: TextStyle(
-                fontSize: context.middleFont,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+            Image.asset("assets/images/logo.png", width: context.width(0.6)),
           ],
         ),
       ),

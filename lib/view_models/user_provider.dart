@@ -13,6 +13,22 @@ class UserNotifier extends Notifier<UserState> {
     return const UserState();
   }
 
+  /// 유저 정보를 갱신하는 메소드
+  void loadUserInfo({
+    required int amount,
+    required double amountPerSec,
+    required bool hasSalary,
+    required int payday,
+    // 추후, 위시리스트 등이 포함됨
+  }) {
+    state = state.copyWith(
+      monthlySalary: amount,
+      payday: payday,
+      earningsPerSecond: amountPerSec,
+      isearningsPerSecond: hasSalary,
+    );
+  }
+
   /// 급여 정보를 업데이트하는 메소드
   void updateSalaryInfo({
     required int newMonthlySalary,

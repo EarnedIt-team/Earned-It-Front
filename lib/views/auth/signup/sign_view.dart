@@ -16,7 +16,7 @@ class SignView extends ConsumerWidget {
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Stack(
-        children: [
+        children: <Widget>[
           Scaffold(
             resizeToAvoidBottomInset: true,
             appBar: AppBar(

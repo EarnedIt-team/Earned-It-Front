@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:go_router/go_router.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -10,6 +12,14 @@ class HomeView extends StatefulWidget {
 class _HomeViewState extends State<HomeView> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(appBar: AppBar(title: Text("메인화면")));
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text(
+          "Earned !t",
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+      ),
+      body: Center(),
+    );
   }
 }

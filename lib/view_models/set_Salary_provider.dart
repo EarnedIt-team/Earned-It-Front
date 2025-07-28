@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:earned_it/config/exception.dart';
 import 'package:earned_it/models/setting/set_salary_state.dart';
 import 'package:earned_it/services/auth/login_service.dart';
+import 'package:earned_it/view_models/user_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -176,6 +177,15 @@ class SetSalaryViewModel extends AutoDisposeNotifier<SetSalaryState> {
 
       final double amountPerSec = response.data['amountPerSec'];
       final String formattedAmount = amountPerSec.toStringAsFixed(2);
+
+      // 초당 수익 업데이트
+      ref
+          .read(userProvider.notifier)
+          .updateSalaryInfo(
+            newMonthlySalary: salaryAmount,
+            newPayday: paydayDay,
+            newEarningsPerSecond: amountPerSec,
+          );
 
       toastification.show(
         alignment: Alignment.topCenter,

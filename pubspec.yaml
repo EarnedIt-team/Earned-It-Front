@@ -48,6 +48,9 @@ flutter:
     - assets/images/kakao_login.png
     - assets/images/apple_login_light.png
     - assets/images/apple_login_dark.png
+    - assets/images/money/money_small.png
+    - assets/images/money/money_middleSmall.png
+
 
   fonts:
     - family: Mainfonts

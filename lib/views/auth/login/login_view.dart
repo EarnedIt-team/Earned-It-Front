@@ -38,12 +38,9 @@ class LoginView extends ConsumerWidget {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
                             // 메인 로고
-                            Text(
-                              "Earned !t",
-                              style: TextStyle(
-                                fontSize: context.middleFont,
-                                fontWeight: FontWeight.bold,
-                              ),
+                            Image.asset(
+                              "assets/images/logo.png",
+                              width: context.width(0.55),
                             ),
                             SizedBox(height: context.height(0.07)),
                             // 이메일 & 비밀번호

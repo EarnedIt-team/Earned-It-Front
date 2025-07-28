@@ -37,7 +37,7 @@ class SetSalaryViewModel extends AutoDisposeNotifier<SetSalaryState> {
     _loginService = ref.read(loginServiceProvider);
     _settingService = ref.read(settingServiceProvider);
 
-    // 컨트롤러 초기화 (여기서는 아직 state의 초기값이 사용되지 않음)
+    // 컨트롤러 초기화
     _salaryController = TextEditingController();
     _paydayController = TextEditingController();
 
@@ -53,10 +53,10 @@ class SetSalaryViewModel extends AutoDisposeNotifier<SetSalaryState> {
     // 초기 상태 반환.
     final initialState = const SetSalaryState();
 
-    // 초기 상태를 컨트롤러에 반영 (state가 초기화된 후)
+    // 초기 상태를 컨트롤러에 반영
     _updateControllersFromState(initialState);
 
-    // 초기 버튼 상태 설정 (initialState를 기반으로)
+    // 초기 버튼 상태 설정
     _updateButtonState(initialState);
 
     return initialState;
@@ -74,9 +74,7 @@ class SetSalaryViewModel extends AutoDisposeNotifier<SetSalaryState> {
       _salaryController.value = TextEditingValue(
         text: currentState.salaryText,
         selection: TextSelection.collapsed(
-          offset:
-              currentState.salaryText.length -
-              (currentState.salaryText.endsWith('원') ? 1 : 0),
+          offset: currentState.salaryText.length,
         ),
       );
     }
@@ -88,17 +86,11 @@ class SetSalaryViewModel extends AutoDisposeNotifier<SetSalaryState> {
   }
 
   void _formatSalaryInput() {
-    String text = _salaryController.text;
-    if (text.isEmpty) {
-      if (state.salaryText.isNotEmpty) {
-        state = state.copyWith(salaryText: '');
-      }
-      return;
-    }
+    final text = _salaryController.text;
+    final selection = _salaryController.selection;
 
-    String cleanText = text
-        .replaceAll('원', '')
-        .replaceAll(RegExp(r'[^0-9]'), '');
+    String cleanText = text.replaceAll(RegExp(r'[^0-9]'), '');
+
     if (cleanText.isEmpty) {
       if (state.salaryText.isNotEmpty) {
         state = state.copyWith(salaryText: '');
@@ -107,27 +99,30 @@ class SetSalaryViewModel extends AutoDisposeNotifier<SetSalaryState> {
     }
 
     int? value = int.tryParse(cleanText);
-
     String formattedText;
+
     if (value != null) {
-      formattedText = '${_numberFormat.format(value)}원';
+      formattedText = _numberFormat.format(value);
     } else {
       formattedText = '';
     }
 
-    // 컨트롤러 텍스트를 직접 업데이트할 때 무한 루프 방지
+    if (state.salaryText != formattedText) {
+      state = state.copyWith(salaryText: formattedText);
+    }
+
     if (_salaryController.text != formattedText) {
+      // 포매팅으로 인해 쉼표(,)가 추가/삭제되면서 텍스트 길이가 변하므로
+      // 변경된 길이만큼 커서 위치를 보정해줍니다.
+      final int newOffset =
+          selection.baseOffset + (formattedText.length - text.length);
+
       _salaryController.value = TextEditingValue(
         text: formattedText,
         selection: TextSelection.collapsed(
-          offset: formattedText.length - (formattedText.endsWith('원') ? 1 : 0),
+          offset: newOffset.clamp(0, formattedText.length),
         ),
       );
-    }
-    // 상태 업데이트: TextField의 텍스트가 ViewModel의 상태가 됩니다.
-    // 불필요한 state 업데이트 방지
-    if (state.salaryText != _salaryController.text) {
-      state = state.copyWith(salaryText: _salaryController.text);
     }
   }
 
@@ -141,9 +136,10 @@ class SetSalaryViewModel extends AutoDisposeNotifier<SetSalaryState> {
 
   // 버튼 활성화 상태 업데이트 (내부 로직)
   void _updateButtonState(SetSalaryState currentState) {
-    final String cleanSalaryText = _salaryController.text
-        .replaceAll('원', '')
-        .replaceAll(RegExp(r'[^0-9]'), '');
+    final String cleanSalaryText = _salaryController.text.replaceAll(
+      RegExp(r'[^0-9]'),
+      '',
+    );
     final bool isEnabled =
         cleanSalaryText.isNotEmpty && currentState.selectedDay > 0;
     if (currentState.isButtonEnabled != isEnabled) {
@@ -178,11 +174,14 @@ class SetSalaryViewModel extends AutoDisposeNotifier<SetSalaryState> {
       print('월 급여 설정 완료: ${response.data}');
       state = state.copyWith(isLoading: false, errorMessage: '');
 
+      final double amountPerSec = response.data['amountPerSec'];
+      final String formattedAmount = amountPerSec.toStringAsFixed(2);
+
       toastification.show(
         alignment: Alignment.topCenter,
         style: ToastificationStyle.simple,
         context: context,
-        title: Text("초당 수익 : ${response.data['amountPerSec']}"),
+        title: Text("초당 수익 : $formattedAmount원"),
         autoCloseDuration: const Duration(seconds: 3),
       );
 

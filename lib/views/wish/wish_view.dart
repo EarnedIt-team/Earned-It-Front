@@ -12,9 +12,12 @@ class _WishViewState extends State<WishView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          "위시리스트",
-          style: TextStyle(fontWeight: FontWeight.bold),
+        title: const Row(
+          spacing: 10,
+          children: <Widget>[
+            Icon(Icons.local_mall),
+            Text("위시리스트", style: TextStyle(fontWeight: FontWeight.bold)),
+          ],
         ),
         centerTitle: false,
       ),

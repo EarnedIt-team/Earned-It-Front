@@ -14,9 +14,12 @@ class _SettingViewState extends State<SettingView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          "마이페이지",
-          style: TextStyle(fontWeight: FontWeight.bold),
+        title: const Row(
+          spacing: 10,
+          children: <Widget>[
+            Icon(Icons.account_circle),
+            Text("마이페이지", style: TextStyle(fontWeight: FontWeight.bold)),
+          ],
         ),
         centerTitle: false,
       ),

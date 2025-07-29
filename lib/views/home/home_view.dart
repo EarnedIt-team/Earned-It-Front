@@ -1,10 +1,31 @@
 import 'dart:async';
+import 'package:animated_digit/animated_digit.dart';
+import 'package:animated_toggle_switch/animated_toggle_switch.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:earned_it/config/design.dart';
+import 'package:earned_it/models/user/user_state.dart';
 import 'package:earned_it/view_models/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:animated_digit/animated_digit.dart';
+import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+class WishlistItem {
+  final String name;
+  final String company;
+  final int price;
+  final String link;
+  final String image;
+
+  WishlistItem({
+    required this.name,
+    required this.company,
+    required this.price,
+    required this.link,
+    required this.image,
+  });
+}
 
 class HomeView extends ConsumerStatefulWidget {
   const HomeView({super.key});
@@ -14,21 +35,129 @@ class HomeView extends ConsumerStatefulWidget {
 }
 
 class _HomeViewState extends ConsumerState<HomeView> {
+  final CarouselSliderController carouselSliderController =
+      CarouselSliderController();
+  final NumberFormat _currencyFormat = NumberFormat.decimalPattern('ko_KR');
+
+  List<WishlistItem> _wishlistItems = [];
+  int _carouselIndex = 0;
   Timer? _timer;
   double _currentEarnedAmount = 0.0;
+  int _toggleIndex = 0;
 
   @override
   void initState() {
     super.initState();
+    _loadInitialWishlist();
     final userState = ref.read(userProvider);
     if (userState.isearningsPerSecond) {
       _startEarningTimer(userState.payday, userState.earningsPerSecond);
     }
   }
 
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  void _loadInitialWishlist() {
+    _wishlistItems = [
+      WishlistItem(
+        name: '2020년형 MacBook Pro 13.3인치 256GB',
+        company: 'APPLE',
+        price: 1678530,
+        link: 'https://ko.aliexpress.com/item/1005005626333589.html',
+        image: 'macbook',
+      ),
+      WishlistItem(
+        name: '아이폰 15 Pro 256GB',
+        company: 'APPLE',
+        price: 1298000,
+        link: 'https://www.coupang.com/vp/products/7630888734',
+        image: 'iphone',
+      ),
+      WishlistItem(
+        name: '닌텐도 스위치 OLED',
+        company: 'NINTENDO',
+        price: 377470,
+        link: 'https://prod.danawa.com/info/?pcode=14678627',
+        image: 'switch',
+      ),
+    ];
+  }
+
+  ({double progress, String timeText}) _calculateDisplayInfo(int itemIndex) {
+    if (_wishlistItems.isEmpty) return (progress: 0.0, timeText: '');
+
+    double moneyAvailableForItem = _currentEarnedAmount;
+    for (int i = 0; i < itemIndex; i++) {
+      moneyAvailableForItem -= _wishlistItems[i].price;
+    }
+
+    if (moneyAvailableForItem < 0) moneyAvailableForItem = 0;
+
+    final currentItemPrice = _wishlistItems[itemIndex].price;
+    final progress = (moneyAvailableForItem / currentItemPrice).clamp(0.0, 1.0);
+
+    String timeText;
+    final moneyStillNeeded = currentItemPrice - moneyAvailableForItem;
+
+    if (moneyStillNeeded <= 0) {
+      timeText = "구매하기";
+    } else {
+      final userState = ref.read(userProvider);
+      if (userState.earningsPerSecond <= 0) {
+        timeText = '∞';
+      } else {
+        final totalSeconds =
+            (moneyStillNeeded / userState.earningsPerSecond).round();
+        final duration = Duration(seconds: totalSeconds);
+
+        final int years = duration.inDays ~/ 365;
+        final int months = (duration.inDays % 365) ~/ 30;
+        final int days = (duration.inDays % 365) % 30;
+        final int hours = duration.inHours % 24;
+        final int minutes = duration.inMinutes % 60;
+        final int seconds = duration.inSeconds % 60;
+
+        if (years > 0)
+          timeText = '$years년 ${months}개월';
+        else if (months > 0)
+          timeText = '$months개월 ${days}일';
+        else if (days > 0)
+          timeText = '$days일 ${hours}시간';
+        else if (hours > 0)
+          timeText = '$hours시간 ${minutes}분';
+        else if (minutes > 0)
+          timeText = '$minutes분 ${seconds}초';
+        else
+          timeText = '$seconds초';
+      }
+    }
+    return (progress: progress, timeText: timeText);
+  }
+
+  void _jumpToInProgressItem() {
+    if (!mounted || _wishlistItems.isEmpty) return;
+
+    int targetIndex = _wishlistItems.length - 1;
+    for (int i = 0; i < _wishlistItems.length; i++) {
+      if (_calculateDisplayInfo(i).progress < 1.0) {
+        targetIndex = i;
+        break;
+      }
+    }
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        carouselSliderController.jumpToPage(targetIndex);
+      }
+    });
+  }
+
   void _startEarningTimer(int payday, double earningsPerSecond) {
     _timer?.cancel();
-
     final now = DateTime.now();
     DateTime lastPayday;
 
@@ -43,42 +172,281 @@ class _HomeViewState extends ConsumerState<HomeView> {
 
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (mounted) {
-        setState(() {
-          _currentEarnedAmount += earningsPerSecond;
-        });
+        setState(() => _currentEarnedAmount += earningsPerSecond);
       }
     });
+
+    _jumpToInProgressItem();
   }
 
-  @override
-  void dispose() {
-    _timer?.cancel();
-    super.dispose();
+  Future<void> _launchURL(String url) async {
+    final uri = Uri.parse(url);
+    if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
+      throw Exception('Could not launch $url');
+    }
+  }
+
+  Color _getProgressColor(double progress) {
+    if (progress == 1.0) return Colors.green;
+    if (progress >= 0.8) return Colors.purple;
+    if (progress >= 0.5) return Colors.blue;
+    if (progress >= 0.31) return Colors.orange;
+    return Colors.red;
   }
 
   Widget _buildAmountImage(double currentAmount) {
     final int amount = currentAmount.toInt();
     String? imagePath;
 
-    if (amount >= 50000) {
+    if (amount >= 50000)
       imagePath = "assets/images/money/money_largeMiddle.png";
-    } else if (amount >= 10000) {
+    else if (amount >= 10000)
       imagePath = "assets/images/money/money_largeSmall.png";
-    } else if (amount >= 5000) {
+    else if (amount >= 5000)
       imagePath = "assets/images/money/money_middle.png";
-    } else if (amount >= 1000) {
+    else if (amount >= 1000)
       imagePath = "assets/images/money/money_middleSmall.png";
-    } else if (amount >= 10) {
+    else if (amount >= 10)
       imagePath = "assets/images/money/money_small.png";
-    } else {
+    else
       return const SizedBox.shrink();
-    }
 
     return Image.asset(
       imagePath,
       width: context.height(0.08),
       height: context.height(0.08),
     );
+  }
+
+  Widget _buildTopSection(UserState userState) {
+    return Padding(
+      padding: EdgeInsets.only(
+        top: context.height(0.015),
+        left: context.middlePadding,
+        right: context.middlePadding,
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text.rich(
+                TextSpan(
+                  style: TextStyle(
+                    fontSize: context.height(0.02),
+                    fontWeight: FontWeight.bold,
+                  ),
+                  children: [
+                    const TextSpan(text: '금월 누적 금액'),
+                    if (userState.isearningsPerSecond) ...[
+                      TextSpan(
+                        text:
+                            '  ( ${userState.earningsPerSecond.toStringAsFixed(2)}',
+                        style: TextStyle(
+                          fontSize: context.height(0.018),
+                          fontWeight: FontWeight.w100,
+                          color: Colors.grey,
+                        ),
+                      ),
+                      TextSpan(
+                        text: '₩ /sec )',
+                        style: TextStyle(
+                          fontSize: context.height(0.015),
+                          fontWeight: FontWeight.w100,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+              SizedBox(height: context.height(0.005)),
+              userState.isearningsPerSecond
+                  ? Row(
+                    crossAxisAlignment: CrossAxisAlignment.baseline,
+                    textBaseline: TextBaseline.alphabetic,
+                    children: [
+                      AnimatedDigitWidget(
+                        value: _currentEarnedAmount.toInt(),
+                        textStyle: TextStyle(fontSize: context.height(0.035)),
+                        enableSeparator: true,
+                      ),
+                      Text(
+                        " 원",
+                        style: TextStyle(fontSize: context.height(0.02)),
+                      ),
+                    ],
+                  )
+                  : Text(
+                    "설정된 금액이 없습니다.",
+                    style: TextStyle(
+                      fontSize: context.height(0.018),
+                      color: Colors.grey,
+                    ),
+                  ),
+            ],
+          ),
+          userState.isearningsPerSecond
+              ? _buildAmountImage(_currentEarnedAmount)
+              : ElevatedButton(
+                onPressed: () => context.push('/setSalary'),
+                child: const Text("월 수익 설정"),
+              ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildWishlist() {
+    if (_wishlistItems.isEmpty) {
+      return const Center(child: Text("위시리스트를 추가해주세요."));
+    }
+
+    final displayInfo = _calculateDisplayInfo(_carouselIndex);
+    final item = _wishlistItems[_carouselIndex];
+    final progressColor = _getProgressColor(displayInfo.progress);
+
+    return Column(
+      children: <Widget>[
+        Expanded(
+          child: CarouselSlider.builder(
+            carouselController: carouselSliderController,
+            itemCount: _wishlistItems.length,
+            itemBuilder: (context, index, realIndex) {
+              final currentItem = _wishlistItems[index];
+              final progress = _calculateDisplayInfo(index).progress;
+              return Opacity(
+                opacity: progress < 1.0 && index != _carouselIndex ? 0.5 : 1.0,
+                child: Image.asset(
+                  'assets/images/${currentItem.image}.png',
+                  height: context.height(0.3),
+                ),
+              );
+            },
+            options: CarouselOptions(
+              initialPage: 0,
+              aspectRatio: 16 / 9,
+              height: MediaQuery.of(context).size.height * 0.333,
+              viewportFraction: 0.65,
+              enableInfiniteScroll: false,
+              enlargeCenterPage: true,
+              enlargeFactor: 0.55,
+              enlargeStrategy: CenterPageEnlargeStrategy.zoom,
+              onPageChanged:
+                  (index, reason) => setState(() => _carouselIndex = index),
+            ),
+          ),
+        ),
+        ConstrainedBox(
+          constraints: BoxConstraints(
+            maxWidth: MediaQuery.of(context).size.width * 0.8,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text(
+                item.company,
+                style: TextStyle(
+                  color: Colors.grey,
+                  fontSize: MediaQuery.of(context).size.width * 0.04,
+                ),
+              ),
+              Text(
+                item.name,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: MediaQuery.of(context).size.width * 0.05,
+                  fontWeight: FontWeight.bold,
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
+          ),
+        ),
+        SizedBox(height: context.height(0.03)),
+        // 위시아이템 진행률
+        ConstrainedBox(
+          constraints: BoxConstraints(maxWidth: context.width(0.8)),
+          child: Column(
+            children: [
+              LinearProgressIndicator(
+                minHeight: context.height(0.015),
+                borderRadius: const BorderRadius.all(Radius.circular(16)),
+                backgroundColor: const Color.fromARGB(255, 234, 234, 234),
+                color: progressColor,
+                value: displayInfo.progress,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    '${_currencyFormat.format(item.price)}원',
+                    style: const TextStyle(color: Colors.grey),
+                  ),
+                  Text(
+                    '${(displayInfo.progress * 100).toStringAsFixed(2)}%',
+                    style: const TextStyle(color: Colors.grey),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+        SizedBox(height: context.height(0.02)),
+        // 위시아이템 구매하기
+        ConstrainedBox(
+          constraints: BoxConstraints(maxWidth: context.width(0.5)),
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              side: BorderSide(
+                color:
+                    displayInfo.progress >= 1.0
+                        ? progressColor
+                        : Colors.transparent,
+                width: 2,
+              ),
+              backgroundColor: Colors.white,
+              disabledBackgroundColor: Colors.grey[300],
+            ),
+            onPressed:
+                displayInfo.progress >= 1.0
+                    ? () => _launchURL(item.link)
+                    : null,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  displayInfo.progress >= 1.0
+                      ? Icons.shopping_cart
+                      : Icons.timer_outlined,
+                  color:
+                      displayInfo.progress >= 1.0 ? Colors.black : Colors.grey,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  displayInfo.timeText,
+                  style: TextStyle(
+                    color:
+                        displayInfo.progress >= 1.0
+                            ? Colors.black
+                            : Colors.grey,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        SizedBox(height: context.height(0.03)),
+      ],
+    );
+  }
+
+  Widget _buildPuzzle() {
+    return const Center(child: Text("퍼즐"));
   }
 
   @override
@@ -88,108 +456,81 @@ class _HomeViewState extends ConsumerState<HomeView> {
     ref.listen(userProvider, (previous, next) {
       if (next.isearningsPerSecond && (previous?.isearningsPerSecond != true)) {
         _startEarningTimer(next.payday, next.earningsPerSecond);
+      } else if (!next.isearningsPerSecond &&
+          previous?.isearningsPerSecond == true) {
+        _timer?.cancel();
+        setState(() => _currentEarnedAmount = 0.0);
       }
     });
 
     return Scaffold(
       appBar: AppBar(
+        surfaceTintColor: Colors.transparent,
         title: Image.asset(
           "assets/images/logo.png",
           width: context.width(0.35),
         ),
-      ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.only(top: context.height(0.01)),
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: context.middlePadding),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text.rich(
-                        TextSpan(
-                          style: TextStyle(
-                            fontSize: context.height(0.02),
-                            fontWeight: FontWeight.bold,
-                          ),
-                          children: <InlineSpan>[
-                            TextSpan(
-                              text: '금월 누적 금액',
-                              style: TextStyle(fontSize: context.height(0.02)),
-                            ),
-
-                            if (userState.isearningsPerSecond) ...<InlineSpan>[
-                              TextSpan(
-                                text:
-                                    '  ${userState.earningsPerSecond.toStringAsFixed(2)}',
-                                style: TextStyle(
-                                  fontSize: context.height(0.018),
-                                  fontWeight: FontWeight.w100,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                              TextSpan(
-                                text: '₩ /sec',
-                                style: TextStyle(
-                                  fontSize: context.height(0.015),
-                                  fontWeight: FontWeight.w100,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                            ],
-                          ],
+        centerTitle: false,
+        actionsPadding: const EdgeInsets.symmetric(horizontal: 30),
+        actions: [
+          AnimatedToggleSwitch.dual(
+            current: _toggleIndex,
+            first: 0,
+            second: 1,
+            onChanged: (value) => setState(() => _toggleIndex = value),
+            spacing: 0,
+            height: 40,
+            styleBuilder:
+                (value) => ToggleStyle(
+                  borderColor: Colors.black,
+                  indicatorColor: Colors.white,
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Color.fromARGB(66, 125, 125, 125),
+                      spreadRadius: 1,
+                      blurRadius: 2,
+                      offset: Offset(0, 1.5),
+                    ),
+                  ],
+                  backgroundColor: value == 0 ? Colors.green : Colors.blue,
+                ),
+            iconBuilder:
+                (value) =>
+                    value == 0
+                        ? const Icon(
+                          Icons.local_mall,
+                          color: Colors.green,
+                          size: 25.0,
+                        )
+                        : const Icon(
+                          Icons.extension,
+                          color: Colors.blue,
+                          size: 25.0,
                         ),
-                      ),
-
-                      userState.isearningsPerSecond
-                          ? Row(
-                            crossAxisAlignment: CrossAxisAlignment.baseline,
-                            textBaseline: TextBaseline.alphabetic,
-                            children: <Widget>[
-                              AnimatedDigitWidget(
-                                value: _currentEarnedAmount.toInt(),
-                                textStyle: TextStyle(
-                                  fontSize: context.height(0.035),
-                                ),
-                                enableSeparator: true,
-                                separateSymbol: ',',
-                              ),
-                              Text(
-                                " 원",
-                                style: TextStyle(
-                                  fontSize: context.height(0.02),
-                                ),
-                              ),
-                            ],
-                          )
-                          : Text(
-                            "설정된 금액이 없습니다.",
-                            style: TextStyle(
-                              fontSize: context.height(0.018),
-                              color: Colors.grey,
-                            ),
-                          ),
-                    ],
-                  ),
-                  userState.isearningsPerSecond
-                      ? _buildAmountImage(_currentEarnedAmount)
-                      : ElevatedButton(
-                        onPressed: () {
-                          context.push('/setSalary');
-                        },
-                        child: const Text("월 수익 설정"),
-                      ),
-                ],
-              ),
-            ],
+            textBuilder:
+                (value) =>
+                    value == 0
+                        ? const Icon(
+                          Icons.extension,
+                          color: Color.fromARGB(255, 202, 202, 202),
+                          size: 20.0,
+                        )
+                        : const Icon(
+                          Icons.local_mall,
+                          color: Color.fromARGB(255, 202, 202, 202),
+                          size: 20.0,
+                        ),
           ),
-        ),
+        ],
+      ),
+      body: Column(
+        children: <Widget>[
+          _buildTopSection(userState),
+          Expanded(
+            child: _toggleIndex == 0 ? _buildWishlist() : _buildPuzzle(),
+          ),
+          SizedBox(height: context.height(0.02)),
+        ],
       ),
     );
   }

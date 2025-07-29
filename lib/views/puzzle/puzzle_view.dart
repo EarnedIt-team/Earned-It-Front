@@ -12,7 +12,13 @@ class _PuzzleViewState extends State<PuzzleView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("퍼즐", style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Row(
+          spacing: 10,
+          children: <Widget>[
+            Icon(Icons.extension),
+            Text("퍼즐", style: TextStyle(fontWeight: FontWeight.bold)),
+          ],
+        ),
         centerTitle: false,
       ),
     );

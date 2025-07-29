@@ -9,9 +9,6 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:go_router/go_router.dart';
 import 'package:toastification/toastification.dart';
 
-// appleLogin provider
-final appleLoginServiceProvider = Provider((ref) => AppleLoginService());
-
 final loginViewModelProvider = NotifierProvider<LoginViewModel, LoginState>(
   LoginViewModel.new,
 );
@@ -156,18 +153,30 @@ class LoginViewModel extends Notifier<LoginState> {
     state = state.copyWith(isLoading: true, errorMessage: null);
 
     try {
-      final appleService = ref.read(appleLoginServiceProvider);
-      await appleService.login();
+      final appleService = ref.read(appleloginServiceProvider);
+      final response = await appleService.login();
+
+      final String accessToken = response.data['accessToken'] as String;
+      final String refreshToken = response.data['refreshToken'] as String;
+      final String userId = (response.data['userId'] as int).toString();
+
+      // accessToken과 refreshToken을 secure storage에 저장
+      await const FlutterSecureStorage().write(
+        key: 'accessToken',
+        value: accessToken,
+      );
+      await const FlutterSecureStorage().write(
+        key: 'refreshToken',
+        value: refreshToken,
+      );
+      // userId를 secure storage에 저장
+      await const FlutterSecureStorage().write(key: 'userId', value: userId);
+
+      print("token과 userId를 저장했습니다.");
 
       // 로그인 성공 처리 (예: 서버에서 토큰을 받아오고 사용자 상태 업데이트)
       state = state.copyWith(isLoading: false, errorMessage: null);
-      toastification.show(
-        context: context,
-        title: const Text("애플 로그인 성공!"),
-        type: ToastificationType.success,
-        autoCloseDuration: const Duration(seconds: 2),
-      );
-      // 성공 후 다음 화면으로 이동
+
       context.go('/home');
     } catch (e) {
       state = state.copyWith(isLoading: false);

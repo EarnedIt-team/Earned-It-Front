@@ -1,8 +1,19 @@
-import 'package:flutter/foundation.dart';
+import 'package:earned_it/main.dart';
+import 'package:earned_it/models/api_response.dart';
+import 'package:earned_it/services/rest_client.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
+final appleloginServiceProvider = Provider<AppleLoginService>((ref) {
+  return AppleLoginService(restClient);
+});
+
 class AppleLoginService {
-  Future<void> login() async {
+  final RestClient _restClient;
+
+  AppleLoginService(this._restClient);
+
+  Future<ApiResponse> login() async {
     try {
       final AuthorizationCredentialAppleID
       credentialAppleID = await SignInWithApple.getAppleIDCredential(
@@ -34,9 +45,21 @@ class AppleLoginService {
         'Authorization Code: ${credentialAppleID.authorizationCode}',
       ); // 이 코드도 서버로 보내 검증 가능
       // 서버로 Apple 인증 정보 전송 관련 로직
+
+      final Map<String, String> requestBody = <String, String>{
+        "idToken": credentialAppleID.identityToken!,
+      };
+
+      final ApiResponse response = await _restClient.applelogin(requestBody);
+      // 통신은 성공했지만, 처리가 되지 않았을 때
+      if (response.code != "SUCCESS") {
+        throw Exception(response.message);
+      }
+      return response;
     } on SignInWithAppleAuthorizationException catch (e) {
       // Apple 로그인 실패 시 오류 처리
       print('Apple 로그인 실패: ${e.code} - ${e.message}');
+
       if (e.code == AuthorizationErrorCode.canceled) {
         throw Exception('로그인을 취소했습니다.');
       } else if (e.code == AuthorizationErrorCode.notHandled) {
@@ -46,7 +69,7 @@ class AppleLoginService {
     } catch (e) {
       // 그 외 알 수 없는 오류
       print('알 수 없는 오류 발생: $e');
-      throw Exception('예상치 못한 오류 발생');
+      throw Exception('애플 로그인 실패: $e');
     }
   }
 }

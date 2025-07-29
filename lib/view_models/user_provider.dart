@@ -1,16 +1,32 @@
 import 'package:earned_it/models/user/user_state.dart';
+import 'package:earned_it/services/auth/user_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 final userProvider = NotifierProvider<UserNotifier, UserState>(
   UserNotifier.new,
 );
 
 class UserNotifier extends Notifier<UserState> {
+  final FlutterSecureStorage _storage = const FlutterSecureStorage();
+
   @override
   UserState build() {
     // Notifier가 처음 생성될 때의 초기 상태를 반환합니다.
     // UserState의 기본값(@Default)들이 사용됩니다.
     return const UserState();
+  }
+
+  /// 사용자 정보를 불러옵니다.
+  Future<void> loadUser() async {
+    try {
+      final String? accessToken = await _storage.read(key: 'accessToken');
+
+      final userService = ref.read(userServiceProvider);
+      final response = await userService.loadUserInfo(accessToken!);
+
+      print("유저 정보 $response");
+    } catch (e) {}
   }
 
   /// 유저 정보를 갱신하는 메소드

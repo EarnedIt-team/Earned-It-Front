@@ -48,6 +48,9 @@ class _HomeViewState extends ConsumerState<HomeView> {
   @override
   void initState() {
     super.initState();
+
+    // ref.read(userProvider.notifier).loadUser(); // 유저 정보 불러오기
+
     _loadInitialWishlist();
     final userState = ref.read(userProvider);
     if (userState.isearningsPerSecond) {

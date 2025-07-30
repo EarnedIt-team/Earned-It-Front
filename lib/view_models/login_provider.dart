@@ -3,14 +3,13 @@ import 'package:earned_it/models/login/login_state.dart';
 import 'package:earned_it/services/auth/apple_login_service.dart';
 import 'package:earned_it/services/auth/kakao_login_service.dart';
 import 'package:earned_it/services/auth/login_service.dart';
+import 'package:earned_it/view_models/user_provider.dart';
+import 'package:earned_it/views/auth/agreement_modal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:go_router/go_router.dart';
 import 'package:toastification/toastification.dart';
-
-// appleLogin provider
-final appleLoginServiceProvider = Provider((ref) => AppleLoginService());
 
 final loginViewModelProvider = NotifierProvider<LoginViewModel, LoginState>(
   LoginViewModel.new,
@@ -19,27 +18,27 @@ final loginViewModelProvider = NotifierProvider<LoginViewModel, LoginState>(
 class LoginViewModel extends Notifier<LoginState> {
   late final TextEditingController _idTextController;
   late final TextEditingController _passwordTextController;
-
-  // loginService 인스턴스를 저장할 필드
   late final LoginService _loginService;
+  final _storage = const FlutterSecureStorage();
 
   TextEditingController get idTextController => _idTextController;
   TextEditingController get passwordTextController => _passwordTextController;
+  bool get isLoginButtonEnabled =>
+      _idTextController.text.isNotEmpty &&
+      _passwordTextController.text.isNotEmpty;
 
   @override
   LoginState build() {
     _loginService = ref.read(loginServiceProvider);
-
     _idTextController = TextEditingController();
     _passwordTextController = TextEditingController();
 
-    // 컨트롤러에 리스너 추가하여 텍스트 변경 시 상태 업데이트
     _idTextController.addListener(_updateLoginButtonState);
     _passwordTextController.addListener(_updateLoginButtonState);
 
     ref.onDispose(() {
-      _idTextController.removeListener(_updateLoginButtonState); // 리스너 제거
-      _passwordTextController.removeListener(_updateLoginButtonState); // 리스너 제거
+      _idTextController.removeListener(_updateLoginButtonState);
+      _passwordTextController.removeListener(_updateLoginButtonState);
       _idTextController.dispose();
       _passwordTextController.dispose();
     });
@@ -47,13 +46,6 @@ class LoginViewModel extends Notifier<LoginState> {
     return const LoginState();
   }
 
-  // 로그인 버튼 활성화 상태를 결정하는 게터
-  bool get isLoginButtonEnabled {
-    return _idTextController.text.isNotEmpty &&
-        _passwordTextController.text.isNotEmpty;
-  }
-
-  // 텍스트 필드 변경 시 호출될 내부 메서드
   void _updateLoginButtonState() {
     state = state.copyWith(
       isIdValid: _idTextController.text.isNotEmpty,
@@ -61,171 +53,161 @@ class LoginViewModel extends Notifier<LoginState> {
     );
   }
 
-  /// 비밀번호 숨김/보임 상태를 토글합니다.
   void toggleObscurePassword() {
     state = state.copyWith(isObscurePassword: !state.isObscurePassword);
   }
 
-  /// 자체 로그인
+  // Public Login Methods
   Future<void> login(BuildContext context) async {
-    // 로딩 상태 시작
-    state = state.copyWith(isLoading: true, errorMessage: null);
-
-    try {
-      // 자체 로그인 API
-      final response = await _loginService.selfLogin(
-        _idTextController.text,
-        _passwordTextController.text,
-      );
-
-      state = state.copyWith(isLoading: false);
-
-      final String accessToken = response.data['accessToken'] as String;
-      final String refreshToken = response.data['refreshToken'] as String;
-      final String userId = (response.data['userId'] as int).toString();
-
-      // accessToken과 refreshToken을 secure storage에 저장
-      await const FlutterSecureStorage().write(
-        key: 'accessToken',
-        value: accessToken,
-      );
-      await const FlutterSecureStorage().write(
-        key: 'refreshToken',
-        value: refreshToken,
-      );
-      // userId를 secure storage에 저장
-      await const FlutterSecureStorage().write(key: 'userId', value: userId);
-
-      print("token과 userId를 저장했습니다.");
-
-      context.go('/home');
-    } catch (e) {
-      state = state.copyWith(isLoading: false);
-      toastification.show(
-        alignment: Alignment.topCenter,
-        style: ToastificationStyle.simple,
-        context: context,
-        title: Text(e.toDisplayString()),
-        autoCloseDuration: const Duration(seconds: 3),
-      );
-    }
+    await _executeLogin(
+      context,
+      loginFunction:
+          () => _loginService.selfLogin(
+            _idTextController.text,
+            _passwordTextController.text,
+          ),
+    );
   }
 
-  /// 자동 로그인
+  Future<void> signInWithApple(BuildContext context) async {
+    await _executeLogin(
+      context,
+      loginFunction: () => ref.read(appleloginServiceProvider).login(),
+      errorTitle: "애플 로그인 실패",
+      isSocialLogin: true,
+    );
+  }
+
+  Future<void> signInWithKakao(BuildContext context) async {
+    await _executeLogin(
+      context,
+      loginFunction: () => ref.read(kakaologinServiceProvider).login(),
+      errorTitle: "카카오 로그인 실패",
+      isSocialLogin: true,
+    );
+  }
+
   Future<void> autoLogin(BuildContext context, String token) async {
     try {
-      // 토큰 검증 API
       final response = await _loginService.checkToken(token);
-
-      final String accessToken = response.data['accessToken'] as String;
-      final String refreshToken = response.data['refreshToken'] as String;
-
-      // accessToken과 refreshToken을 secure storage에 저장
-      await const FlutterSecureStorage().write(
-        key: 'accessToken',
-        value: accessToken,
+      await _saveTokens(
+        accessToken: response.data['accessToken'] as String,
+        refreshToken: response.data['refreshToken'] as String,
       );
-      await const FlutterSecureStorage().write(
-        key: 'refreshToken',
-        value: refreshToken,
-      );
-
-      print("accessToken 과 refreshToken 을 갱신했습니다.");
-
       context.go("/home");
     } catch (e) {
-      // 사용자 정보 제거
-      await const FlutterSecureStorage().delete(key: 'accessToken');
-      await const FlutterSecureStorage().delete(key: 'refreshToken');
-      await const FlutterSecureStorage().delete(key: 'userId');
-      print("토큰을 갱신할수없어서, 사용자 정보를 제거했습니다.");
+      await _clearLoginData();
       context.go('/login');
+      _handleLoginFailure(context, e);
+    }
+  }
+
+  // Private Helper Methods
+  Future<void> _executeLogin(
+    BuildContext context, {
+    required Future<dynamic> Function() loginFunction,
+    String? errorTitle,
+    bool isSocialLogin = false,
+  }) async {
+    state = state.copyWith(isLoading: true, errorMessage: null);
+    try {
+      final response = await loginFunction();
+      final data = response.data as Map<String, dynamic>;
+
+      final bool hasAgreed =
+          data.containsKey('hasAgreedTerm')
+              ? data['hasAgreedTerm'] as bool
+              : true;
+
+      if (isSocialLogin && !hasAgreed) {
+        // 소셜 로그인이고 약관 미동의 시 모달을 띄움
+        if (context.mounted) {
+          await _promptAgreementAndFinalize(context, data);
+        }
+      } else {
+        // 일반 로그인 또는 약관에 이미 동의한 경우 즉시 성공 처리
+        await _handleLoginSuccess(context, data);
+      }
+
+      state = state.copyWith(isLoading: false);
+    } catch (e) {
+      _handleLoginFailure(context, e, title: errorTitle);
+    }
+  }
+
+  // 약관 동의 modal 처리
+  Future<void> _promptAgreementAndFinalize(
+    BuildContext context,
+    Map<String, dynamic> data,
+  ) async {
+    dynamic agreed = await agreementModal(
+      context,
+      data['accessToken'] as String,
+    ); // 약관 동의 Modal
+
+    if (agreed == true && context.mounted) {
+      // '동의'를 눌렀을 때만 로그인 절차를 마저 진행
+      await _handleLoginSuccess(context, data);
+    }
+  }
+
+  Future<void> _handleLoginSuccess(
+    BuildContext context,
+    Map<String, dynamic> data,
+  ) async {
+    state = state.copyWith(isLoading: true);
+    await _saveLoginData(
+      accessToken: data['accessToken'] as String,
+      refreshToken: data['refreshToken'] as String,
+      userId: (data['userId'] as int).toString(),
+    );
+
+    ref
+        .read(userProvider.notifier)
+        .loadUserInfo(
+          hasAgreedTerm:
+              data.containsKey('hasAgreedTerm')
+                  ? data['hasAgreedTerm'] as bool
+                  : true,
+        );
+
+    state = state.copyWith(isLoading: false);
+    if (context.mounted) context.go('/home');
+  }
+
+  void _handleLoginFailure(BuildContext context, Object e, {String? title}) {
+    state = state.copyWith(isLoading: false);
+    if (context.mounted) {
       toastification.show(
         alignment: Alignment.topCenter,
         style: ToastificationStyle.simple,
         context: context,
-        title: Text(e.toDisplayString()),
+        title: Text(title ?? e.toDisplayString()),
         autoCloseDuration: const Duration(seconds: 3),
       );
     }
   }
 
-  /// SNS 로그인 (애플)
-  Future<void> signInWithApple(BuildContext context) async {
-    print("애플 로그인");
-    state = state.copyWith(isLoading: true, errorMessage: null);
-
-    try {
-      final appleService = ref.read(appleLoginServiceProvider);
-      await appleService.login();
-
-      // 로그인 성공 처리 (예: 서버에서 토큰을 받아오고 사용자 상태 업데이트)
-      state = state.copyWith(isLoading: false, errorMessage: null);
-      toastification.show(
-        context: context,
-        title: const Text("애플 로그인 성공!"),
-        type: ToastificationType.success,
-        autoCloseDuration: const Duration(seconds: 2),
-      );
-      // 성공 후 다음 화면으로 이동
-      context.go('/home');
-    } catch (e) {
-      state = state.copyWith(isLoading: false);
-      toastification.show(
-        context: context,
-        title: const Text("애플 로그인 실패"),
-        description: Text(e.toDisplayString()),
-        type: ToastificationType.error,
-        autoCloseDuration: const Duration(seconds: 3),
-      );
-    }
+  Future<void> _saveTokens({
+    required String accessToken,
+    required String refreshToken,
+  }) async {
+    await _storage.write(key: 'accessToken', value: accessToken);
+    await _storage.write(key: 'refreshToken', value: refreshToken);
   }
 
-  /// SNS 로그인 (카카오)
-  Future<void> signInWithKakao(BuildContext context) async {
-    print("카카오 로그인");
-    state = state.copyWith(isLoading: true, errorMessage: null);
+  Future<void> _saveLoginData({
+    required String accessToken,
+    required String refreshToken,
+    required String userId,
+  }) async {
+    await _saveTokens(accessToken: accessToken, refreshToken: refreshToken);
+    await _storage.write(key: 'userId', value: userId);
+  }
 
-    try {
-      final kakaoService = ref.read(kakaologinServiceProvider);
-      final response = await kakaoService.login();
-
-      final String accessToken = response.data['accessToken'] as String;
-      final String refreshToken = response.data['refreshToken'] as String;
-      final String userId = (response.data['userId'] as int).toString();
-
-      // accessToken과 refreshToken을 secure storage에 저장
-      await const FlutterSecureStorage().write(
-        key: 'accessToken',
-        value: accessToken,
-      );
-      await const FlutterSecureStorage().write(
-        key: 'refreshToken',
-        value: refreshToken,
-      );
-      // userId를 secure storage에 저장
-      await const FlutterSecureStorage().write(key: 'userId', value: userId);
-
-      print("token과 userId를 저장했습니다.");
-
-      // 로그인 성공 처리 (예: 서버에서 토큰을 받아오고 사용자 상태 업데이트)
-      state = state.copyWith(isLoading: false, errorMessage: null);
-
-      context.go('/home');
-    } catch (e) {
-      // Exception 문구 제거
-      String errorMessage = e.toString();
-      if (errorMessage.startsWith('Exception: ')) {
-        errorMessage = errorMessage.substring('Exception: '.length);
-      }
-      state = state.copyWith(isLoading: false);
-      toastification.show(
-        context: context,
-        title: const Text("카카오 로그인 실패"),
-        description: Text(errorMessage),
-        type: ToastificationType.error,
-        autoCloseDuration: const Duration(seconds: 3),
-      );
-    }
+  Future<void> _clearLoginData() async {
+    await _storage.delete(key: 'accessToken');
+    await _storage.delete(key: 'refreshToken');
+    await _storage.delete(key: 'userId');
   }
 }

@@ -28,10 +28,25 @@ abstract class RestClient {
   @POST("/api/auth/signin/kakao")
   Future<ApiResponse> kakaologin(@Body() Map<String, String> body);
 
+  /// 로그인 API (애플 로그인)
+  @POST("/api/auth/signin/apple")
+  Future<ApiResponse> applelogin(@Body() Map<String, String> body);
+
   /// 로그인 연장 API (토큰 검사 및 재발행)
   /// 해당 API는 "자동 로그인"과 토큰 재발행을 위한 용도입니다.
   @POST("/api/auth/refresh")
   Future<ApiResponse> checkToken(@Header("Authorization") String refreshtoken);
+
+  /// 유저 정보 불러오기 API
+  @GET("/api/mainpage")
+  Future<ApiResponse> loadUserInfo(@Header("Authorization") String accessToken);
+
+  /// 이용 약관 동의 API
+  @POST("/api/profile/terms")
+  Future<ApiResponse> agreedTerms(
+    @Header("Authorization") String accessToken,
+    @Body() List<Map<String, dynamic>> body,
+  );
 
   /// 월 수익 설정 API
   @POST("/api/profile/salary")

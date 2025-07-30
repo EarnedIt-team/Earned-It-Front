@@ -2,7 +2,7 @@ name: earned_it
 description: "A new Flutter project."
 publish_to: 'none'
 
-version: 1.0.1+1
+version: 1.0.2+1
 
 environment:
   sdk: ^3.7.0
@@ -31,6 +31,7 @@ dependencies:
   animated_digit: ^3.2.3
   animated_toggle_switch: ^0.8.5
   carousel_slider: ^5.1.1
+  action_slider: ^0.7.0
 
 dev_dependencies:
   flutter_test:

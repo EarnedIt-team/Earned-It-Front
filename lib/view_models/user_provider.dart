@@ -29,19 +29,23 @@ class UserNotifier extends Notifier<UserState> {
     } catch (e) {}
   }
 
-  /// 유저 정보를 갱신하는 메소드
+  /// 유저 정보를 부분적으로 또는 전체적으로 갱신하는 메소드입니다.
+  /// 필요한 파라미터만 선택적으로 전달하여 사용할 수 있습니다.
   void loadUserInfo({
-    required int amount,
-    required double amountPerSec,
-    required bool hasSalary,
-    required int payday,
-    // 추후, 위시리스트 등이 포함됨
+    int? amount,
+    double? amountPerSec,
+    bool? hasSalary,
+    int? payday,
+    bool? hasAgreedTerm,
+    // 추후, 위시리스트 등이 포함될 수 있습니다.
   }) {
     state = state.copyWith(
-      monthlySalary: amount,
-      payday: payday,
-      earningsPerSecond: amountPerSec,
-      isearningsPerSecond: hasSalary,
+      // 전달된 값이 null이 아니면 새로운 값으로, null이면 기존 상태값을 유지합니다.
+      monthlySalary: amount ?? state.monthlySalary,
+      payday: payday ?? state.payday,
+      earningsPerSecond: amountPerSec ?? state.earningsPerSecond,
+      isearningsPerSecond: hasSalary ?? state.isearningsPerSecond,
+      hasAgreedTerm: hasAgreedTerm ?? state.hasAgreedTerm,
     );
   }
 

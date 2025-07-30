@@ -3,18 +3,19 @@ import 'package:earned_it/models/login/login_state.dart';
 import 'package:earned_it/services/auth/apple_login_service.dart';
 import 'package:earned_it/services/auth/kakao_login_service.dart';
 import 'package:earned_it/services/auth/login_service.dart';
+import 'package:earned_it/view_models/user_provider.dart';
+import 'package:earned_it/views/auth/agreement_modal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:go_router/go_router.dart';
 import 'package:toastification/toastification.dart';
 
-final loginViewModelProvider =
-    NotifierProvider.autoDispose<LoginViewModel, LoginState>(
-      LoginViewModel.new,
-    );
+final loginViewModelProvider = NotifierProvider<LoginViewModel, LoginState>(
+  LoginViewModel.new,
+);
 
-class LoginViewModel extends AutoDisposeNotifier<LoginState> {
+class LoginViewModel extends Notifier<LoginState> {
   late final TextEditingController _idTextController;
   late final TextEditingController _passwordTextController;
   late final LoginService _loginService;
@@ -56,8 +57,7 @@ class LoginViewModel extends AutoDisposeNotifier<LoginState> {
     state = state.copyWith(isObscurePassword: !state.isObscurePassword);
   }
 
-  // -------------------- Public Login Methods --------------------
-
+  // Public Login Methods
   Future<void> login(BuildContext context) async {
     await _executeLogin(
       context,
@@ -74,6 +74,7 @@ class LoginViewModel extends AutoDisposeNotifier<LoginState> {
       context,
       loginFunction: () => ref.read(appleloginServiceProvider).login(),
       errorTitle: "애플 로그인 실패",
+      isSocialLogin: true,
     );
   }
 
@@ -82,6 +83,7 @@ class LoginViewModel extends AutoDisposeNotifier<LoginState> {
       context,
       loginFunction: () => ref.read(kakaologinServiceProvider).login(),
       errorTitle: "카카오 로그인 실패",
+      isSocialLogin: true,
     );
   }
 
@@ -92,29 +94,60 @@ class LoginViewModel extends AutoDisposeNotifier<LoginState> {
         accessToken: response.data['accessToken'] as String,
         refreshToken: response.data['refreshToken'] as String,
       );
-      print("accessToken 과 refreshToken 을 갱신했습니다.");
       context.go("/home");
     } catch (e) {
       await _clearLoginData();
-      print("토큰을 갱신할수없어서, 사용자 정보를 제거했습니다.");
       context.go('/login');
       _handleLoginFailure(context, e);
     }
   }
 
-  // -------------------- Private Helper Methods --------------------
-
+  // Private Helper Methods
   Future<void> _executeLogin(
     BuildContext context, {
     required Future<dynamic> Function() loginFunction,
     String? errorTitle,
+    bool isSocialLogin = false,
   }) async {
     state = state.copyWith(isLoading: true, errorMessage: null);
     try {
       final response = await loginFunction();
-      await _handleLoginSuccess(context, response.data);
+      final data = response.data as Map<String, dynamic>;
+
+      final bool hasAgreed =
+          data.containsKey('hasAgreedTerm')
+              ? data['hasAgreedTerm'] as bool
+              : true;
+
+      if (isSocialLogin && !hasAgreed) {
+        // 소셜 로그인이고 약관 미동의 시 모달을 띄움
+        if (context.mounted) {
+          await _promptAgreementAndFinalize(context, data);
+        }
+      } else {
+        // 일반 로그인 또는 약관에 이미 동의한 경우 즉시 성공 처리
+        await _handleLoginSuccess(context, data);
+      }
+
+      state = state.copyWith(isLoading: false);
     } catch (e) {
       _handleLoginFailure(context, e, title: errorTitle);
+    }
+  }
+
+  // 약관 동의 modal 처리
+  Future<void> _promptAgreementAndFinalize(
+    BuildContext context,
+    Map<String, dynamic> data,
+  ) async {
+    dynamic agreed = await agreementModal(
+      context,
+      data['accessToken'] as String,
+    ); // 약관 동의 Modal
+
+    if (agreed == true && context.mounted) {
+      // '동의'를 눌렀을 때만 로그인 절차를 마저 진행
+      await _handleLoginSuccess(context, data);
     }
   }
 
@@ -122,11 +155,22 @@ class LoginViewModel extends AutoDisposeNotifier<LoginState> {
     BuildContext context,
     Map<String, dynamic> data,
   ) async {
+    state = state.copyWith(isLoading: true);
     await _saveLoginData(
       accessToken: data['accessToken'] as String,
       refreshToken: data['refreshToken'] as String,
       userId: (data['userId'] as int).toString(),
     );
+
+    ref
+        .read(userProvider.notifier)
+        .loadUserInfo(
+          hasAgreedTerm:
+              data.containsKey('hasAgreedTerm')
+                  ? data['hasAgreedTerm'] as bool
+                  : true,
+        );
+
     state = state.copyWith(isLoading: false);
     if (context.mounted) context.go('/home');
   }
@@ -159,7 +203,6 @@ class LoginViewModel extends AutoDisposeNotifier<LoginState> {
   }) async {
     await _saveTokens(accessToken: accessToken, refreshToken: refreshToken);
     await _storage.write(key: 'userId', value: userId);
-    print("token과 userId를 저장했습니다.");
   }
 
   Future<void> _clearLoginData() async {

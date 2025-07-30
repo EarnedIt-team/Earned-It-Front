@@ -18,7 +18,9 @@ mixin _$UserState {
  bool get isearningsPerSecond;/// 월 급여
  int get monthlySalary;/// 월급날
  int get payday;/// 초당 수익
- double get earningsPerSecond;
+ double get earningsPerSecond;/// 약관 동의 여부 (Default = true)
+/// 정보가 없는 경우 모달이 뜨지 않도록 하는 안전장치
+ bool get hasAgreedTerm;
 /// Create a copy of UserState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -29,16 +31,16 @@ $UserStateCopyWith<UserState> get copyWith => _$UserStateCopyWithImpl<UserState>
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is UserState&&(identical(other.isearningsPerSecond, isearningsPerSecond) || other.isearningsPerSecond == isearningsPerSecond)&&(identical(other.monthlySalary, monthlySalary) || other.monthlySalary == monthlySalary)&&(identical(other.payday, payday) || other.payday == payday)&&(identical(other.earningsPerSecond, earningsPerSecond) || other.earningsPerSecond == earningsPerSecond));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is UserState&&(identical(other.isearningsPerSecond, isearningsPerSecond) || other.isearningsPerSecond == isearningsPerSecond)&&(identical(other.monthlySalary, monthlySalary) || other.monthlySalary == monthlySalary)&&(identical(other.payday, payday) || other.payday == payday)&&(identical(other.earningsPerSecond, earningsPerSecond) || other.earningsPerSecond == earningsPerSecond)&&(identical(other.hasAgreedTerm, hasAgreedTerm) || other.hasAgreedTerm == hasAgreedTerm));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,isearningsPerSecond,monthlySalary,payday,earningsPerSecond);
+int get hashCode => Object.hash(runtimeType,isearningsPerSecond,monthlySalary,payday,earningsPerSecond,hasAgreedTerm);
 
 @override
 String toString() {
-  return 'UserState(isearningsPerSecond: $isearningsPerSecond, monthlySalary: $monthlySalary, payday: $payday, earningsPerSecond: $earningsPerSecond)';
+  return 'UserState(isearningsPerSecond: $isearningsPerSecond, monthlySalary: $monthlySalary, payday: $payday, earningsPerSecond: $earningsPerSecond, hasAgreedTerm: $hasAgreedTerm)';
 }
 
 
@@ -49,7 +51,7 @@ abstract mixin class $UserStateCopyWith<$Res>  {
   factory $UserStateCopyWith(UserState value, $Res Function(UserState) _then) = _$UserStateCopyWithImpl;
 @useResult
 $Res call({
- bool isearningsPerSecond, int monthlySalary, int payday, double earningsPerSecond
+ bool isearningsPerSecond, int monthlySalary, int payday, double earningsPerSecond, bool hasAgreedTerm
 });
 
 
@@ -66,13 +68,14 @@ class _$UserStateCopyWithImpl<$Res>
 
 /// Create a copy of UserState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? isearningsPerSecond = null,Object? monthlySalary = null,Object? payday = null,Object? earningsPerSecond = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? isearningsPerSecond = null,Object? monthlySalary = null,Object? payday = null,Object? earningsPerSecond = null,Object? hasAgreedTerm = null,}) {
   return _then(_self.copyWith(
 isearningsPerSecond: null == isearningsPerSecond ? _self.isearningsPerSecond : isearningsPerSecond // ignore: cast_nullable_to_non_nullable
 as bool,monthlySalary: null == monthlySalary ? _self.monthlySalary : monthlySalary // ignore: cast_nullable_to_non_nullable
 as int,payday: null == payday ? _self.payday : payday // ignore: cast_nullable_to_non_nullable
 as int,earningsPerSecond: null == earningsPerSecond ? _self.earningsPerSecond : earningsPerSecond // ignore: cast_nullable_to_non_nullable
-as double,
+as double,hasAgreedTerm: null == hasAgreedTerm ? _self.hasAgreedTerm : hasAgreedTerm // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 
@@ -157,10 +160,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool isearningsPerSecond,  int monthlySalary,  int payday,  double earningsPerSecond)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool isearningsPerSecond,  int monthlySalary,  int payday,  double earningsPerSecond,  bool hasAgreedTerm)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _UserState() when $default != null:
-return $default(_that.isearningsPerSecond,_that.monthlySalary,_that.payday,_that.earningsPerSecond);case _:
+return $default(_that.isearningsPerSecond,_that.monthlySalary,_that.payday,_that.earningsPerSecond,_that.hasAgreedTerm);case _:
   return orElse();
 
 }
@@ -178,10 +181,10 @@ return $default(_that.isearningsPerSecond,_that.monthlySalary,_that.payday,_that
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool isearningsPerSecond,  int monthlySalary,  int payday,  double earningsPerSecond)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool isearningsPerSecond,  int monthlySalary,  int payday,  double earningsPerSecond,  bool hasAgreedTerm)  $default,) {final _that = this;
 switch (_that) {
 case _UserState():
-return $default(_that.isearningsPerSecond,_that.monthlySalary,_that.payday,_that.earningsPerSecond);case _:
+return $default(_that.isearningsPerSecond,_that.monthlySalary,_that.payday,_that.earningsPerSecond,_that.hasAgreedTerm);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -198,10 +201,10 @@ return $default(_that.isearningsPerSecond,_that.monthlySalary,_that.payday,_that
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool isearningsPerSecond,  int monthlySalary,  int payday,  double earningsPerSecond)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool isearningsPerSecond,  int monthlySalary,  int payday,  double earningsPerSecond,  bool hasAgreedTerm)?  $default,) {final _that = this;
 switch (_that) {
 case _UserState() when $default != null:
-return $default(_that.isearningsPerSecond,_that.monthlySalary,_that.payday,_that.earningsPerSecond);case _:
+return $default(_that.isearningsPerSecond,_that.monthlySalary,_that.payday,_that.earningsPerSecond,_that.hasAgreedTerm);case _:
   return null;
 
 }
@@ -213,7 +216,7 @@ return $default(_that.isearningsPerSecond,_that.monthlySalary,_that.payday,_that
 
 
 class _UserState implements UserState {
-  const _UserState({this.isearningsPerSecond = false, this.monthlySalary = 0, this.payday = 0, this.earningsPerSecond = 0.0});
+  const _UserState({this.isearningsPerSecond = false, this.monthlySalary = 0, this.payday = 0, this.earningsPerSecond = 0.0, this.hasAgreedTerm = true});
   
 
 /// 월 수익 설정 여부
@@ -224,6 +227,9 @@ class _UserState implements UserState {
 @override@JsonKey() final  int payday;
 /// 초당 수익
 @override@JsonKey() final  double earningsPerSecond;
+/// 약관 동의 여부 (Default = true)
+/// 정보가 없는 경우 모달이 뜨지 않도록 하는 안전장치
+@override@JsonKey() final  bool hasAgreedTerm;
 
 /// Create a copy of UserState
 /// with the given fields replaced by the non-null parameter values.
@@ -235,16 +241,16 @@ _$UserStateCopyWith<_UserState> get copyWith => __$UserStateCopyWithImpl<_UserSt
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UserState&&(identical(other.isearningsPerSecond, isearningsPerSecond) || other.isearningsPerSecond == isearningsPerSecond)&&(identical(other.monthlySalary, monthlySalary) || other.monthlySalary == monthlySalary)&&(identical(other.payday, payday) || other.payday == payday)&&(identical(other.earningsPerSecond, earningsPerSecond) || other.earningsPerSecond == earningsPerSecond));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UserState&&(identical(other.isearningsPerSecond, isearningsPerSecond) || other.isearningsPerSecond == isearningsPerSecond)&&(identical(other.monthlySalary, monthlySalary) || other.monthlySalary == monthlySalary)&&(identical(other.payday, payday) || other.payday == payday)&&(identical(other.earningsPerSecond, earningsPerSecond) || other.earningsPerSecond == earningsPerSecond)&&(identical(other.hasAgreedTerm, hasAgreedTerm) || other.hasAgreedTerm == hasAgreedTerm));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,isearningsPerSecond,monthlySalary,payday,earningsPerSecond);
+int get hashCode => Object.hash(runtimeType,isearningsPerSecond,monthlySalary,payday,earningsPerSecond,hasAgreedTerm);
 
 @override
 String toString() {
-  return 'UserState(isearningsPerSecond: $isearningsPerSecond, monthlySalary: $monthlySalary, payday: $payday, earningsPerSecond: $earningsPerSecond)';
+  return 'UserState(isearningsPerSecond: $isearningsPerSecond, monthlySalary: $monthlySalary, payday: $payday, earningsPerSecond: $earningsPerSecond, hasAgreedTerm: $hasAgreedTerm)';
 }
 
 
@@ -255,7 +261,7 @@ abstract mixin class _$UserStateCopyWith<$Res> implements $UserStateCopyWith<$Re
   factory _$UserStateCopyWith(_UserState value, $Res Function(_UserState) _then) = __$UserStateCopyWithImpl;
 @override @useResult
 $Res call({
- bool isearningsPerSecond, int monthlySalary, int payday, double earningsPerSecond
+ bool isearningsPerSecond, int monthlySalary, int payday, double earningsPerSecond, bool hasAgreedTerm
 });
 
 
@@ -272,13 +278,14 @@ class __$UserStateCopyWithImpl<$Res>
 
 /// Create a copy of UserState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? isearningsPerSecond = null,Object? monthlySalary = null,Object? payday = null,Object? earningsPerSecond = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? isearningsPerSecond = null,Object? monthlySalary = null,Object? payday = null,Object? earningsPerSecond = null,Object? hasAgreedTerm = null,}) {
   return _then(_UserState(
 isearningsPerSecond: null == isearningsPerSecond ? _self.isearningsPerSecond : isearningsPerSecond // ignore: cast_nullable_to_non_nullable
 as bool,monthlySalary: null == monthlySalary ? _self.monthlySalary : monthlySalary // ignore: cast_nullable_to_non_nullable
 as int,payday: null == payday ? _self.payday : payday // ignore: cast_nullable_to_non_nullable
 as int,earningsPerSecond: null == earningsPerSecond ? _self.earningsPerSecond : earningsPerSecond // ignore: cast_nullable_to_non_nullable
-as double,
+as double,hasAgreedTerm: null == hasAgreedTerm ? _self.hasAgreedTerm : hasAgreedTerm // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 

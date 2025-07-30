@@ -41,6 +41,13 @@ abstract class RestClient {
   @GET("/api/mainpage")
   Future<ApiResponse> loadUserInfo(@Header("Authorization") String accessToken);
 
+  /// 이용 약관 동의 API
+  @POST("/api/profile/terms")
+  Future<ApiResponse> agreedTerms(
+    @Header("Authorization") String accessToken,
+    @Body() List<Map<String, dynamic>> body,
+  );
+
   /// 월 수익 설정 API
   @POST("/api/profile/salary")
   Future<ApiResponse> setSalary(

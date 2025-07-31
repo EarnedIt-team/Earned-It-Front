@@ -57,16 +57,35 @@ class SetSalaryViewModel extends AutoDisposeNotifier<SetSalaryState> {
     // 초기 상태를 컨트롤러에 반영
     _updateControllersFromState(initialState);
 
-    // 초기 버튼 상태 설정
-    _updateButtonState(initialState);
-
     return initialState;
   }
 
   // _salaryController의 text 변화를 감지하는 리스너
   void _onSalaryControllerChanged() {
     _formatSalaryInput(); // 월 급여 포맷팅
-    _updateButtonState(state); // 버튼 활성화 상태 업데이트
+    _validateSalary(); // 유효성 검사 함수 호출
+    _updateButtonState();
+  }
+
+  // 월급 유효성 검사 로직 추가
+  void _validateSalary() {
+    final cleanText = _salaryController.text.replaceAll(RegExp(r'[^0-9]'), '');
+
+    if (cleanText.isEmpty) {
+      // 텍스트가 비어있으면 에러 없음
+      state = state.copyWith(salaryErrorText: null);
+      return;
+    }
+
+    final value = int.tryParse(cleanText) ?? 0;
+
+    if (value < 1000) {
+      // 입력값이 0이면 에러 메시지 설정
+      state = state.copyWith(salaryErrorText: "최소 1000원 이상부터 작성 가능합니다.");
+    } else {
+      // 유효한 값이면 에러 메시지 제거
+      state = state.copyWith(salaryErrorText: null);
+    }
   }
 
   // ViewModel의 상태를 기반으로 컨트롤러 텍스트를 업데이트하는 내부 도우미 함수
@@ -132,19 +151,23 @@ class SetSalaryViewModel extends AutoDisposeNotifier<SetSalaryState> {
     state = state.copyWith(selectedDay: day);
     // 상태가 업데이트되면 컨트롤러 텍스트도 업데이트
     _updateControllersFromState(state);
-    _updateButtonState(state); // 상태 업데이트 후 버튼 활성화 상태 갱신
+    _updateButtonState(); // 상태 업데이트 후 버튼 활성화 상태 갱신
   }
 
   // 버튼 활성화 상태 업데이트 (내부 로직)
-  void _updateButtonState(SetSalaryState currentState) {
+  void _updateButtonState() {
     final String cleanSalaryText = _salaryController.text.replaceAll(
       RegExp(r'[^0-9]'),
       '',
     );
+    // 에러가 없고 모든 값이 입력되었을 때만 버튼 활성화
     final bool isEnabled =
-        cleanSalaryText.isNotEmpty && currentState.selectedDay > 0;
-    if (currentState.isButtonEnabled != isEnabled) {
-      state = currentState.copyWith(isButtonEnabled: isEnabled);
+        cleanSalaryText.isNotEmpty &&
+        state.selectedDay > 0 &&
+        state.salaryErrorText == null; // 에러 상태 확인
+
+    if (state.isButtonEnabled != isEnabled) {
+      state = state.copyWith(isButtonEnabled: isEnabled);
     }
   }
 

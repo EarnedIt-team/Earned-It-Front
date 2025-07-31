@@ -1,16 +1,18 @@
 import 'package:earned_it/config/design.dart';
 import 'package:earned_it/view_models/set_Salary_provider.dart';
+import 'package:earned_it/view_models/user_provider.dart';
 import 'package:earned_it/views/loading_overlay_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 
 class SetSalaryView extends ConsumerWidget {
   const SetSalaryView({super.key});
 
   // Cupertino 스타일로 일(day) 선택기를 띄우는 함수
   Future<void> _selectDayCupertino(BuildContext context, WidgetRef ref) async {
-    final viewModel = ref.read(setSalaryViewModelProvider.notifier);
+    final setSalaryProvider = ref.read(setSalaryViewModelProvider.notifier);
     final currentState = ref.read(setSalaryViewModelProvider);
 
     int tempSelectedDay = currentState.selectedDay;
@@ -54,7 +56,7 @@ class SetSalaryView extends ConsumerWidget {
                         vertical: 10.0,
                       ),
                       onPressed: () {
-                        viewModel.updateSelectedDay(
+                        setSalaryProvider.updateSelectedDay(
                           tempSelectedDay,
                         ); // ViewModel에 업데이트
                         Navigator.pop(context); // 선택 완료
@@ -103,8 +105,11 @@ class SetSalaryView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // build 메서드에 WidgetRef ref 추가
-    final state = ref.watch(setSalaryViewModelProvider);
-    final viewModel = ref.read(setSalaryViewModelProvider.notifier);
+    final salaryState = ref.watch(setSalaryViewModelProvider);
+    final setSalaryProvider = ref.read(setSalaryViewModelProvider.notifier);
+    final userState = ref.read(userProvider);
+
+    final numberFormat = NumberFormat('#,###', 'ko_KR');
 
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
@@ -133,44 +138,76 @@ class SetSalaryView extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    Text(
-                      "월 급여",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: context.width(0.04),
-                      ),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.baseline,
+                      textBaseline: TextBaseline.alphabetic,
+                      children: [
+                        Text(
+                          "월 급여",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: context.width(0.045),
+                          ),
+                        ),
+                        if (userState.isearningsPerSecond)
+                          Text(
+                            " [ 현재 : ${numberFormat.format(userState.monthlySalary)}원 ]",
+                            style: TextStyle(
+                              fontSize: context.width(0.03),
+                              color: const Color.fromARGB(255, 118, 118, 118),
+                            ),
+                          ),
+                      ],
                     ),
+                    // 월 급여 TextField
                     TextField(
                       textAlign: TextAlign.end,
-                      controller:
-                          viewModel.salaryController, // ViewModel의 컨트롤러 사용
+                      controller: setSalaryProvider.salaryController,
                       keyboardType: TextInputType.number,
                       decoration: InputDecoration(
-                        hintText: '월 급여를 입력하세요 (예: 2,000,000원)',
+                        hintText: '월 급여를 입력하세요.',
                         suffixText:
-                            viewModel.salaryController.text.isNotEmpty
+                            setSalaryProvider.salaryController.text.isNotEmpty
                                 ? '원'
                                 : null,
+                        // ViewModel의 에러 메시지를 TextField에 연결
+                        errorText: salaryState.salaryErrorText,
                       ),
                     ),
                     const SizedBox(height: 30),
-                    Text(
-                      "월 급여 날짜",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: context.width(0.04),
-                      ),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.baseline,
+                      textBaseline: TextBaseline.alphabetic,
+                      children: [
+                        Text(
+                          "급여 날짜",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: context.width(0.045),
+                          ),
+                        ),
+                        if (userState.isearningsPerSecond)
+                          Text(
+                            " [ 현재 : 매 달 ${userState.payday}일 ]",
+                            style: TextStyle(
+                              fontSize: context.width(0.03),
+                              color: const Color.fromARGB(255, 118, 118, 118),
+                            ),
+                          ),
+                      ],
                     ),
                     TextField(
                       textAlign: TextAlign.end,
                       controller:
-                          viewModel.paydayController, // ViewModel의 컨트롤러 사용
+                          setSalaryProvider
+                              .paydayController, // ViewModel의 컨트롤러 사용
                       readOnly: true,
                       onTap: () => _selectDayCupertino(context, ref), // ref를 전달
                       decoration: const InputDecoration(
                         hintText: '월급날짜를 선택하세요 (예: 매 달 25일)',
                       ),
                     ),
+                    const SizedBox(height: 30),
                   ],
                 ),
               ),
@@ -190,16 +227,18 @@ class SetSalaryView extends ConsumerWidget {
                       backgroundColor: primaryColor,
                     ),
                     onPressed:
-                        state.isButtonEnabled
+                        salaryState.isButtonEnabled
                             ? () {
-                              viewModel.completeSetup(context);
+                              setSalaryProvider.completeSetup(context);
                             }
                             : null,
                     child: Text(
                       "설정 완료",
                       style: TextStyle(
                         color:
-                            state.isButtonEnabled ? Colors.black : Colors.grey,
+                            salaryState.isButtonEnabled
+                                ? Colors.black
+                                : Colors.grey,
                       ),
                     ),
                   ),
@@ -208,7 +247,7 @@ class SetSalaryView extends ConsumerWidget {
             ),
           ),
           // 로딩 오버레이 (월 수익 설정)
-          if (state.isLoading) // isLoading이 true일 때만 표시
+          if (salaryState.isLoading) // isLoading이 true일 때만 표시
             overlayView(),
         ],
       ),

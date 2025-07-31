@@ -25,7 +25,21 @@ class UserNotifier extends Notifier<UserState> {
       final userService = ref.read(userServiceProvider);
       final response = await userService.loadUserInfo(accessToken!);
 
-      print("유저 정보 $response");
+      state = state.copyWith(
+        // 월 수익
+        monthlySalary:
+            response.data["userInfo"]["amount"] ?? state.monthlySalary,
+        // 월 수익 날짜
+        payday: response.data["userInfo"]["payday"] ?? state.payday,
+        // 초당 수익
+        earningsPerSecond:
+            response.data["userInfo"]["amountPerSec"] ??
+            state.earningsPerSecond,
+        // 수익 설정 여부
+        isearningsPerSecond:
+            response.data["userInfo"]["hasSalary"] ?? state.isearningsPerSecond,
+      );
+      print("저장 완료");
     } catch (e) {}
   }
 

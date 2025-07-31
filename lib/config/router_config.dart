@@ -3,62 +3,88 @@ import 'package:earned_it/views/auth/login/forgot_password_view.dart';
 import 'package:earned_it/views/auth/login/login_view.dart';
 import 'package:earned_it/views/navigation_view.dart';
 import 'package:earned_it/views/onboarding/onboarding_view.dart';
+import 'package:earned_it/views/puzzle/puzzle_view.dart';
 import 'package:earned_it/views/auth/signup/sign_view.dart';
 import 'package:earned_it/views/setting/set_salary_view.dart';
+import 'package:earned_it/views/setting/setting_view.dart';
 import 'package:earned_it/views/splash_view.dart';
+import 'package:earned_it/views/wish/wish_view.dart';
 import 'package:flutter/widgets.dart';
 
 import 'package:go_router/go_router.dart';
 
 final GoRouter routes = GoRouter(
   initialLocation: '/',
-  debugLogDiagnostics: true, // 라우팅 디버깅 로그 활성화
+  debugLogDiagnostics: true,
   routes: <RouteBase>[
-    // 초기 화면 (splash screen)
+    // =================================================
+    // 셸(Shell) 외부의 경로들 (인증, 온보딩 등)
+    // =================================================
     GoRoute(
       path: '/',
       builder:
           (BuildContext context, GoRouterState state) => const SplashView(),
     ),
-    // 온보딩 화면 (onboarding)
     GoRoute(
       path: '/onboarding',
       builder:
           (BuildContext context, GoRouterState state) => const OnboardingView(),
     ),
-    // 회원가입 (sign)
     GoRoute(
       path: '/sign',
       builder: (BuildContext context, GoRouterState state) => const SignView(),
     ),
-    // 로그인 (login)
     GoRoute(
       path: '/login',
       builder: (BuildContext context, GoRouterState state) => const LoginView(),
     ),
-    // 비밀번호 찾기 (forgot password)
     GoRoute(
       path: '/forgot_password',
       builder:
           (BuildContext context, GoRouterState state) =>
               const ForgotPasswordView(),
     ),
-    // 홈 화면 (home)
-    GoRoute(
-      path: '/home',
-      builder:
-          (BuildContext context, GoRouterState state) => const NavigationView(),
-    ),
-    // 메인화면 (main)
-    GoRoute(
-      path: '/main',
-      builder: (BuildContext context, GoRouterState state) => const HomeView(),
-    ),
-    // 월 수익 설정 (setSalary)
     GoRoute(
       path: '/setSalary',
       builder:
           (BuildContext context, GoRouterState state) => const SetSalaryView(),
+    ),
+
+    // =================================================
+    // 셸(Shell) 경로: 하단 네비게이션 바가 유지되는 화면들
+    // =================================================
+    ShellRoute(
+      builder: (BuildContext context, GoRouterState state, Widget child) {
+        // NavigationView가 공통 UI(셸) 역할을 합니다.
+        return NavigationView(child: child);
+      },
+      // 셸 내부에 표시될 자식 경로들
+      routes: <RouteBase>[
+        GoRoute(
+          path: '/home', // 이전의 '/', '/main'을 '/home'으로 통일합니다.
+          builder: (BuildContext context, GoRouterState state) {
+            return const HomeView();
+          },
+        ),
+        GoRoute(
+          path: '/wish',
+          builder: (BuildContext context, GoRouterState state) {
+            return const WishView();
+          },
+        ),
+        GoRoute(
+          path: '/puzzle',
+          builder: (BuildContext context, GoRouterState state) {
+            return const PuzzleView();
+          },
+        ),
+        GoRoute(
+          path: '/setting',
+          builder: (BuildContext context, GoRouterState state) {
+            return const SettingView();
+          },
+        ),
+      ],
     ),
   ],
 );

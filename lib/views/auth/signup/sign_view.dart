@@ -261,7 +261,7 @@ class SignView extends ConsumerWidget {
                                 text: "서비스 이용 약관",
                                 style: const TextStyle(
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.black,
+
                                   decoration: TextDecoration.underline,
                                   decorationColor: Colors.grey,
                                   height: 1.5,
@@ -272,10 +272,7 @@ class SignView extends ConsumerWidget {
                                         signUpNotifier.launchTermsUrl();
                                       },
                               ),
-                              const TextSpan(
-                                text: "에 동의합니다.",
-                                style: TextStyle(color: Colors.black),
-                              ),
+                              const TextSpan(text: "에 동의합니다."),
                             ],
                           ),
                         ),
@@ -295,6 +292,7 @@ class SignView extends ConsumerWidget {
                 ),
                 child: SizedBox(
                   width: double.infinity,
+                  height: context.height(0.06),
                   child: ElevatedButton(
                     onPressed:
                         signUpState.isSuccessfulCode &&
@@ -334,7 +332,13 @@ class SignView extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Text(type, style: const TextStyle(fontWeight: FontWeight.bold)),
+        Text(
+          type,
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: context.width(0.04),
+          ),
+        ),
         TextField(
           controller: controller,
           readOnly: readOnly,

@@ -112,9 +112,18 @@ class SetSalaryView extends ConsumerWidget {
         children: <Widget>[
           Scaffold(
             resizeToAvoidBottomInset: true,
-            appBar: AppBar(title: const Text("월 수익 설정"), centerTitle: false),
+            appBar: AppBar(
+              title: const Text(
+                "월 수익 설정",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              centerTitle: false,
+            ),
             body: Padding(
-              padding: EdgeInsets.symmetric(horizontal: context.middlePadding),
+              padding: EdgeInsets.symmetric(
+                horizontal: context.middlePadding,
+                vertical: context.middlePadding,
+              ),
               child: SingleChildScrollView(
                 padding: EdgeInsets.only(
                   bottom:
@@ -122,23 +131,36 @@ class SetSalaryView extends ConsumerWidget {
                       context.height(0.15),
                 ),
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
+                    Text(
+                      "월 급여",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: context.width(0.04),
+                      ),
+                    ),
                     TextField(
                       textAlign: TextAlign.end,
                       controller:
                           viewModel.salaryController, // ViewModel의 컨트롤러 사용
                       keyboardType: TextInputType.number,
                       decoration: InputDecoration(
-                        labelText: '월 급여',
                         hintText: '월 급여를 입력하세요 (예: 2,000,000원)',
                         suffixText:
                             viewModel.salaryController.text.isNotEmpty
                                 ? '원'
                                 : null,
                       ),
-                      // onChanged는 이제 필요 없음. 컨트롤러 리스너가 모든 포맷팅 및 상태 업데이트를 처리
                     ),
-                    SizedBox(height: context.middlePadding),
+                    const SizedBox(height: 30),
+                    Text(
+                      "월 급여 날짜",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: context.width(0.04),
+                      ),
+                    ),
                     TextField(
                       textAlign: TextAlign.end,
                       controller:
@@ -146,7 +168,6 @@ class SetSalaryView extends ConsumerWidget {
                       readOnly: true,
                       onTap: () => _selectDayCupertino(context, ref), // ref를 전달
                       decoration: const InputDecoration(
-                        labelText: '월급날짜',
                         hintText: '월급날짜를 선택하세요 (예: 매 달 25일)',
                       ),
                     ),
@@ -163,14 +184,24 @@ class SetSalaryView extends ConsumerWidget {
                 ),
                 child: SizedBox(
                   width: double.infinity,
+                  height: context.height(0.06),
                   child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: primaryColor,
+                    ),
                     onPressed:
                         state.isButtonEnabled
                             ? () {
                               viewModel.completeSetup(context);
                             }
                             : null,
-                    child: const Text("설정 완료"),
+                    child: Text(
+                      "설정 완료",
+                      style: TextStyle(
+                        color:
+                            state.isButtonEnabled ? Colors.black : Colors.grey,
+                      ),
+                    ),
                   ),
                 ),
               ),

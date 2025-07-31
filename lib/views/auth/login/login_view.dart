@@ -40,7 +40,9 @@ class LoginView extends ConsumerWidget {
                           children: <Widget>[
                             // 메인 로고
                             Image.asset(
-                              "assets/images/logo.png",
+                              Theme.of(context).brightness == Brightness.dark
+                                  ? "assets/images/logo_dark.png"
+                                  : "assets/images/logo_light.png",
                               width: context.width(0.55),
                             ),
                             SizedBox(height: context.height(0.07)),
@@ -52,6 +54,9 @@ class LoginView extends ConsumerWidget {
                                   controller: loginNotifier.idTextController,
                                   decoration: const InputDecoration(
                                     labelText: "이메일",
+                                    labelStyle: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
                                 ),
                                 TextField(
@@ -60,6 +65,9 @@ class LoginView extends ConsumerWidget {
                                   obscureText: loginState.isObscurePassword,
                                   decoration: InputDecoration(
                                     labelText: "비밀번호",
+                                    labelStyle: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                     suffixIcon: IconButton(
                                       onPressed:
                                           loginNotifier.toggleObscurePassword,
@@ -88,14 +96,24 @@ class LoginView extends ConsumerWidget {
                                       onPressed: () {
                                         context.push("/sign");
                                       },
-                                      child: const Text("회원가입"),
+                                      child: const Text(
+                                        "회원가입",
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
                                     ),
                                     // 비밀번호 찾기
                                     TextButton(
                                       onPressed: () {
                                         context.push("/forgot_password");
                                       },
-                                      child: const Text("비밀번호 찾기"),
+                                      child: const Text(
+                                        "비밀번호 찾기",
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
                                     ),
                                   ],
                                 ),
@@ -115,14 +133,22 @@ class LoginView extends ConsumerWidget {
                                         }
                                         : null,
                                 style: ElevatedButton.styleFrom(
+                                  backgroundColor: primaryColor,
                                   padding: EdgeInsets.symmetric(
                                     vertical: context.buttonPadding,
                                   ),
-                                  textStyle: TextStyle(
+                                ),
+                                child: Text(
+                                  "로그인",
+                                  style: TextStyle(
                                     fontSize: context.regularFont,
+                                    color:
+                                        loginState.isIdValid &&
+                                                loginState.isPasswordValid
+                                            ? Colors.black
+                                            : Colors.grey,
                                   ),
                                 ),
-                                child: const Text("로그인"),
                               ),
                             ),
                             SizedBox(height: context.height(0.08)),
@@ -137,9 +163,9 @@ class LoginView extends ConsumerWidget {
                                         horizontal: 10.0,
                                       ),
                                       child: Text(
-                                        "소셜 계정으로 간편하게 로그인",
+                                        "소셜 계정으로 간편 로그인",
                                         style: TextStyle(
-                                          fontSize: context.smallFont,
+                                          fontSize: context.width(0.035),
                                           fontWeight: FontWeight.bold,
                                         ),
                                       ),
@@ -173,7 +199,10 @@ class LoginView extends ConsumerWidget {
                                         ),
                                         child: ClipOval(
                                           child: Image.asset(
-                                            'assets/images/apple_login_light.png',
+                                            Theme.of(context).brightness ==
+                                                    Brightness.dark
+                                                ? 'assets/images/login/apple_login_dark.png'
+                                                : 'assets/images/login/apple_login_light.png',
                                             fit: BoxFit.cover,
                                             scale: context.height(0.006),
                                           ),
@@ -197,7 +226,7 @@ class LoginView extends ConsumerWidget {
                                       ),
                                       child: ClipOval(
                                         child: Image.asset(
-                                          'assets/images/kakao_login.png',
+                                          'assets/images/login/kakao_login.png',
                                           fit: BoxFit.cover,
                                           scale: context.height(0.006),
                                         ),

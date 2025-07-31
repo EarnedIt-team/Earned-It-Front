@@ -22,7 +22,7 @@ class OnboardingPage extends StatelessWidget {
         Image.asset(
           imagePath,
           fit: BoxFit.contain,
-          width: context.width(0.7),
+          width: context.width(0.6),
           height: context.height(0.35),
           errorBuilder: (
             BuildContext context,
@@ -43,17 +43,13 @@ class OnboardingPage extends StatelessWidget {
           style: TextStyle(
             fontSize: context.width(0.07),
             fontWeight: FontWeight.bold,
-            color: Colors.black,
           ),
         ),
         SizedBox(height: context.height(0.02)), // 제목과 설명 사이 간격
         Text(
           description,
           textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: context.regularFont,
-            color: Colors.grey[700],
-          ),
+          style: TextStyle(fontSize: context.regularFont),
         ),
       ],
     );

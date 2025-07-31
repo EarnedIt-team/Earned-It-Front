@@ -22,10 +22,7 @@ class KakaoLoginService {
 
       // 깔려있다면 UserApi.instance.loginWithKakaoTalk() 으로 카카오톡 오픈 후 동의
       // 깔려있지 않다면 UserApi.instance.loginWithKakaoAccount() 으로 웹을 통한 인증
-      OAuthToken token =
-          installed
-              ? await UserApi.instance.loginWithKakaoTalk()
-              : await UserApi.instance.loginWithKakaoAccount();
+      OAuthToken token = await UserApi.instance.loginWithKakaoAccount();
 
       // 위 두가지 방법으로 인증 로그인 성공 후 유저 정보 가져오기
       User user = await UserApi.instance.me();

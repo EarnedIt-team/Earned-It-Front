@@ -4,12 +4,16 @@ import 'package:animated_toggle_switch/animated_toggle_switch.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:earned_it/config/design.dart';
 import 'package:earned_it/models/user/user_state.dart';
+import 'package:earned_it/services/auth/user_service.dart';
 import 'package:earned_it/view_models/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+// ✨ 1. carouselIndex를 위한 StateProvider를 생성합니다.
+final carouselIndexProvider = StateProvider<int>((ref) => 0);
 
 class WishlistItem {
   final String name;
@@ -39,8 +43,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
       CarouselSliderController();
   final NumberFormat _currencyFormat = NumberFormat.decimalPattern('ko_KR');
 
-  List<WishlistItem> _wishlistItems = [];
-  int _carouselIndex = 0;
+  List<WishlistItem> _wishlistItems = <WishlistItem>[];
   Timer? _timer;
   double _currentEarnedAmount = 0.0;
   int _toggleIndex = 0;
@@ -49,7 +52,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
   void initState() {
     super.initState();
 
-    // ref.read(userProvider.notifier).loadUser(); // 유저 정보 불러오기
+    ref.read(userProvider.notifier).loadUser();
 
     _loadInitialWishlist();
     final userState = ref.read(userProvider);
@@ -110,8 +113,8 @@ class _HomeViewState extends ConsumerState<HomeView> {
       timeText = "구매하기";
     } else {
       final userState = ref.read(userProvider);
-      if (userState.earningsPerSecond <= 0) {
-        timeText = '∞';
+      if (userState.isearningsPerSecond == false) {
+        timeText = '월 수익 설정 시, 활성화 됩니다.';
       } else {
         final totalSeconds =
             (moneyStillNeeded / userState.earningsPerSecond).round();
@@ -243,7 +246,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
                   ),
                   children: [
                     const TextSpan(text: '금월 누적 금액'),
-                    if (userState.isearningsPerSecond) ...[
+                    if (userState.isearningsPerSecond) ...<InlineSpan>[
                       TextSpan(
                         text:
                             '  ( ${userState.earningsPerSecond.toStringAsFixed(2)}',
@@ -270,10 +273,18 @@ class _HomeViewState extends ConsumerState<HomeView> {
                   ? Row(
                     crossAxisAlignment: CrossAxisAlignment.baseline,
                     textBaseline: TextBaseline.alphabetic,
-                    children: [
+                    children: <Widget>[
                       AnimatedDigitWidget(
                         value: _currentEarnedAmount.toInt(),
-                        textStyle: TextStyle(fontSize: context.height(0.035)),
+                        textStyle: TextStyle(
+                          fontSize: context.height(0.035),
+                          fontWeight: FontWeight.bold,
+
+                          color:
+                              Theme.of(context).brightness == Brightness.dark
+                                  ? Colors.white
+                                  : Colors.black,
+                        ),
                         enableSeparator: true,
                       ),
                       Text(
@@ -295,7 +306,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
               ? _buildAmountImage(_currentEarnedAmount)
               : ElevatedButton(
                 onPressed: () => context.push('/setSalary'),
-                child: const Text("월 수익 설정"),
+                child: const Text("월 수익 설정하기"),
               ),
         ],
       ),
@@ -307,8 +318,11 @@ class _HomeViewState extends ConsumerState<HomeView> {
       return const Center(child: Text("위시리스트를 추가해주세요."));
     }
 
-    final displayInfo = _calculateDisplayInfo(_carouselIndex);
-    final item = _wishlistItems[_carouselIndex];
+    // ✨ 3. build 메소드에서 carouselIndexProvider를 watch합니다.
+    final carouselIndex = ref.watch(carouselIndexProvider);
+
+    final displayInfo = _calculateDisplayInfo(carouselIndex);
+    final item = _wishlistItems[carouselIndex];
     final progressColor = _getProgressColor(displayInfo.progress);
 
     return Column(
@@ -320,8 +334,9 @@ class _HomeViewState extends ConsumerState<HomeView> {
             itemBuilder: (context, index, realIndex) {
               final currentItem = _wishlistItems[index];
               final progress = _calculateDisplayInfo(index).progress;
+              // ✨ _carouselIndex 대신 provider에서 가져온 carouselIndex를 사용
               return Opacity(
-                opacity: progress < 1.0 && index != _carouselIndex ? 0.5 : 1.0,
+                opacity: index != carouselIndex ? 0.5 : 1.0,
                 child: Image.asset(
                   'assets/images/${currentItem.image}.png',
                   height: context.height(0.3),
@@ -329,7 +344,8 @@ class _HomeViewState extends ConsumerState<HomeView> {
               );
             },
             options: CarouselOptions(
-              initialPage: 0,
+              // ✨ 4. 페이지에 다시 돌아왔을 때 저장된 인덱스에서 시작하도록 설정
+              initialPage: carouselIndex,
               aspectRatio: 16 / 9,
               height: MediaQuery.of(context).size.height * 0.333,
               viewportFraction: 0.65,
@@ -337,11 +353,14 @@ class _HomeViewState extends ConsumerState<HomeView> {
               enlargeCenterPage: true,
               enlargeFactor: 0.55,
               enlargeStrategy: CenterPageEnlargeStrategy.zoom,
+              // ✨ 5. 페이지가 변경될 때 setState 대신 provider의 상태를 변경
               onPageChanged:
-                  (index, reason) => setState(() => _carouselIndex = index),
+                  (index, reason) =>
+                      ref.read(carouselIndexProvider.notifier).state = index,
             ),
           ),
         ),
+        // ... 아래 UI 로직은 carouselIndex를 사용하므로 자동으로 업데이트됩니다 ...
         ConstrainedBox(
           constraints: BoxConstraints(
             maxWidth: MediaQuery.of(context).size.width * 0.8,
@@ -370,7 +389,6 @@ class _HomeViewState extends ConsumerState<HomeView> {
           ),
         ),
         SizedBox(height: context.height(0.03)),
-        // 위시아이템 진행률
         ConstrainedBox(
           constraints: BoxConstraints(maxWidth: context.width(0.8)),
           child: Column(
@@ -378,7 +396,10 @@ class _HomeViewState extends ConsumerState<HomeView> {
               LinearProgressIndicator(
                 minHeight: context.height(0.015),
                 borderRadius: const BorderRadius.all(Radius.circular(16)),
-                backgroundColor: const Color.fromARGB(255, 234, 234, 234),
+                backgroundColor:
+                    Theme.of(context).brightness == Brightness.dark
+                        ? const Color.fromARGB(97, 75, 75, 75)
+                        : const Color.fromARGB(255, 234, 234, 234),
                 color: progressColor,
                 value: displayInfo.progress,
               ),
@@ -399,9 +420,11 @@ class _HomeViewState extends ConsumerState<HomeView> {
           ),
         ),
         SizedBox(height: context.height(0.02)),
-        // 위시아이템 구매하기
         ConstrainedBox(
-          constraints: BoxConstraints(maxWidth: context.width(0.5)),
+          constraints: BoxConstraints(
+            maxWidth: context.width(0.7),
+            minHeight: context.height(0.055),
+          ),
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
               side: BorderSide(
@@ -411,8 +434,11 @@ class _HomeViewState extends ConsumerState<HomeView> {
                         : Colors.transparent,
                 width: 2,
               ),
+              disabledBackgroundColor:
+                  Theme.of(context).brightness == Brightness.dark
+                      ? const Color.fromARGB(97, 75, 75, 75)
+                      : const Color.fromARGB(255, 234, 234, 234),
               backgroundColor: Colors.white,
-              disabledBackgroundColor: Colors.grey[300],
             ),
             onPressed:
                 displayInfo.progress >= 1.0
@@ -456,6 +482,9 @@ class _HomeViewState extends ConsumerState<HomeView> {
   Widget build(BuildContext context) {
     final userState = ref.watch(userProvider);
 
+    // ✨ carouselIndexProvider를 여기서 watch할 필요는 없습니다.
+    // ✨ _buildWishlist 내부에서 직접 watch하여 사용합니다.
+
     ref.listen(userProvider, (previous, next) {
       if (next.isearningsPerSecond && (previous?.isearningsPerSecond != true)) {
         _startEarningTimer(next.payday, next.earningsPerSecond);
@@ -470,7 +499,9 @@ class _HomeViewState extends ConsumerState<HomeView> {
       appBar: AppBar(
         surfaceTintColor: Colors.transparent,
         title: Image.asset(
-          "assets/images/logo.png",
+          Theme.of(context).brightness == Brightness.dark
+              ? "assets/images/logo_dark.png"
+              : "assets/images/logo_light.png",
           width: context.width(0.35),
         ),
         centerTitle: false,
@@ -487,12 +518,12 @@ class _HomeViewState extends ConsumerState<HomeView> {
                 (value) => ToggleStyle(
                   borderColor: Colors.black,
                   indicatorColor: Colors.white,
-                  boxShadow: const [
+                  boxShadow: [
                     BoxShadow(
-                      color: Color.fromARGB(66, 125, 125, 125),
+                      color: context.shadowColor,
                       spreadRadius: 1,
                       blurRadius: 2,
-                      offset: Offset(0, 1.5),
+                      offset: const Offset(0, 1.5),
                     ),
                   ],
                   backgroundColor: value == 0 ? Colors.green : Colors.blue,

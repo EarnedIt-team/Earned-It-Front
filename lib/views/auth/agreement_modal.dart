@@ -27,7 +27,7 @@ Future<bool?> agreementModal(BuildContext context, String token) {
 
               // 2. 약관 요약 내용
               const Text(
-                "Earned It(언드잇)’의 원활한 서비스 이용을 위해 약관 동의를 받고 있습니다. 아래 내용에 동의해 주셔야 전체 서비스를 이용하실 수 있어요.",
+                "Earned It(언드잇)의 원활한 서비스 이용을 위해 약관 동의를 받고 있습니다. 아래 내용에 동의해 주셔야 전체 서비스를 이용하실 수 있어요.",
               ),
               const SizedBox(height: 8),
 
@@ -48,8 +48,19 @@ Future<bool?> agreementModal(BuildContext context, String token) {
                   alignment: Alignment.centerLeft,
                 ),
                 child: const Text(
-                  "서비스 이용 약관 전문 보기",
+                  "(필수) 서비스 이용 약관 전문 보기",
                   style: TextStyle(decoration: TextDecoration.underline),
+                ),
+              ),
+              const SizedBox(height: 32),
+
+              // 2. 약관 요약 내용
+              Text(
+                "약관을 모두 확인했으며, 이에 동의합니다.",
+                style: TextStyle(
+                  color: Colors.red,
+                  fontWeight: FontWeight.bold,
+                  fontSize: context.regularFont,
                 ),
               ),
               const SizedBox(height: 32),
@@ -57,9 +68,13 @@ Future<bool?> agreementModal(BuildContext context, String token) {
               // 4. 동의 액션 슬라이더 (핵심 기능 수정)
               ActionSlider.standard(
                 sliderBehavior: SliderBehavior.stretch,
+
                 // 배경색 및 전경색 테마 적용
-                backgroundColor: Colors.grey.shade200,
                 toggleColor: Colors.green,
+                backgroundColor:
+                    Theme.of(context).brightness == Brightness.dark
+                        ? const Color.fromARGB(125, 158, 158, 158)
+                        : const Color.fromARGB(125, 255, 255, 255),
                 action: (ActionSliderController controller) async {
                   controller.loading(); // 로딩 애니메이션 시작
                   await Future.delayed(const Duration(seconds: 1)); // 처리 시간 흉내
@@ -91,7 +106,16 @@ Future<bool?> agreementModal(BuildContext context, String token) {
                     }
                   }
                 },
-                child: const Text('밀어서 약관에 동의하기'),
+                child: Text(
+                  '밀어서 약관에 동의하기',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color:
+                        Theme.of(context).brightness == Brightness.dark
+                            ? Colors.white
+                            : Colors.black,
+                  ),
+                ),
               ),
             ],
           ),

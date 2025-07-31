@@ -60,7 +60,12 @@ class _SplashViewState extends ConsumerState<SplashView> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             SizedBox(height: context.height(0.005)),
-            Image.asset("assets/images/logo.png", width: context.width(0.6)),
+            Image.asset(
+              Theme.of(context).brightness == Brightness.dark
+                  ? "assets/images/logo_dark.png"
+                  : "assets/images/logo_light.png",
+              width: context.width(0.6),
+            ),
           ],
         ),
       ),

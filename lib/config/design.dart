@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 extension ContextExtension on BuildContext {
   // 화면 너비 가져오기
@@ -34,6 +35,17 @@ extension ContextExtension on BuildContext {
   // 성공 컬러
   Color get successColor => Colors.green;
 
+  // 테마에 맞는 그림자 색상
+  Color get shadowColor {
+    // 현재 테마의 밝기를 확인
+    final isDarkMode = Theme.of(this).brightness == Brightness.dark;
+
+    // 다크 모드일 때는 약간 밝은 그림자를, 라이트 모드일 때는 어두운 그림자를 반환
+    return isDarkMode
+        ? Colors.white.withValues(alpha: 0.15) // 다크 모드용 그림자
+        : const Color.fromARGB(66, 125, 125, 125); // 라이트 모드용 그림자
+  }
+
   // // 패딩 (예: const EdgeInsets.symmetric(horizontal: context.width(0.05)))
   // EdgeInsets get horizontalPadding =>
   //     EdgeInsets.symmetric(horizontal: screenWidth * 0.05);
@@ -43,3 +55,60 @@ extension ContextExtension on BuildContext {
   // // 텍스트 스케일 팩터 (접근성 설정에 따라 폰트 크기 조절)
   // double get textScaleFactor => MediaQuery.of(this).textScaleFactor;
 }
+
+// 사용할 메인 컬러
+const Color primaryColor = Color(0xFFFFB73D);
+
+// ==================================
+// 라이트 모드 테마
+// ==================================
+final ThemeData lightTheme = ThemeData(
+  brightness: Brightness.light,
+  fontFamily: 'Mainfonts',
+  colorScheme: ColorScheme.fromSeed(
+    seedColor: primaryColor,
+    brightness: Brightness.light,
+  ),
+  scaffoldBackgroundColor: Colors.white,
+  appBarTheme: const AppBarTheme(
+    systemOverlayStyle: SystemUiOverlayStyle(
+      // 1. 상태 바 아이콘을 '어둡게' 설정 (정상 표시)
+      statusBarIconBrightness: Brightness.dark,
+      statusBarColor: Colors.transparent,
+
+      // 2. 하단 내비게이션 바 배경 및 아이콘 설정
+      systemNavigationBarColor: Colors.white,
+      systemNavigationBarIconBrightness: Brightness.dark,
+    ),
+    elevation: 0,
+    backgroundColor: Colors.white,
+    foregroundColor: Colors.black,
+  ),
+);
+
+// ==================================
+// 다크 모드 테마
+// ==================================
+final ThemeData darkTheme = ThemeData(
+  brightness: Brightness.dark,
+  fontFamily: 'Mainfonts',
+  colorScheme: ColorScheme.fromSeed(
+    seedColor: primaryColor,
+    brightness: Brightness.dark,
+  ),
+  scaffoldBackgroundColor: Colors.black,
+  appBarTheme: const AppBarTheme(
+    systemOverlayStyle: SystemUiOverlayStyle(
+      // 1. 상태 바 아이콘을 '밝게' 설정 (정상 표시)
+      statusBarIconBrightness: Brightness.light,
+      statusBarColor: Colors.transparent,
+
+      // 2. 하단 내비게이션 바 배경 및 아이콘 설정
+      systemNavigationBarColor: Colors.black,
+      systemNavigationBarIconBrightness: Brightness.light,
+    ),
+    elevation: 0,
+    backgroundColor: Colors.black,
+    foregroundColor: Colors.white,
+  ),
+);

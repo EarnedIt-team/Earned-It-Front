@@ -1,4 +1,5 @@
 import 'package:earned_it/models/user/user_state.dart';
+import 'package:earned_it/models/wish/wish_model.dart';
 import 'package:earned_it/services/auth/user_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -25,6 +26,13 @@ class UserNotifier extends Notifier<UserState> {
       final userService = ref.read(userServiceProvider);
       final response = await userService.loadUserInfo(accessToken!);
 
+      final List<dynamic> rawStarWishes = response.data["starWishes"];
+
+      final List<WishModel> starWishesList =
+          rawStarWishes
+              .map((json) => WishModel.fromJson(json as Map<String, dynamic>))
+              .toList();
+
       state = state.copyWith(
         // 월 수익
         monthlySalary:
@@ -38,9 +46,13 @@ class UserNotifier extends Notifier<UserState> {
         // 수익 설정 여부
         isearningsPerSecond:
             response.data["userInfo"]["hasSalary"] ?? state.isearningsPerSecond,
+        // 위시리스트 (TOP5)
+        starWishes: starWishesList,
       );
       print("저장 완료");
-    } catch (e) {}
+    } catch (e) {
+      print("유저 정보 불러오기 에러 $e");
+    }
   }
 
   /// 유저 정보를 부분적으로 또는 전체적으로 갱신하는 메소드입니다.

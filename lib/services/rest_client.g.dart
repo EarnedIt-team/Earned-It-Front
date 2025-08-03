@@ -267,7 +267,7 @@ class _RestClient implements RestClient {
   @override
   Future<ApiResponse<dynamic>> agreedTerms(
     String accessToken,
-    List<Map<String, dynamic>> body,
+    dynamic body,
   ) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};

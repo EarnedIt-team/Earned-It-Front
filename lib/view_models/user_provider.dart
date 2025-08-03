@@ -1,4 +1,5 @@
 import 'package:earned_it/models/user/user_state.dart';
+import 'package:earned_it/models/wish/wish_model.dart';
 import 'package:earned_it/services/auth/user_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -17,6 +18,12 @@ class UserNotifier extends Notifier<UserState> {
     return const UserState();
   }
 
+  /// 전체 위시리스트를 업데이트하는 메소드
+  void updateTotalWishes(List<WishModel> newTotalWishes) {
+    // copyWith를 사용하여 totalWishes만 새로운 값으로 교체합니다. (임시로 starWishes)
+    state = state.copyWith(starWishes: newTotalWishes);
+  }
+
   /// 사용자 정보를 불러옵니다.
   Future<void> loadUser() async {
     try {
@@ -25,8 +32,33 @@ class UserNotifier extends Notifier<UserState> {
       final userService = ref.read(userServiceProvider);
       final response = await userService.loadUserInfo(accessToken!);
 
-      print("유저 정보 $response");
-    } catch (e) {}
+      final List<dynamic> rawStarWishes = response.data["starWishes"];
+
+      final List<WishModel> starWishesList =
+          rawStarWishes
+              .map((json) => WishModel.fromJson(json as Map<String, dynamic>))
+              .toList();
+
+      state = state.copyWith(
+        // 월 수익
+        monthlySalary:
+            response.data["userInfo"]["amount"] ?? state.monthlySalary,
+        // 월 수익 날짜
+        payday: response.data["userInfo"]["payday"] ?? state.payday,
+        // 초당 수익
+        earningsPerSecond:
+            response.data["userInfo"]["amountPerSec"] ??
+            state.earningsPerSecond,
+        // 수익 설정 여부
+        isearningsPerSecond:
+            response.data["userInfo"]["hasSalary"] ?? state.isearningsPerSecond,
+        // 위시리스트 (TOP5)
+        starWishes: starWishesList,
+      );
+      print("저장 완료");
+    } catch (e) {
+      print("유저 정보 불러오기 에러 $e");
+    }
   }
 
   /// 유저 정보를 부분적으로 또는 전체적으로 갱신하는 메소드입니다.

@@ -8,7 +8,8 @@ abstract class SetSalaryState with _$SetSalaryState {
     @Default('') String salaryText,
     @Default(1) int selectedDay,
     @Default(false) bool isButtonEnabled,
-    @Default(false) bool isLoading, // API 호출 중 로딩 상태
-    @Default('') String errorMessage, // API 에러 메시지
+    @Default(false) bool isLoading,
+    @Default('') String errorMessage,
+    String? salaryErrorText, // 유효성 검사 에러 메시지 필드
   }) = _SetSalaryState;
 }

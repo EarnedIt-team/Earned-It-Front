@@ -54,7 +54,7 @@ class SettingView extends ConsumerWidget {
                                         .read(themeProvider.notifier)
                                         .changeTheme(newTheme);
                                   }
-                                  Navigator.of(context).pop();
+                                  context.pop();
                                 },
                               );
                             }).toList(),

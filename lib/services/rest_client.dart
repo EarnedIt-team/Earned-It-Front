@@ -45,7 +45,7 @@ abstract class RestClient {
   @POST("/api/profile/terms")
   Future<ApiResponse> agreedTerms(
     @Header("Authorization") String accessToken,
-    @Body() List<Map<String, dynamic>> body,
+    @Body() dynamic body,
   );
 
   /// 월 수익 설정 API

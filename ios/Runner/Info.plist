@@ -43,6 +43,9 @@
 		<string>kakaotalk</string>
 	</array>
 
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>위시 아이템에 등록할 이미지를 선택하기 위해 앨범에 접근합니다.</string>
+
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>

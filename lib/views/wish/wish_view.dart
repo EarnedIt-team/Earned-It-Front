@@ -1,4 +1,6 @@
+import 'package:earned_it/config/design.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class WishView extends StatefulWidget {
   const WishView({super.key});
@@ -20,6 +22,15 @@ class _WishViewState extends State<WishView> {
           ],
         ),
         centerTitle: false,
+        actions: <Widget>[
+          IconButton(
+            onPressed: () {
+              context.push('/addWish');
+            },
+            icon: const Icon(Icons.add_circle, color: primaryColor),
+          ),
+        ],
+        actionsPadding: const EdgeInsets.symmetric(horizontal: 15),
       ),
     );
   }

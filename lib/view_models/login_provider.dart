@@ -94,11 +94,17 @@ class LoginViewModel extends Notifier<LoginState> {
         accessToken: response.data['accessToken'] as String,
         refreshToken: response.data['refreshToken'] as String,
       );
-      context.go("/home");
+
+      // 👇 1. 자동 로그인 성공 시 유저 정보 불러오기
+      await ref.read(userProvider.notifier).loadUser();
+
+      if (context.mounted) context.go("/home");
     } catch (e) {
       await _clearLoginData();
-      context.go('/login');
-      _handleLoginFailure(context, e);
+      if (context.mounted) {
+        context.go('/login');
+        _handleLoginFailure(context, e);
+      }
     }
   }
 
@@ -120,33 +126,33 @@ class LoginViewModel extends Notifier<LoginState> {
               : true;
 
       if (isSocialLogin && !hasAgreed) {
-        // 소셜 로그인이고 약관 미동의 시 모달을 띄움
         if (context.mounted) {
           await _promptAgreementAndFinalize(context, data);
         }
       } else {
-        // 일반 로그인 또는 약관에 이미 동의한 경우 즉시 성공 처리
         await _handleLoginSuccess(context, data);
       }
-
-      state = state.copyWith(isLoading: false);
     } catch (e) {
       _handleLoginFailure(context, e, title: errorTitle);
+    } finally {
+      // 로딩 상태를 항상 false로 되돌려놓습니다.
+      if (context.mounted) {
+        state = state.copyWith(isLoading: false);
+      }
     }
   }
 
-  // 약관 동의 modal 처리
   Future<void> _promptAgreementAndFinalize(
     BuildContext context,
     Map<String, dynamic> data,
   ) async {
-    dynamic agreed = await agreementModal(
+    // agreementModal이 null을 반환할 수 있으므로 bool?로 타입을 명시합니다.
+    final bool? agreed = await agreementModal(
       context,
       data['accessToken'] as String,
-    ); // 약관 동의 Modal
+    );
 
     if (agreed == true && context.mounted) {
-      // '동의'를 눌렀을 때만 로그인 절차를 마저 진행
       await _handleLoginSuccess(context, data);
     }
   }
@@ -155,28 +161,19 @@ class LoginViewModel extends Notifier<LoginState> {
     BuildContext context,
     Map<String, dynamic> data,
   ) async {
-    state = state.copyWith(isLoading: true);
     await _saveLoginData(
       accessToken: data['accessToken'] as String,
       refreshToken: data['refreshToken'] as String,
       userId: (data['userId'] as int).toString(),
     );
 
-    ref
-        .read(userProvider.notifier)
-        .loadUserInfo(
-          hasAgreedTerm:
-              data.containsKey('hasAgreedTerm')
-                  ? data['hasAgreedTerm'] as bool
-                  : true,
-        );
+    // 👇 2. 자체/소셜 로그인 성공 시 유저 정보 불러오기
+    await ref.read(userProvider.notifier).loadUser();
 
-    state = state.copyWith(isLoading: false);
     if (context.mounted) context.go('/home');
   }
 
   void _handleLoginFailure(BuildContext context, Object e, {String? title}) {
-    state = state.copyWith(isLoading: false);
     if (context.mounted) {
       toastification.show(
         alignment: Alignment.topCenter,

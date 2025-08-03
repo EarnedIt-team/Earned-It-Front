@@ -47,11 +47,9 @@ class WishAddView extends ConsumerWidget {
           centerTitle: false,
         ),
         body: Padding(
-          padding: EdgeInsets.symmetric(
-            horizontal: context.middlePadding,
-            vertical: context.middlePadding,
-          ),
+          padding: EdgeInsets.symmetric(horizontal: context.middlePadding),
           child: SingleChildScrollView(
+            padding: EdgeInsets.symmetric(vertical: context.middlePadding),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[

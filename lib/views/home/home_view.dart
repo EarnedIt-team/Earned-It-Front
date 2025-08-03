@@ -11,18 +11,67 @@ import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+// 현재 캐러셀 인덱스를 관리하는 Provider
 final carouselIndexProvider = StateProvider.autoDispose<int>((ref) => 0);
 
-class HomeView extends ConsumerWidget {
+// 👇 1. 계산에 필요한 모든 데이터가 준비되었는지 알려주는 새로운 Provider
+final isHomeReadyProvider = Provider.autoDispose<bool>((ref) {
+  // userProvider와 homeViewModelProvider를 모두 감시
+  final userReady = ref.watch(
+    userProvider.select((s) => s.starWishes.isNotEmpty),
+  );
+  final homeReady = ref.watch(
+    homeViewModelProvider.select((s) => s.currentEarnedAmount > 0),
+  );
+  // 두 조건이 모두 충족되면 true를 반환
+  return userReady && homeReady;
+});
+
+// ConsumerStatefulWidget으로 변경하여 상태 변화에 더 유연하게 대응
+class HomeView extends ConsumerStatefulWidget {
   const HomeView({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<HomeView> createState() => _HomeViewState();
+}
+
+class _HomeViewState extends ConsumerState<HomeView> {
+  @override
+  Widget build(BuildContext context) {
     final userState = ref.watch(userProvider);
     final homeState = ref.watch(homeViewModelProvider);
     final homeProvider = ref.read(homeViewModelProvider.notifier);
-    final carouselIndex = ref.watch(carouselIndexProvider);
-    final wishList = userState.starWishes;
+
+    // 👇 2. 핵심 수정: isHomeReadyProvider를 감시하여 정확한 시점에 로직 실행
+    ref.listen<bool>(isHomeReadyProvider, (wasReady, isNowReady) {
+      // '준비 안 됨' -> '준비 완료' 상태로 바뀔 때 단 한 번만 실행
+      if (!wasReady! && isNowReady) {
+        // 위젯 빌드가 완료된 후 실행하여 안정성 확보
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!mounted) return;
+
+          // 최신 상태를 다시 읽어옴
+          final currentHomeState = ref.read(homeViewModelProvider);
+          final currentUserState = ref.read(userProvider);
+
+          // 올바른 시작 인덱스 계산
+          double cumulativePrice = 0;
+          int targetIndex = 0;
+          for (int i = 0; i < currentUserState.starWishes.length; i++) {
+            cumulativePrice += currentUserState.starWishes[i].price;
+            if (currentHomeState.currentEarnedAmount < cumulativePrice) {
+              targetIndex = i;
+              break;
+            }
+            targetIndex = i;
+          }
+
+          // 계산된 인덱스로 캐러셀 이동 및 상태 업데이트
+          homeProvider.carouselController.jumpToPage(targetIndex);
+          ref.read(carouselIndexProvider.notifier).state = targetIndex;
+        });
+      }
+    });
 
     return Scaffold(
       appBar: AppBar(
@@ -101,6 +150,7 @@ class HomeView extends ConsumerWidget {
     );
   }
 
+  // (이하 다른 메서드들은 변경사항 없음)
   Widget _buildTopSection(BuildContext context, WidgetRef ref) {
     final userState = ref.watch(userProvider);
     final homeState = ref.watch(homeViewModelProvider);
@@ -199,12 +249,9 @@ class HomeView extends ConsumerWidget {
     final wishList = userState.starWishes;
     final currencyFormat = NumberFormat.decimalPattern('ko_KR');
 
-    // 위시리스트가 비어있을 때,
     if (wishList.isEmpty) {
       return Center(
         child: Column(
-          spacing: context.height(0.03),
-          crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Lottie.asset(
@@ -214,6 +261,7 @@ class HomeView extends ConsumerWidget {
               height: context.width(0.4),
               fit: BoxFit.contain,
             ),
+            SizedBox(height: context.height(0.03)),
             Text(
               "등록된 TOP5 리스트가 없습니다.",
               style: TextStyle(
@@ -222,7 +270,6 @@ class HomeView extends ConsumerWidget {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            ElevatedButton(onPressed: () {}, child: const Text("위시리스트 추가")),
           ],
         ),
       );
@@ -242,9 +289,8 @@ class HomeView extends ConsumerWidget {
               final currentItem = wishList[index];
               return Opacity(
                 opacity: index != carouselIndex ? 0.5 : 1.0,
-                // 이미지는 임시로 고정
                 child: Image.asset(
-                  'assets/images/iphone.png',
+                  'assets/images/${currentItem.itemImage}.png',
                   height: context.height(0.3),
                   errorBuilder:
                       (context, error, stackTrace) => const Icon(
@@ -256,7 +302,7 @@ class HomeView extends ConsumerWidget {
               );
             },
             options: CarouselOptions(
-              initialPage: carouselIndex,
+              initialPage: ref.read(carouselIndexProvider),
               aspectRatio: 16 / 9,
               height: MediaQuery.of(context).size.height * 0.333,
               viewportFraction: 0.65,
@@ -350,7 +396,7 @@ class HomeView extends ConsumerWidget {
               backgroundColor: Colors.white,
             ),
             onPressed:
-                displayInfo.progress >= 1.0 ? () => _launchURL("") : null,
+                displayInfo.progress >= 1.0 ? () => _launchURL(item.url) : null,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [

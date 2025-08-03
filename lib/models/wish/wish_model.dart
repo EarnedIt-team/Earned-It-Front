@@ -7,16 +7,16 @@ part 'wish_model.g.dart';
 @freezed
 abstract class WishModel with _$WishModel {
   const factory WishModel({
-    required int id,
-    required int userId,
-    required String name,
-    required int price,
-    required String itemImage,
-    required String vendor,
-    required String createdAt,
-    required bool bought,
-    required bool starred,
-    // required PieceInfoModel pieceInfo,
+    @Default(0) int id,
+    @Default(0) int userId,
+    @Default('') String name,
+    @Default(0) int price,
+    @Default('') String itemImage,
+    @Default('') String vendor,
+    @Default('') String createdAt,
+    @Default('') String url,
+    @Default(false) bool bought,
+    @Default(false) bool starred,
   }) = _WishModel;
 
   factory WishModel.fromJson(Map<String, dynamic> json) =>

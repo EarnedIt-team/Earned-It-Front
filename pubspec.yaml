@@ -2,7 +2,7 @@ name: earned_it
 description: "A new Flutter project."
 publish_to: 'none'
 
-version: 1.0.3+1
+version: 1.0.4+1
 
 environment:
   sdk: ^3.7.0
@@ -34,6 +34,7 @@ dependencies:
   action_slider: ^0.7.0
   shared_preferences: ^2.5.3
   lottie: ^3.3.1
+  image_picker: ^1.1.2
 
 dev_dependencies:
   flutter_test:

@@ -22,8 +22,11 @@ abstract class UserState with _$UserState {
     /// 약관 동의 여부 (Default = true)
     @Default(true) bool hasAgreedTerm,
 
-    /// 즐겨찾기 위시리스트
+    /// 즐겨찾기 위시리스트 (Top5)
     @Default([]) List<WishModel> starWishes,
+
+    /// 전체 위시리스트
+    @Default([]) List<WishModel> totalWishes,
   }) = _UserState;
 
   // JSON 직렬화를 위한 fromJson 팩토리 생성자 추가

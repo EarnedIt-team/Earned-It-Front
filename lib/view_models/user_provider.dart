@@ -18,6 +18,12 @@ class UserNotifier extends Notifier<UserState> {
     return const UserState();
   }
 
+  /// 전체 위시리스트를 업데이트하는 메소드
+  void updateTotalWishes(List<WishModel> newTotalWishes) {
+    // copyWith를 사용하여 totalWishes만 새로운 값으로 교체합니다. (임시로 starWishes)
+    state = state.copyWith(starWishes: newTotalWishes);
+  }
+
   /// 사용자 정보를 불러옵니다.
   Future<void> loadUser() async {
     try {

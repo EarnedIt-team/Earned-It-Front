@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$WishModel {
 
- int get id; int get userId; String get name; int get price; String get itemImage; String get vendor; String get createdAt; bool get bought; bool get starred;
+ int get id; int get userId; String get name; int get price; String get itemImage; String get vendor; String get createdAt; String get url; bool get bought; bool get starred;
 /// Create a copy of WishModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $WishModelCopyWith<WishModel> get copyWith => _$WishModelCopyWithImpl<WishModel>
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is WishModel&&(identical(other.id, id) || other.id == id)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.name, name) || other.name == name)&&(identical(other.price, price) || other.price == price)&&(identical(other.itemImage, itemImage) || other.itemImage == itemImage)&&(identical(other.vendor, vendor) || other.vendor == vendor)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.bought, bought) || other.bought == bought)&&(identical(other.starred, starred) || other.starred == starred));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is WishModel&&(identical(other.id, id) || other.id == id)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.name, name) || other.name == name)&&(identical(other.price, price) || other.price == price)&&(identical(other.itemImage, itemImage) || other.itemImage == itemImage)&&(identical(other.vendor, vendor) || other.vendor == vendor)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.url, url) || other.url == url)&&(identical(other.bought, bought) || other.bought == bought)&&(identical(other.starred, starred) || other.starred == starred));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,userId,name,price,itemImage,vendor,createdAt,bought,starred);
+int get hashCode => Object.hash(runtimeType,id,userId,name,price,itemImage,vendor,createdAt,url,bought,starred);
 
 @override
 String toString() {
-  return 'WishModel(id: $id, userId: $userId, name: $name, price: $price, itemImage: $itemImage, vendor: $vendor, createdAt: $createdAt, bought: $bought, starred: $starred)';
+  return 'WishModel(id: $id, userId: $userId, name: $name, price: $price, itemImage: $itemImage, vendor: $vendor, createdAt: $createdAt, url: $url, bought: $bought, starred: $starred)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $WishModelCopyWith<$Res>  {
   factory $WishModelCopyWith(WishModel value, $Res Function(WishModel) _then) = _$WishModelCopyWithImpl;
 @useResult
 $Res call({
- int id, int userId, String name, int price, String itemImage, String vendor, String createdAt, bool bought, bool starred
+ int id, int userId, String name, int price, String itemImage, String vendor, String createdAt, String url, bool bought, bool starred
 });
 
 
@@ -65,7 +65,7 @@ class _$WishModelCopyWithImpl<$Res>
 
 /// Create a copy of WishModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? userId = null,Object? name = null,Object? price = null,Object? itemImage = null,Object? vendor = null,Object? createdAt = null,Object? bought = null,Object? starred = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? userId = null,Object? name = null,Object? price = null,Object? itemImage = null,Object? vendor = null,Object? createdAt = null,Object? url = null,Object? bought = null,Object? starred = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,userId: null == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
@@ -74,6 +74,7 @@ as String,price: null == price ? _self.price : price // ignore: cast_nullable_to
 as int,itemImage: null == itemImage ? _self.itemImage : itemImage // ignore: cast_nullable_to_non_nullable
 as String,vendor: null == vendor ? _self.vendor : vendor // ignore: cast_nullable_to_non_nullable
 as String,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as String,url: null == url ? _self.url : url // ignore: cast_nullable_to_non_nullable
 as String,bought: null == bought ? _self.bought : bought // ignore: cast_nullable_to_non_nullable
 as bool,starred: null == starred ? _self.starred : starred // ignore: cast_nullable_to_non_nullable
 as bool,
@@ -161,10 +162,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  int userId,  String name,  int price,  String itemImage,  String vendor,  String createdAt,  bool bought,  bool starred)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  int userId,  String name,  int price,  String itemImage,  String vendor,  String createdAt,  String url,  bool bought,  bool starred)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _WishModel() when $default != null:
-return $default(_that.id,_that.userId,_that.name,_that.price,_that.itemImage,_that.vendor,_that.createdAt,_that.bought,_that.starred);case _:
+return $default(_that.id,_that.userId,_that.name,_that.price,_that.itemImage,_that.vendor,_that.createdAt,_that.url,_that.bought,_that.starred);case _:
   return orElse();
 
 }
@@ -182,10 +183,10 @@ return $default(_that.id,_that.userId,_that.name,_that.price,_that.itemImage,_th
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  int userId,  String name,  int price,  String itemImage,  String vendor,  String createdAt,  bool bought,  bool starred)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  int userId,  String name,  int price,  String itemImage,  String vendor,  String createdAt,  String url,  bool bought,  bool starred)  $default,) {final _that = this;
 switch (_that) {
 case _WishModel():
-return $default(_that.id,_that.userId,_that.name,_that.price,_that.itemImage,_that.vendor,_that.createdAt,_that.bought,_that.starred);case _:
+return $default(_that.id,_that.userId,_that.name,_that.price,_that.itemImage,_that.vendor,_that.createdAt,_that.url,_that.bought,_that.starred);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -202,10 +203,10 @@ return $default(_that.id,_that.userId,_that.name,_that.price,_that.itemImage,_th
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  int userId,  String name,  int price,  String itemImage,  String vendor,  String createdAt,  bool bought,  bool starred)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  int userId,  String name,  int price,  String itemImage,  String vendor,  String createdAt,  String url,  bool bought,  bool starred)?  $default,) {final _that = this;
 switch (_that) {
 case _WishModel() when $default != null:
-return $default(_that.id,_that.userId,_that.name,_that.price,_that.itemImage,_that.vendor,_that.createdAt,_that.bought,_that.starred);case _:
+return $default(_that.id,_that.userId,_that.name,_that.price,_that.itemImage,_that.vendor,_that.createdAt,_that.url,_that.bought,_that.starred);case _:
   return null;
 
 }
@@ -217,18 +218,19 @@ return $default(_that.id,_that.userId,_that.name,_that.price,_that.itemImage,_th
 @JsonSerializable()
 
 class _WishModel implements WishModel {
-  const _WishModel({required this.id, required this.userId, required this.name, required this.price, required this.itemImage, required this.vendor, required this.createdAt, required this.bought, required this.starred});
+  const _WishModel({this.id = 0, this.userId = 0, this.name = '', this.price = 0, this.itemImage = '', this.vendor = '', this.createdAt = '', this.url = '', this.bought = false, this.starred = false});
   factory _WishModel.fromJson(Map<String, dynamic> json) => _$WishModelFromJson(json);
 
-@override final  int id;
-@override final  int userId;
-@override final  String name;
-@override final  int price;
-@override final  String itemImage;
-@override final  String vendor;
-@override final  String createdAt;
-@override final  bool bought;
-@override final  bool starred;
+@override@JsonKey() final  int id;
+@override@JsonKey() final  int userId;
+@override@JsonKey() final  String name;
+@override@JsonKey() final  int price;
+@override@JsonKey() final  String itemImage;
+@override@JsonKey() final  String vendor;
+@override@JsonKey() final  String createdAt;
+@override@JsonKey() final  String url;
+@override@JsonKey() final  bool bought;
+@override@JsonKey() final  bool starred;
 
 /// Create a copy of WishModel
 /// with the given fields replaced by the non-null parameter values.
@@ -243,16 +245,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _WishModel&&(identical(other.id, id) || other.id == id)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.name, name) || other.name == name)&&(identical(other.price, price) || other.price == price)&&(identical(other.itemImage, itemImage) || other.itemImage == itemImage)&&(identical(other.vendor, vendor) || other.vendor == vendor)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.bought, bought) || other.bought == bought)&&(identical(other.starred, starred) || other.starred == starred));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _WishModel&&(identical(other.id, id) || other.id == id)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.name, name) || other.name == name)&&(identical(other.price, price) || other.price == price)&&(identical(other.itemImage, itemImage) || other.itemImage == itemImage)&&(identical(other.vendor, vendor) || other.vendor == vendor)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.url, url) || other.url == url)&&(identical(other.bought, bought) || other.bought == bought)&&(identical(other.starred, starred) || other.starred == starred));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,userId,name,price,itemImage,vendor,createdAt,bought,starred);
+int get hashCode => Object.hash(runtimeType,id,userId,name,price,itemImage,vendor,createdAt,url,bought,starred);
 
 @override
 String toString() {
-  return 'WishModel(id: $id, userId: $userId, name: $name, price: $price, itemImage: $itemImage, vendor: $vendor, createdAt: $createdAt, bought: $bought, starred: $starred)';
+  return 'WishModel(id: $id, userId: $userId, name: $name, price: $price, itemImage: $itemImage, vendor: $vendor, createdAt: $createdAt, url: $url, bought: $bought, starred: $starred)';
 }
 
 
@@ -263,7 +265,7 @@ abstract mixin class _$WishModelCopyWith<$Res> implements $WishModelCopyWith<$Re
   factory _$WishModelCopyWith(_WishModel value, $Res Function(_WishModel) _then) = __$WishModelCopyWithImpl;
 @override @useResult
 $Res call({
- int id, int userId, String name, int price, String itemImage, String vendor, String createdAt, bool bought, bool starred
+ int id, int userId, String name, int price, String itemImage, String vendor, String createdAt, String url, bool bought, bool starred
 });
 
 
@@ -280,7 +282,7 @@ class __$WishModelCopyWithImpl<$Res>
 
 /// Create a copy of WishModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? userId = null,Object? name = null,Object? price = null,Object? itemImage = null,Object? vendor = null,Object? createdAt = null,Object? bought = null,Object? starred = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? userId = null,Object? name = null,Object? price = null,Object? itemImage = null,Object? vendor = null,Object? createdAt = null,Object? url = null,Object? bought = null,Object? starred = null,}) {
   return _then(_WishModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,userId: null == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
@@ -289,6 +291,7 @@ as String,price: null == price ? _self.price : price // ignore: cast_nullable_to
 as int,itemImage: null == itemImage ? _self.itemImage : itemImage // ignore: cast_nullable_to_non_nullable
 as String,vendor: null == vendor ? _self.vendor : vendor // ignore: cast_nullable_to_non_nullable
 as String,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as String,url: null == url ? _self.url : url // ignore: cast_nullable_to_non_nullable
 as String,bought: null == bought ? _self.bought : bought // ignore: cast_nullable_to_non_nullable
 as bool,starred: null == starred ? _self.starred : starred // ignore: cast_nullable_to_non_nullable
 as bool,

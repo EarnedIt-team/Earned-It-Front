@@ -8,6 +8,7 @@ import 'package:earned_it/views/auth/signup/sign_view.dart';
 import 'package:earned_it/views/setting/set_salary_view.dart';
 import 'package:earned_it/views/setting/setting_view.dart';
 import 'package:earned_it/views/splash_view.dart';
+import 'package:earned_it/views/wish/wish_add_view.dart';
 import 'package:earned_it/views/wish/wish_view.dart';
 import 'package:flutter/widgets.dart';
 
@@ -48,6 +49,11 @@ final GoRouter routes = GoRouter(
       path: '/setSalary',
       builder:
           (BuildContext context, GoRouterState state) => const SetSalaryView(),
+    ),
+    GoRoute(
+      path: '/addWish',
+      builder:
+          (BuildContext context, GoRouterState state) => const WishAddView(),
     ),
 
     // =================================================

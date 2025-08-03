@@ -14,9 +14,6 @@ class HomeViewModel extends AutoDisposeNotifier<HomeState> {
 
   @override
   HomeState build() {
-    // 유저 정보 불러오기
-    ref.read(userProvider.notifier).loadUser();
-
     ref.onDispose(() {
       _timer?.cancel();
     });

@@ -55,4 +55,11 @@ abstract class RestClient {
     @Header("Authorization") String accesstoken,
     @Body() Map<String, int> body,
   );
+
+  /// 위시아이템 추가 API
+  @POST("/api/wish")
+  Future<ApiResponse> addWishItem(
+    @Header("Authorization") String accesstoken,
+    @Body() Map<String, dynamic> body,
+  );
 }

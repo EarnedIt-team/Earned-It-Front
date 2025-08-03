@@ -9,5 +9,6 @@ abstract class WishAddState with _$WishAddState {
     XFile? itemImage,
     @Default(false) bool isTop5,
     @Default(false) bool canSubmit,
+    @Default(false) bool isLoading,
   }) = _WishAddState;
 }

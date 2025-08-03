@@ -1,34 +1,52 @@
+import 'package:dio/dio.dart';
+import 'package:earned_it/config/exception.dart';
 import 'package:earned_it/models/wish/wish_add_state.dart';
 import 'package:earned_it/models/wish/wish_model.dart';
+import 'package:earned_it/services/auth/login_service.dart';
+import 'package:earned_it/services/wish_service.dart';
 import 'package:earned_it/view_models/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:toastification/toastification.dart';
 
-// 2. 로직을 처리하는 Notifier(ViewModel) 클래스
+final wishAddViewModelProvider =
+    NotifierProvider.autoDispose<WishAddViewModel, WishAddState>(
+      WishAddViewModel.new,
+    );
+
 class WishAddViewModel extends AutoDisposeNotifier<WishAddState> {
-  // UI에서 사용할 컨트롤러들을 Notifier가 관리
   late final TextEditingController nameController;
   late final TextEditingController vendorController;
   late final TextEditingController priceController;
   late final TextEditingController urlController;
+
+  late final LoginService _loginService;
+  late final WishService _wishService;
+
   final ImagePicker _picker = ImagePicker();
+  final FlutterSecureStorage _storage = const FlutterSecureStorage();
 
   @override
   WishAddState build() {
-    // 컨트롤러 초기화
     nameController = TextEditingController();
     vendorController = TextEditingController();
     priceController = TextEditingController();
     urlController = TextEditingController();
 
-    // 특정 컨트롤러의 텍스트 변경을 감지하여 버튼 활성화 상태 업데이트
+    _loginService = ref.read(loginServiceProvider);
+    _wishService = ref.read(wishServiceProvider);
+
+    // 👇 1. '회사' 컨트롤러에도 리스너 추가
     nameController.addListener(_updateCanSubmit);
+    vendorController.addListener(_updateCanSubmit);
     priceController.addListener(_updateCanSubmit);
 
-    // Notifier가 소멸될 때 컨트롤러도 함께 해제
     ref.onDispose(() {
       nameController.removeListener(_updateCanSubmit);
+      vendorController.removeListener(_updateCanSubmit); // 리스너 제거
       priceController.removeListener(_updateCanSubmit);
       nameController.dispose();
       vendorController.dispose();
@@ -39,65 +57,129 @@ class WishAddViewModel extends AutoDisposeNotifier<WishAddState> {
     return const WishAddState();
   }
 
-  // 버튼 활성화 여부를 업데이트하는 내부 함수
+  // 👇 2. 버튼 활성화 조건에 '회사' 필드 추가
   void _updateCanSubmit() {
     final canSubmit =
-        nameController.text.isNotEmpty && priceController.text.isNotEmpty;
+        nameController.text.isNotEmpty &&
+        vendorController.text.isNotEmpty && // '회사' 입력 여부 확인
+        priceController.text.isNotEmpty &&
+        state.itemImage != null;
     state = state.copyWith(canSubmit: canSubmit);
   }
 
-  // 이미지 선택 로직
-  Future<void> pickImage() async {
+  Future<void> pickImage(BuildContext context) async {
     try {
-      final pickedImage = await _picker.pickImage(source: ImageSource.gallery);
+      final pickedImage = await _picker.pickImage(
+        source: ImageSource.gallery,
+        // 이미지 품질을 50%로 설정
+        imageQuality: 50,
+        requestFullMetadata: false,
+      );
+
       if (pickedImage != null) {
+        // 이미지 크기 검사
+        final imageSize = await pickedImage.length();
+        const maxSizeInBytes = 5 * 1024 * 1024; // 5MB
+
+        if (imageSize > maxSizeInBytes) {
+          // 크기 초과 시 사용자에게 알림
+          if (context.mounted) {
+            toastification.show(
+              context: context,
+              type: ToastificationType.error,
+              style: ToastificationStyle.flat,
+              title: const Text('이미지 크기는 2MB를 초과할 수 없습니다.'),
+              autoCloseDuration: const Duration(seconds: 3),
+            );
+          }
+          return; // 이미지 설정을 중단
+        }
+
+        // 유효한 이미지일 경우 상태 업데이트
         state = state.copyWith(itemImage: pickedImage);
+        _updateCanSubmit(); // 버튼 활성화 상태 재검사
       }
     } catch (e) {
       debugPrint('Image picking error: $e');
+      if (context.mounted) {
+        toastification.show(
+          context: context,
+          type: ToastificationType.error,
+          style: ToastificationStyle.flat,
+          title: const Text('이미지를 불러오는 중 오류가 발생했습니다.'),
+          autoCloseDuration: const Duration(seconds: 3),
+        );
+      }
     }
   }
 
-  // TOP5 체크박스 토글 로직
   void toggleIsTop5(bool? value) {
     state = state.copyWith(isTop5: value ?? false);
   }
 
-  // 위시리스트 추가 로직
-  void addDummyWishlist() {
-    final dummyData = [
-      const WishModel(
-        name: '2020년형 MacBook Pro 13.3인치 256GB',
-        vendor: 'APPLE',
-        price: 1678530,
-        itemImage: 'macbook',
-        url: 'https://ko.aliexpress.com/item/1005005626333589.html',
-      ),
-      const WishModel(
-        name: '아이폰 15 Pro 256GB',
-        vendor: 'APPLE',
-        price: 1298000,
-        itemImage: 'iphone',
-        url: 'https://www.coupang.com/vp/products/7630888734',
-      ),
-      const WishModel(
-        name: '닌텐도 스위치 OLED',
-        vendor: 'NINTENDO',
-        price: 377470,
-        itemImage: 'switch',
-        url: 'https://prod.danawa.com/info/?pcode=14678627',
-      ),
-    ];
+  Future<void> submitWishItem(BuildContext context) async {
+    if (!state.canSubmit) return;
 
-    final currentWishes = ref.read(userProvider).totalWishes;
-    final updatedWishes = [...currentWishes, ...dummyData];
+    state = state.copyWith(isLoading: true);
 
-    ref.read(userProvider.notifier).updateTotalWishes(updatedWishes);
+    try {
+      final String? accessToken = await _storage.read(key: 'accessToken');
+
+      final newWishItem = WishModel(
+        name: nameController.text,
+        vendor: vendorController.text,
+        price: int.tryParse(priceController.text.replaceAll(',', '')) ?? 0,
+        url: urlController.text,
+        itemImage: state.itemImage!.path,
+        starred: state.isTop5,
+      );
+
+      await _wishService.addWishItem(accessToken!, newWishItem);
+      await ref.read(userProvider.notifier).loadUser();
+
+      if (context.mounted) {
+        toastification.show(
+          context: context,
+          type: ToastificationType.success,
+          title: const Text("위시 아이템이 추가되었습니다."),
+          autoCloseDuration: const Duration(seconds: 3),
+        );
+        context.pop();
+      }
+    } on DioException catch (e) {
+      if (context.mounted) _handleApiError(context, e);
+    } catch (e) {
+      if (context.mounted) _handleGeneralError(context, e);
+    } finally {
+      if (context.mounted) {
+        state = state.copyWith(isLoading: false);
+      }
+    }
+  }
+
+  Future<void> _handleApiError(BuildContext context, DioException e) async {
+    if (e.response?.data['code'] == "AUTH_REQUIRED") {
+      toastification.show(
+        context: context,
+        title: const Text("토큰이 만료되어 재발급합니다. 잠시 후 다시 시도해주세요."),
+        autoCloseDuration: const Duration(seconds: 3),
+      );
+      try {
+        final String? refreshToken = await _storage.read(key: 'refreshToken');
+        await _loginService.checkToken(refreshToken!);
+      } catch (_) {
+        if (context.mounted) context.go('/login');
+      }
+    } else {
+      _handleGeneralError(context, e);
+    }
+  }
+
+  void _handleGeneralError(BuildContext context, Object e) {
+    toastification.show(
+      context: context,
+      title: Text(e.toDisplayString()),
+      autoCloseDuration: const Duration(seconds: 3),
+    );
   }
 }
-
-// 3. Provider 정의
-final wishAddViewModelProvider =
-    NotifierProvider.autoDispose<WishAddViewModel, WishAddState>(
-      WishAddViewModel.new,
-    );

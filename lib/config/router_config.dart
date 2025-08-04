@@ -1,3 +1,4 @@
+import 'package:earned_it/models/wish/wish_model.dart';
 import 'package:earned_it/views/home/home_view.dart';
 import 'package:earned_it/views/auth/login/forgot_password_view.dart';
 import 'package:earned_it/views/auth/login/login_view.dart';
@@ -9,6 +10,7 @@ import 'package:earned_it/views/setting/set_salary_view.dart';
 import 'package:earned_it/views/setting/setting_view.dart';
 import 'package:earned_it/views/splash_view.dart';
 import 'package:earned_it/views/wish/wish_add_view.dart';
+import 'package:earned_it/views/wish/wish_edit_view.dart';
 import 'package:earned_it/views/wish/wish_view.dart';
 import 'package:flutter/widgets.dart';
 
@@ -54,6 +56,15 @@ final GoRouter routes = GoRouter(
       path: '/addWish',
       builder:
           (BuildContext context, GoRouterState state) => const WishAddView(),
+    ),
+    GoRoute(
+      path: '/editWish',
+      builder: (BuildContext context, GoRouterState state) {
+        // extra로 전달된 WishModel 객체를 추출합니다.
+        final wishItem = state.extra as WishModel;
+        // WishEditView에 추출한 객체를 전달하여 화면을 생성합니다.
+        return WishEditView(wishItem: wishItem);
+      },
     ),
 
     // =================================================

@@ -1,4 +1,4 @@
-import 'package:earned_it/models/wish/piece_info_model.dart';
+import 'package:earned_it/models/piece/piece_info_model.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'wish_model.freezed.dart';

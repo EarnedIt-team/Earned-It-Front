@@ -73,4 +73,13 @@ abstract class RestClient {
     @Header("Authorization") String accesstoken,
     @Path("wishId") int wishId,
   );
+
+  @PATCH("/api/wish/{wishId}")
+  @MultiPart()
+  Future<ApiResponse> editWishItem(
+    @Header("Authorization") String accesstoken,
+    @Path("wishId") int wishId, {
+    @Part(name: "wish") required String wish,
+    @Part(name: "image") File? itemImage,
+  });
 }

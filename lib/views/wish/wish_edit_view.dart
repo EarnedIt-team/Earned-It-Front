@@ -157,19 +157,26 @@ class _WishEditViewState extends ConsumerState<WishEditView> {
                       "이름",
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
-                    TextField(controller: wishEditNotifier.nameController),
+                    TextField(
+                      textAlign: TextAlign.end,
+                      controller: wishEditNotifier.nameController,
+                    ),
                     const SizedBox(height: 24),
                     const Text(
                       "회사",
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
-                    TextField(controller: wishEditNotifier.vendorController),
+                    TextField(
+                      textAlign: TextAlign.end,
+                      controller: wishEditNotifier.vendorController,
+                    ),
                     const SizedBox(height: 24),
                     const Text(
                       "금액",
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                     TextField(
+                      textAlign: TextAlign.end,
                       controller: wishEditNotifier.priceController,
                       keyboardType: TextInputType.number,
                       inputFormatters: [
@@ -183,6 +190,7 @@ class _WishEditViewState extends ConsumerState<WishEditView> {
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                     TextField(
+                      textAlign: TextAlign.end,
                       controller: wishEditNotifier.urlController,
                       keyboardType: TextInputType.url,
                     ),
@@ -216,7 +224,6 @@ class _WishEditViewState extends ConsumerState<WishEditView> {
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: primaryColor,
-                      disabledBackgroundColor: Colors.grey.shade300,
                     ),
                     onPressed:
                         wishEditState.canSubmit
@@ -228,7 +235,7 @@ class _WishEditViewState extends ConsumerState<WishEditView> {
                         color:
                             wishEditState.canSubmit
                                 ? Colors.black
-                                : Colors.grey[600],
+                                : Colors.grey,
                         fontWeight: FontWeight.bold,
                       ),
                     ),

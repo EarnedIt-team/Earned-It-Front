@@ -1,6 +1,7 @@
 import 'package:earned_it/models/user/user_state.dart';
 import 'package:earned_it/models/wish/wish_model.dart';
 import 'package:earned_it/services/auth/user_service.dart';
+import 'package:earned_it/services/wish_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
@@ -55,6 +56,28 @@ class UserNotifier extends Notifier<UserState> {
         // 위시리스트 (TOP5)
         starWishes: starWishesList,
       );
+      print("저장 완료");
+    } catch (e) {
+      print("유저 정보 불러오기 에러 $e");
+    }
+  }
+
+  /// 사용자의 하이라이트(3개) 위시리스트를 불러옵니다.
+  Future<void> loadHighLightWish() async {
+    try {
+      final String? accessToken = await _storage.read(key: 'accessToken');
+
+      final wishService = ref.read(wishServiceProvider);
+      final response = await wishService.loadHighLightWish(accessToken!);
+
+      final List<dynamic> rawHighLightWishes = response.data;
+
+      final List<WishModel> highLightWishList =
+          rawHighLightWishes
+              .map((json) => WishModel.fromJson(json as Map<String, dynamic>))
+              .toList();
+
+      state = state.copyWith(Wishes3: highLightWishList);
       print("저장 완료");
     } catch (e) {
       print("유저 정보 불러오기 에러 $e");

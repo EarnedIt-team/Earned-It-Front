@@ -208,11 +208,6 @@ class WishAddView extends ConsumerWidget {
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: primaryColor,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      // 버튼 비활성화 시 스타일
-                      // disabledBackgroundColor: Colors.grey.shade300,
                     ),
                     // 👇 ViewModel의 canSubmit 상태에 따라 버튼 활성화/비활성화
                     onPressed:

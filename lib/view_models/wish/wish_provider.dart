@@ -51,6 +51,7 @@ class WishViewModel extends Notifier<WishState> {
       );
 
       await ref.read(userProvider.notifier).loadUser();
+      await ref.read(userProvider.notifier).loadHighLightWish();
 
       if (context.mounted) {
         toastification.show(

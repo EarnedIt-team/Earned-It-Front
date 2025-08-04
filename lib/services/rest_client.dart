@@ -74,6 +74,7 @@ abstract class RestClient {
     @Path("wishId") int wishId,
   );
 
+  /// 위시아이템 수정 API
   @PATCH("/api/wish/{wishId}")
   @MultiPart()
   Future<ApiResponse> editWishItem(
@@ -82,4 +83,10 @@ abstract class RestClient {
     @Part(name: "wish") required String wish,
     @Part(name: "image") File? itemImage,
   });
+
+  /// 위시아이템 하이라이트(3개) 불러오기 API
+  @GET("/api/wish/highlight")
+  Future<ApiResponse> loadHighLightWishInfo(
+    @Header("Authorization") String accessToken,
+  );
 }

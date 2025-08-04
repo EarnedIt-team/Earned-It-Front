@@ -11,6 +11,7 @@ import 'package:earned_it/views/setting/setting_view.dart';
 import 'package:earned_it/views/splash_view.dart';
 import 'package:earned_it/views/wish/wish_add_view.dart';
 import 'package:earned_it/views/wish/wish_edit_view.dart';
+import 'package:earned_it/views/wish/wish_search_view.dart';
 import 'package:earned_it/views/wish/wish_view.dart';
 import 'package:flutter/widgets.dart';
 
@@ -65,6 +66,11 @@ final GoRouter routes = GoRouter(
         // WishEditView에 추출한 객체를 전달하여 화면을 생성합니다.
         return WishEditView(wishItem: wishItem);
       },
+    ),
+    GoRoute(
+      path: '/wishSearch',
+      builder:
+          (BuildContext context, GoRouterState state) => const WishSearchView(),
     ),
 
     // =================================================

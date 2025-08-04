@@ -137,11 +137,12 @@ class WishEditViewModel extends AutoDisposeNotifier<WishEditState> {
         accessToken: accessToken!,
         wishId: updatedWish.wishId,
         updatedWish: updatedWish,
-        newImage: state.newImage, // 👈 '!' 제거
+        newImage: state.newImage,
       );
 
       // 수정 성공 시, 전체 유저 정보를 다시 불러와 리스트 갱신
       await ref.read(userProvider.notifier).loadUser();
+      await ref.read(userProvider.notifier).loadHighLightWish();
 
       if (context.mounted) {
         toastification.show(

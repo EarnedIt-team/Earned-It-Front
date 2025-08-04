@@ -117,6 +117,7 @@ class WishAddViewModel extends AutoDisposeNotifier<WishAddState> {
     state = state.copyWith(isTop5: value ?? false);
   }
 
+  /// 위시아이템 추가
   Future<void> submitWishItem(BuildContext context) async {
     if (!state.canSubmit) return;
     state = state.copyWith(isLoading: true);
@@ -142,6 +143,7 @@ class WishAddViewModel extends AutoDisposeNotifier<WishAddState> {
       );
 
       await ref.read(userProvider.notifier).loadUser();
+      await ref.read(userProvider.notifier).loadHighLightWish();
 
       if (context.mounted) {
         toastification.show(

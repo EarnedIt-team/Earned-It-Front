@@ -21,7 +21,8 @@ mixin _$UserState {
  int get payday;/// 초당 수익
 @JsonKey(name: 'amountPerSec') double get earningsPerSecond;/// 약관 동의 여부 (Default = true)
  bool get hasAgreedTerm;/// 즐겨찾기 위시리스트 (Top5)
- List<WishModel> get starWishes;/// 전체 위시리스트
+ List<WishModel> get starWishes;/// 위시리스트 상위 노출 3개
+ List<WishModel> get Wishes3;/// 전체 위시리스트
  List<WishModel> get totalWishes;
 /// Create a copy of UserState
 /// with the given fields replaced by the non-null parameter values.
@@ -35,16 +36,16 @@ $UserStateCopyWith<UserState> get copyWith => _$UserStateCopyWithImpl<UserState>
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is UserState&&(identical(other.isearningsPerSecond, isearningsPerSecond) || other.isearningsPerSecond == isearningsPerSecond)&&(identical(other.monthlySalary, monthlySalary) || other.monthlySalary == monthlySalary)&&(identical(other.payday, payday) || other.payday == payday)&&(identical(other.earningsPerSecond, earningsPerSecond) || other.earningsPerSecond == earningsPerSecond)&&(identical(other.hasAgreedTerm, hasAgreedTerm) || other.hasAgreedTerm == hasAgreedTerm)&&const DeepCollectionEquality().equals(other.starWishes, starWishes)&&const DeepCollectionEquality().equals(other.totalWishes, totalWishes));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is UserState&&(identical(other.isearningsPerSecond, isearningsPerSecond) || other.isearningsPerSecond == isearningsPerSecond)&&(identical(other.monthlySalary, monthlySalary) || other.monthlySalary == monthlySalary)&&(identical(other.payday, payday) || other.payday == payday)&&(identical(other.earningsPerSecond, earningsPerSecond) || other.earningsPerSecond == earningsPerSecond)&&(identical(other.hasAgreedTerm, hasAgreedTerm) || other.hasAgreedTerm == hasAgreedTerm)&&const DeepCollectionEquality().equals(other.starWishes, starWishes)&&const DeepCollectionEquality().equals(other.Wishes3, Wishes3)&&const DeepCollectionEquality().equals(other.totalWishes, totalWishes));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,isearningsPerSecond,monthlySalary,payday,earningsPerSecond,hasAgreedTerm,const DeepCollectionEquality().hash(starWishes),const DeepCollectionEquality().hash(totalWishes));
+int get hashCode => Object.hash(runtimeType,isearningsPerSecond,monthlySalary,payday,earningsPerSecond,hasAgreedTerm,const DeepCollectionEquality().hash(starWishes),const DeepCollectionEquality().hash(Wishes3),const DeepCollectionEquality().hash(totalWishes));
 
 @override
 String toString() {
-  return 'UserState(isearningsPerSecond: $isearningsPerSecond, monthlySalary: $monthlySalary, payday: $payday, earningsPerSecond: $earningsPerSecond, hasAgreedTerm: $hasAgreedTerm, starWishes: $starWishes, totalWishes: $totalWishes)';
+  return 'UserState(isearningsPerSecond: $isearningsPerSecond, monthlySalary: $monthlySalary, payday: $payday, earningsPerSecond: $earningsPerSecond, hasAgreedTerm: $hasAgreedTerm, starWishes: $starWishes, Wishes3: $Wishes3, totalWishes: $totalWishes)';
 }
 
 
@@ -55,7 +56,7 @@ abstract mixin class $UserStateCopyWith<$Res>  {
   factory $UserStateCopyWith(UserState value, $Res Function(UserState) _then) = _$UserStateCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(name: 'hasSalary') bool isearningsPerSecond,@JsonKey(name: 'amount') int monthlySalary, int payday,@JsonKey(name: 'amountPerSec') double earningsPerSecond, bool hasAgreedTerm, List<WishModel> starWishes, List<WishModel> totalWishes
+@JsonKey(name: 'hasSalary') bool isearningsPerSecond,@JsonKey(name: 'amount') int monthlySalary, int payday,@JsonKey(name: 'amountPerSec') double earningsPerSecond, bool hasAgreedTerm, List<WishModel> starWishes, List<WishModel> Wishes3, List<WishModel> totalWishes
 });
 
 
@@ -72,7 +73,7 @@ class _$UserStateCopyWithImpl<$Res>
 
 /// Create a copy of UserState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? isearningsPerSecond = null,Object? monthlySalary = null,Object? payday = null,Object? earningsPerSecond = null,Object? hasAgreedTerm = null,Object? starWishes = null,Object? totalWishes = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? isearningsPerSecond = null,Object? monthlySalary = null,Object? payday = null,Object? earningsPerSecond = null,Object? hasAgreedTerm = null,Object? starWishes = null,Object? Wishes3 = null,Object? totalWishes = null,}) {
   return _then(_self.copyWith(
 isearningsPerSecond: null == isearningsPerSecond ? _self.isearningsPerSecond : isearningsPerSecond // ignore: cast_nullable_to_non_nullable
 as bool,monthlySalary: null == monthlySalary ? _self.monthlySalary : monthlySalary // ignore: cast_nullable_to_non_nullable
@@ -80,6 +81,7 @@ as int,payday: null == payday ? _self.payday : payday // ignore: cast_nullable_t
 as int,earningsPerSecond: null == earningsPerSecond ? _self.earningsPerSecond : earningsPerSecond // ignore: cast_nullable_to_non_nullable
 as double,hasAgreedTerm: null == hasAgreedTerm ? _self.hasAgreedTerm : hasAgreedTerm // ignore: cast_nullable_to_non_nullable
 as bool,starWishes: null == starWishes ? _self.starWishes : starWishes // ignore: cast_nullable_to_non_nullable
+as List<WishModel>,Wishes3: null == Wishes3 ? _self.Wishes3 : Wishes3 // ignore: cast_nullable_to_non_nullable
 as List<WishModel>,totalWishes: null == totalWishes ? _self.totalWishes : totalWishes // ignore: cast_nullable_to_non_nullable
 as List<WishModel>,
   ));
@@ -166,10 +168,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'hasSalary')  bool isearningsPerSecond, @JsonKey(name: 'amount')  int monthlySalary,  int payday, @JsonKey(name: 'amountPerSec')  double earningsPerSecond,  bool hasAgreedTerm,  List<WishModel> starWishes,  List<WishModel> totalWishes)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'hasSalary')  bool isearningsPerSecond, @JsonKey(name: 'amount')  int monthlySalary,  int payday, @JsonKey(name: 'amountPerSec')  double earningsPerSecond,  bool hasAgreedTerm,  List<WishModel> starWishes,  List<WishModel> Wishes3,  List<WishModel> totalWishes)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _UserState() when $default != null:
-return $default(_that.isearningsPerSecond,_that.monthlySalary,_that.payday,_that.earningsPerSecond,_that.hasAgreedTerm,_that.starWishes,_that.totalWishes);case _:
+return $default(_that.isearningsPerSecond,_that.monthlySalary,_that.payday,_that.earningsPerSecond,_that.hasAgreedTerm,_that.starWishes,_that.Wishes3,_that.totalWishes);case _:
   return orElse();
 
 }
@@ -187,10 +189,10 @@ return $default(_that.isearningsPerSecond,_that.monthlySalary,_that.payday,_that
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'hasSalary')  bool isearningsPerSecond, @JsonKey(name: 'amount')  int monthlySalary,  int payday, @JsonKey(name: 'amountPerSec')  double earningsPerSecond,  bool hasAgreedTerm,  List<WishModel> starWishes,  List<WishModel> totalWishes)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'hasSalary')  bool isearningsPerSecond, @JsonKey(name: 'amount')  int monthlySalary,  int payday, @JsonKey(name: 'amountPerSec')  double earningsPerSecond,  bool hasAgreedTerm,  List<WishModel> starWishes,  List<WishModel> Wishes3,  List<WishModel> totalWishes)  $default,) {final _that = this;
 switch (_that) {
 case _UserState():
-return $default(_that.isearningsPerSecond,_that.monthlySalary,_that.payday,_that.earningsPerSecond,_that.hasAgreedTerm,_that.starWishes,_that.totalWishes);case _:
+return $default(_that.isearningsPerSecond,_that.monthlySalary,_that.payday,_that.earningsPerSecond,_that.hasAgreedTerm,_that.starWishes,_that.Wishes3,_that.totalWishes);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -207,10 +209,10 @@ return $default(_that.isearningsPerSecond,_that.monthlySalary,_that.payday,_that
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'hasSalary')  bool isearningsPerSecond, @JsonKey(name: 'amount')  int monthlySalary,  int payday, @JsonKey(name: 'amountPerSec')  double earningsPerSecond,  bool hasAgreedTerm,  List<WishModel> starWishes,  List<WishModel> totalWishes)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'hasSalary')  bool isearningsPerSecond, @JsonKey(name: 'amount')  int monthlySalary,  int payday, @JsonKey(name: 'amountPerSec')  double earningsPerSecond,  bool hasAgreedTerm,  List<WishModel> starWishes,  List<WishModel> Wishes3,  List<WishModel> totalWishes)?  $default,) {final _that = this;
 switch (_that) {
 case _UserState() when $default != null:
-return $default(_that.isearningsPerSecond,_that.monthlySalary,_that.payday,_that.earningsPerSecond,_that.hasAgreedTerm,_that.starWishes,_that.totalWishes);case _:
+return $default(_that.isearningsPerSecond,_that.monthlySalary,_that.payday,_that.earningsPerSecond,_that.hasAgreedTerm,_that.starWishes,_that.Wishes3,_that.totalWishes);case _:
   return null;
 
 }
@@ -222,7 +224,7 @@ return $default(_that.isearningsPerSecond,_that.monthlySalary,_that.payday,_that
 @JsonSerializable()
 
 class _UserState implements UserState {
-  const _UserState({@JsonKey(name: 'hasSalary') this.isearningsPerSecond = false, @JsonKey(name: 'amount') this.monthlySalary = 0, this.payday = 0, @JsonKey(name: 'amountPerSec') this.earningsPerSecond = 0.0, this.hasAgreedTerm = true, final  List<WishModel> starWishes = const [], final  List<WishModel> totalWishes = const []}): _starWishes = starWishes,_totalWishes = totalWishes;
+  const _UserState({@JsonKey(name: 'hasSalary') this.isearningsPerSecond = false, @JsonKey(name: 'amount') this.monthlySalary = 0, this.payday = 0, @JsonKey(name: 'amountPerSec') this.earningsPerSecond = 0.0, this.hasAgreedTerm = true, final  List<WishModel> starWishes = const [], final  List<WishModel> Wishes3 = const [], final  List<WishModel> totalWishes = const []}): _starWishes = starWishes,_Wishes3 = Wishes3,_totalWishes = totalWishes;
   factory _UserState.fromJson(Map<String, dynamic> json) => _$UserStateFromJson(json);
 
 /// 월 수익 설정 여부
@@ -242,6 +244,15 @@ class _UserState implements UserState {
   if (_starWishes is EqualUnmodifiableListView) return _starWishes;
   // ignore: implicit_dynamic_type
   return EqualUnmodifiableListView(_starWishes);
+}
+
+/// 위시리스트 상위 노출 3개
+ final  List<WishModel> _Wishes3;
+/// 위시리스트 상위 노출 3개
+@override@JsonKey() List<WishModel> get Wishes3 {
+  if (_Wishes3 is EqualUnmodifiableListView) return _Wishes3;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_Wishes3);
 }
 
 /// 전체 위시리스트
@@ -267,16 +278,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UserState&&(identical(other.isearningsPerSecond, isearningsPerSecond) || other.isearningsPerSecond == isearningsPerSecond)&&(identical(other.monthlySalary, monthlySalary) || other.monthlySalary == monthlySalary)&&(identical(other.payday, payday) || other.payday == payday)&&(identical(other.earningsPerSecond, earningsPerSecond) || other.earningsPerSecond == earningsPerSecond)&&(identical(other.hasAgreedTerm, hasAgreedTerm) || other.hasAgreedTerm == hasAgreedTerm)&&const DeepCollectionEquality().equals(other._starWishes, _starWishes)&&const DeepCollectionEquality().equals(other._totalWishes, _totalWishes));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UserState&&(identical(other.isearningsPerSecond, isearningsPerSecond) || other.isearningsPerSecond == isearningsPerSecond)&&(identical(other.monthlySalary, monthlySalary) || other.monthlySalary == monthlySalary)&&(identical(other.payday, payday) || other.payday == payday)&&(identical(other.earningsPerSecond, earningsPerSecond) || other.earningsPerSecond == earningsPerSecond)&&(identical(other.hasAgreedTerm, hasAgreedTerm) || other.hasAgreedTerm == hasAgreedTerm)&&const DeepCollectionEquality().equals(other._starWishes, _starWishes)&&const DeepCollectionEquality().equals(other._Wishes3, _Wishes3)&&const DeepCollectionEquality().equals(other._totalWishes, _totalWishes));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,isearningsPerSecond,monthlySalary,payday,earningsPerSecond,hasAgreedTerm,const DeepCollectionEquality().hash(_starWishes),const DeepCollectionEquality().hash(_totalWishes));
+int get hashCode => Object.hash(runtimeType,isearningsPerSecond,monthlySalary,payday,earningsPerSecond,hasAgreedTerm,const DeepCollectionEquality().hash(_starWishes),const DeepCollectionEquality().hash(_Wishes3),const DeepCollectionEquality().hash(_totalWishes));
 
 @override
 String toString() {
-  return 'UserState(isearningsPerSecond: $isearningsPerSecond, monthlySalary: $monthlySalary, payday: $payday, earningsPerSecond: $earningsPerSecond, hasAgreedTerm: $hasAgreedTerm, starWishes: $starWishes, totalWishes: $totalWishes)';
+  return 'UserState(isearningsPerSecond: $isearningsPerSecond, monthlySalary: $monthlySalary, payday: $payday, earningsPerSecond: $earningsPerSecond, hasAgreedTerm: $hasAgreedTerm, starWishes: $starWishes, Wishes3: $Wishes3, totalWishes: $totalWishes)';
 }
 
 
@@ -287,7 +298,7 @@ abstract mixin class _$UserStateCopyWith<$Res> implements $UserStateCopyWith<$Re
   factory _$UserStateCopyWith(_UserState value, $Res Function(_UserState) _then) = __$UserStateCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(name: 'hasSalary') bool isearningsPerSecond,@JsonKey(name: 'amount') int monthlySalary, int payday,@JsonKey(name: 'amountPerSec') double earningsPerSecond, bool hasAgreedTerm, List<WishModel> starWishes, List<WishModel> totalWishes
+@JsonKey(name: 'hasSalary') bool isearningsPerSecond,@JsonKey(name: 'amount') int monthlySalary, int payday,@JsonKey(name: 'amountPerSec') double earningsPerSecond, bool hasAgreedTerm, List<WishModel> starWishes, List<WishModel> Wishes3, List<WishModel> totalWishes
 });
 
 
@@ -304,7 +315,7 @@ class __$UserStateCopyWithImpl<$Res>
 
 /// Create a copy of UserState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? isearningsPerSecond = null,Object? monthlySalary = null,Object? payday = null,Object? earningsPerSecond = null,Object? hasAgreedTerm = null,Object? starWishes = null,Object? totalWishes = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? isearningsPerSecond = null,Object? monthlySalary = null,Object? payday = null,Object? earningsPerSecond = null,Object? hasAgreedTerm = null,Object? starWishes = null,Object? Wishes3 = null,Object? totalWishes = null,}) {
   return _then(_UserState(
 isearningsPerSecond: null == isearningsPerSecond ? _self.isearningsPerSecond : isearningsPerSecond // ignore: cast_nullable_to_non_nullable
 as bool,monthlySalary: null == monthlySalary ? _self.monthlySalary : monthlySalary // ignore: cast_nullable_to_non_nullable
@@ -312,6 +323,7 @@ as int,payday: null == payday ? _self.payday : payday // ignore: cast_nullable_t
 as int,earningsPerSecond: null == earningsPerSecond ? _self.earningsPerSecond : earningsPerSecond // ignore: cast_nullable_to_non_nullable
 as double,hasAgreedTerm: null == hasAgreedTerm ? _self.hasAgreedTerm : hasAgreedTerm // ignore: cast_nullable_to_non_nullable
 as bool,starWishes: null == starWishes ? _self._starWishes : starWishes // ignore: cast_nullable_to_non_nullable
+as List<WishModel>,Wishes3: null == Wishes3 ? _self._Wishes3 : Wishes3 // ignore: cast_nullable_to_non_nullable
 as List<WishModel>,totalWishes: null == totalWishes ? _self._totalWishes : totalWishes // ignore: cast_nullable_to_non_nullable
 as List<WishModel>,
   ));

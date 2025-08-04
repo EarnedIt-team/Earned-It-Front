@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:earned_it/models/api_response.dart';
 import 'package:retrofit/retrofit.dart';
@@ -58,8 +60,17 @@ abstract class RestClient {
 
   /// 위시아이템 추가 API
   @POST("/api/wish")
+  @MultiPart()
   Future<ApiResponse> addWishItem(
+    @Header("Authorization") String accesstoken, {
+    @Part(name: "wish") required String wish,
+    @Part(name: "image") required File itemImage,
+  });
+
+  /// 위시아이템 삭제 API
+  @DELETE("/api/wish/{wishId}")
+  Future<ApiResponse> deleteWishItem(
     @Header("Authorization") String accesstoken,
-    @Body() Map<String, dynamic> body,
+    @Path("wishId") int wishId,
   );
 }

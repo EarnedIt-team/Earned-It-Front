@@ -25,6 +25,9 @@ abstract class UserState with _$UserState {
     /// 즐겨찾기 위시리스트 (Top5)
     @Default([]) List<WishModel> starWishes,
 
+    /// 위시리스트 상위 노출 3개
+    @Default([]) List<WishModel> Wishes3,
+
     /// 전체 위시리스트
     @Default([]) List<WishModel> totalWishes,
   }) = _UserState;

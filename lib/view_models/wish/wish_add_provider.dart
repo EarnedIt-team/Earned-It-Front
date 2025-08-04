@@ -88,7 +88,7 @@ class WishAddViewModel extends AutoDisposeNotifier<WishAddState> {
               context: context,
               type: ToastificationType.error,
               style: ToastificationStyle.flat,
-              title: const Text('이미지 크기는 2MB를 초과할 수 없습니다.'),
+              title: const Text('이미지 크기는 5MB를 초과할 수 없습니다.'),
               autoCloseDuration: const Duration(seconds: 3),
             );
           }
@@ -119,22 +119,28 @@ class WishAddViewModel extends AutoDisposeNotifier<WishAddState> {
 
   Future<void> submitWishItem(BuildContext context) async {
     if (!state.canSubmit) return;
-
     state = state.copyWith(isLoading: true);
 
     try {
       final String? accessToken = await _storage.read(key: 'accessToken');
 
+      // 1. UI 데이터로 WishModel 객체 생성
       final newWishItem = WishModel(
         name: nameController.text,
         vendor: vendorController.text,
         price: int.tryParse(priceController.text.replaceAll(',', '')) ?? 0,
         url: urlController.text,
-        itemImage: state.itemImage!.path,
         starred: state.isTop5,
+        // itemImage 필드는 서버에서 URL을 받아 채워지므로 여기서는 비워둡니다.
       );
 
-      await _wishService.addWishItem(accessToken!, newWishItem);
+      // 2. WishService의 수정된 메서드 호출
+      await _wishService.addWishItem(
+        accessToken: accessToken!,
+        wishItem: newWishItem,
+        imageXFile: state.itemImage!, // canSubmit 조건으로 인해 null이 아님
+      );
+
       await ref.read(userProvider.notifier).loadUser();
 
       if (context.mounted) {
@@ -147,8 +153,10 @@ class WishAddViewModel extends AutoDisposeNotifier<WishAddState> {
         context.pop();
       }
     } on DioException catch (e) {
+      print(e);
       if (context.mounted) _handleApiError(context, e);
     } catch (e) {
+      print(e);
       if (context.mounted) _handleGeneralError(context, e);
     } finally {
       if (context.mounted) {

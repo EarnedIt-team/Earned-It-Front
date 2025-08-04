@@ -7,7 +7,7 @@ part 'wish_model.g.dart';
 @freezed
 abstract class WishModel with _$WishModel {
   const factory WishModel({
-    @Default(0) int id,
+    @Default(0) int wishId,
     @Default(0) int userId,
     @Default('') String name,
     @Default(0) int price,

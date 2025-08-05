@@ -89,4 +89,13 @@ abstract class RestClient {
   Future<ApiResponse> loadHighLightWishInfo(
     @Header("Authorization") String accessToken,
   );
+
+  /// 위시리스트 전체 목록 불러오기
+  @GET("/api/wish")
+  Future<ApiResponse> getWishList(
+    @Header("Authorization") String accessToken,
+    @Query("page") int page,
+    @Query("size") int size,
+    @Query("sort") String sort, // 예: "price,asc" 또는 "createdAt,desc"
+  );
 }

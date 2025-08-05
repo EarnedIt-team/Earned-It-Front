@@ -213,7 +213,7 @@ class _WishViewState extends ConsumerState<WishView> {
                       itemBuilder: (context, index) {
                         final item = starWishList[index];
                         // 각 아이템 위젯을 분리하여 재빌드를 최소화
-                        return WishlistItem(
+                        return _WishlistItem(
                           item: item,
                           itemIndex: index,
                           isStar: true,
@@ -266,7 +266,7 @@ class _WishViewState extends ConsumerState<WishView> {
                       itemCount: allWishList.length,
                       itemBuilder: (context, index) {
                         final item = allWishList[index];
-                        return WishlistItem(
+                        return _WishlistItem(
                           item: item,
                           itemIndex: index,
                           isStar: false,
@@ -297,12 +297,12 @@ class _WishViewState extends ConsumerState<WishView> {
 }
 
 // 👇 3. 각 리스트 아이템을 별도의 ConsumerWidget으로 분리
-class WishlistItem extends ConsumerWidget {
+class _WishlistItem extends ConsumerWidget {
   final WishModel item;
   final int itemIndex;
   final bool isStar;
 
-  const WishlistItem({
+  const _WishlistItem({
     super.key,
     required this.item,
     required this.itemIndex,

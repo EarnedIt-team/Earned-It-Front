@@ -84,6 +84,33 @@ class UserNotifier extends Notifier<UserState> {
     }
   }
 
+  /// 사용자의 전체 위시리스트를 불러옵니다.
+  Future<void> loadAllWish() async {
+    try {
+      final String? accessToken = await _storage.read(key: 'accessToken');
+
+      final wishService = ref.read(wishServiceProvider);
+      final response = await wishService.getWishList(
+        accessToken: accessToken!,
+        page: 0,
+        size: 20,
+        sort: "name,asc",
+      );
+
+      final List<dynamic> rawAllWishes = response.data["content"];
+
+      final List<WishModel> allWishList =
+          rawAllWishes
+              .map((json) => WishModel.fromJson(json as Map<String, dynamic>))
+              .toList();
+
+      state = state.copyWith(totalWishes: allWishList);
+      print("저장 완료");
+    } catch (e) {
+      print("유저 정보 불러오기 에러 $e");
+    }
+  }
+
   /// 유저 정보를 부분적으로 또는 전체적으로 갱신하는 메소드입니다.
   /// 필요한 파라미터만 선택적으로 전달하여 사용할 수 있습니다.
   void loadUserInfo({

@@ -126,4 +126,31 @@ class WishService {
       throw Exception("서버에서 에러가 발생했습니다.");
     }
   }
+
+  /// 위시리스트 목록을 서버에서 불러옵니다.
+  Future<ApiResponse> getWishList({
+    required String accessToken,
+    required int page,
+    required int size,
+    required String sort,
+  }) async {
+    try {
+      String token = "Bearer $accessToken";
+      final ApiResponse response = await _restClient.getWishList(
+        token,
+        page,
+        size,
+        sort,
+      );
+
+      if (response.code != "SUCCESS") {
+        throw Exception(response.message);
+      }
+      return response;
+    } on DioException catch (e) {
+      throw Exception(e.response?.data["message"] ?? "요청 처리 중 에러가 발생했습니다.");
+    } catch (e) {
+      throw Exception("서버에서 에러가 발생했습니다.");
+    }
+  }
 }

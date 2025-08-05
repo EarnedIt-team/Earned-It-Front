@@ -11,7 +11,7 @@ import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-final carouselIndexProvider = StateProvider.autoDispose<int>((ref) => 0);
+final carouselIndexProvider = StateProvider<int>((ref) => 0);
 
 // 데이터 준비 상태를 알려주는 Provider (autoDispose 유지)
 final isHomeReadyProvider = Provider.autoDispose<bool>((ref) {

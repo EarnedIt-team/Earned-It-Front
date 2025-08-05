@@ -54,6 +54,7 @@ class _WishAllViewState extends ConsumerState<WishAllView> {
       children: [
         Scaffold(
           appBar: AppBar(
+            scrolledUnderElevation: 0,
             title: const Text(
               '전체 위시리스트',
               style: TextStyle(fontWeight: FontWeight.bold),

@@ -41,6 +41,7 @@ class _WishViewState extends ConsumerState<WishView> {
         children: <Widget>[
           Scaffold(
             appBar: AppBar(
+              scrolledUnderElevation: 0,
               title: const Row(
                 children: <Widget>[
                   Icon(Icons.local_mall),

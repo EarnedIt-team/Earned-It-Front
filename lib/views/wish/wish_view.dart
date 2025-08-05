@@ -181,6 +181,13 @@ class _WishViewState extends ConsumerState<WishView> {
                                             value: totalDisplayAmount.toInt(),
                                             enableSeparator: true,
                                             textStyle: TextStyle(
+                                              color:
+                                                  Theme.of(
+                                                            context,
+                                                          ).brightness ==
+                                                          Brightness.dark
+                                                      ? Colors.white
+                                                      : Colors.black,
                                               fontSize: context.width(0.05),
                                               fontWeight: FontWeight.bold,
                                               height: 1.5,
@@ -229,13 +236,27 @@ class _WishViewState extends ConsumerState<WishView> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          Text(
-                            "ALL",
-                            style: TextStyle(
-                              fontSize: context.width(0.06),
-                              fontWeight: FontWeight.bold,
-                              height: 1.0,
-                            ),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.baseline,
+                            textBaseline: TextBaseline.alphabetic,
+                            children: [
+                              Text(
+                                "ALL",
+                                style: TextStyle(
+                                  fontSize: context.width(0.06),
+                                  fontWeight: FontWeight.bold,
+                                  height: 1.0,
+                                ),
+                              ),
+                              Text(
+                                " (${userState.currentWishCount}/100)",
+                                style: TextStyle(
+                                  fontSize: context.width(0.035),
+                                  fontWeight: FontWeight.w600,
+                                  height: 1.0,
+                                ),
+                              ),
+                            ],
                           ),
                           TextButton(
                             style: TextButton.styleFrom(

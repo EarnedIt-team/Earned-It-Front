@@ -92,17 +92,14 @@ class WishEditViewModel extends AutoDisposeNotifier<WishEditState> {
     final isFormValid =
         nameController.text.isNotEmpty &&
         vendorController.text.isNotEmpty &&
-        priceController.text.isNotEmpty &&
-        state.imageForUpload != null; // 👈 이미지가 준비되었는지 확인
+        priceController.text.isNotEmpty;
 
     final hasChanges =
         nameController.text != initial.name ||
         vendorController.text != initial.vendor ||
         priceController.text.replaceAll(',', '') != initial.price.toString() ||
         urlController.text != initial.url ||
-        state.isTop5 != initial.starred ||
-        (state.imageForUpload?.path !=
-            state.initialWish?.itemImage); // 이미지 변경 여부 확인 (경로 비교)
+        state.isTop5 != initial.starred;
 
     state = state.copyWith(canSubmit: isFormValid && hasChanges);
   }

@@ -30,6 +30,9 @@ abstract class UserState with _$UserState {
 
     /// 전체 위시리스트
     @Default([]) List<WishModel> totalWishes,
+
+    /// 등록된 위시아이템 개수
+    @Default(0) int currentWishCount,
   }) = _UserState;
 
   // JSON 직렬화를 위한 fromJson 팩토리 생성자 추가

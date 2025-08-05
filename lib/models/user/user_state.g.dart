@@ -27,6 +27,7 @@ _UserState _$UserStateFromJson(Map<String, dynamic> json) => _UserState(
           ?.map((e) => WishModel.fromJson(e as Map<String, dynamic>))
           .toList() ??
       const [],
+  currentWishCount: (json['currentWishCount'] as num?)?.toInt() ?? 0,
 );
 
 Map<String, dynamic> _$UserStateToJson(_UserState instance) =>
@@ -39,4 +40,5 @@ Map<String, dynamic> _$UserStateToJson(_UserState instance) =>
       'starWishes': instance.starWishes,
       'Wishes3': instance.Wishes3,
       'totalWishes': instance.totalWishes,
+      'currentWishCount': instance.currentWishCount,
     };

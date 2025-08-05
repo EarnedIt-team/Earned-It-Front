@@ -70,14 +70,18 @@ class UserNotifier extends Notifier<UserState> {
       final wishService = ref.read(wishServiceProvider);
       final response = await wishService.loadHighLightWish(accessToken!);
 
-      final List<dynamic> rawHighLightWishes = response.data;
+      final currentWishCount = response.data["wishInfo"]["currentWishCount"];
+      final List<dynamic> rawHighLightWishes = response.data["wishHighlight"];
 
       final List<WishModel> highLightWishList =
           rawHighLightWishes
               .map((json) => WishModel.fromJson(json as Map<String, dynamic>))
               .toList();
 
-      state = state.copyWith(Wishes3: highLightWishList);
+      state = state.copyWith(
+        Wishes3: highLightWishList,
+        currentWishCount: currentWishCount,
+      );
       print("저장 완료");
     } catch (e) {
       print("유저 정보 불러오기 에러 $e");

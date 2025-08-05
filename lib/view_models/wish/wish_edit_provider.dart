@@ -11,6 +11,8 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:toastification/toastification.dart';
+import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart'; // path_provider 패키지 import
 
 // 2. 로직을 처리하는 Notifier(ViewModel) 클래스
 class WishEditViewModel extends AutoDisposeNotifier<WishEditState> {
@@ -50,13 +52,36 @@ class WishEditViewModel extends AutoDisposeNotifier<WishEditState> {
   }
 
   // View로부터 초기 데이터를 받아 상태와 컨트롤러를 설정
-  void initialize(WishModel wishItem) {
+  Future<void> initialize(WishModel wishItem) async {
     state = state.copyWith(initialWish: wishItem, isTop5: wishItem.starred);
     nameController.text = wishItem.name;
     vendorController.text = wishItem.vendor;
     priceController.text = wishItem.price.toString();
     urlController.text = wishItem.url;
-    _updateCanSubmit(); // 초기 상태 검사
+
+    // 👇 4. 기존 이미지 URL을 파일로 다운로드하여 상태에 저장
+    if (wishItem.itemImage.isNotEmpty) {
+      final imageFile = await _urlToXFile(wishItem.itemImage);
+      state = state.copyWith(imageForUpload: imageFile);
+    }
+    _updateCanSubmit();
+  }
+
+  // URL을 XFile 객체로 변환하는 헬퍼 메서드
+  Future<XFile?> _urlToXFile(String imageUrl) async {
+    try {
+      final response = await http.get(Uri.parse(imageUrl));
+      if (response.statusCode == 200) {
+        final tempDir = await getTemporaryDirectory();
+        final fileName = imageUrl.split('/').last;
+        final file = File('${tempDir.path}/$fileName');
+        await file.writeAsBytes(response.bodyBytes);
+        return XFile(file.path);
+      }
+    } catch (e) {
+      debugPrint("이미지 다운로드 실패: $e");
+    }
+    return null;
   }
 
   // 버튼 활성화 여부를 업데이트하는 핵심 로직
@@ -67,7 +92,8 @@ class WishEditViewModel extends AutoDisposeNotifier<WishEditState> {
     final isFormValid =
         nameController.text.isNotEmpty &&
         vendorController.text.isNotEmpty &&
-        priceController.text.isNotEmpty;
+        priceController.text.isNotEmpty &&
+        state.imageForUpload != null; // 👈 이미지가 준비되었는지 확인
 
     final hasChanges =
         nameController.text != initial.name ||
@@ -75,7 +101,8 @@ class WishEditViewModel extends AutoDisposeNotifier<WishEditState> {
         priceController.text.replaceAll(',', '') != initial.price.toString() ||
         urlController.text != initial.url ||
         state.isTop5 != initial.starred ||
-        state.newImage != null;
+        (state.imageForUpload?.path !=
+            state.initialWish?.itemImage); // 이미지 변경 여부 확인 (경로 비교)
 
     state = state.copyWith(canSubmit: isFormValid && hasChanges);
   }
@@ -101,7 +128,7 @@ class WishEditViewModel extends AutoDisposeNotifier<WishEditState> {
           }
           return;
         }
-        state = state.copyWith(newImage: pickedImage);
+        state = state.copyWith(imageForUpload: pickedImage);
         _updateCanSubmit();
       }
     } catch (e) {
@@ -123,7 +150,6 @@ class WishEditViewModel extends AutoDisposeNotifier<WishEditState> {
     try {
       final accessToken = await _storage.read(key: 'accessToken');
 
-      // 수정된 내용으로 새로운 WishModel 생성
       final updatedWish = state.initialWish!.copyWith(
         name: nameController.text,
         vendor: vendorController.text,
@@ -132,17 +158,15 @@ class WishEditViewModel extends AutoDisposeNotifier<WishEditState> {
         starred: state.isTop5,
       );
 
-      // 👇 핵심 수정: imageXFile에 nullable한 state.newImage를 그대로 전달
+      // 👇 5. imageForUpload를 전달 (null이 아님을 보장)
       await _wishService.editWishItem(
         accessToken: accessToken!,
         wishId: updatedWish.wishId,
         updatedWish: updatedWish,
-        newImage: state.newImage,
+        newImage: state.imageForUpload, // nullable로 전달
       );
 
-      // 수정 성공 시, 전체 유저 정보를 다시 불러와 리스트 갱신
       await ref.read(userProvider.notifier).loadUser();
-      await ref.read(userProvider.notifier).loadHighLightWish();
 
       if (context.mounted) {
         toastification.show(

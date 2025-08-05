@@ -10,6 +10,7 @@ import 'package:earned_it/views/setting/set_salary_view.dart';
 import 'package:earned_it/views/setting/setting_view.dart';
 import 'package:earned_it/views/splash_view.dart';
 import 'package:earned_it/views/wish/wish_add_view.dart';
+import 'package:earned_it/views/wish/wish_all_view.dart';
 import 'package:earned_it/views/wish/wish_edit_view.dart';
 import 'package:earned_it/views/wish/wish_search_view.dart';
 import 'package:earned_it/views/wish/wish_view.dart';
@@ -72,7 +73,11 @@ final GoRouter routes = GoRouter(
       builder:
           (BuildContext context, GoRouterState state) => const WishSearchView(),
     ),
-
+    GoRoute(
+      path: '/wishALL',
+      builder:
+          (BuildContext context, GoRouterState state) => const WishAllView(),
+    ),
     // =================================================
     // 셸(Shell) 경로: 하단 네비게이션 바가 유지되는 화면들
     // =================================================

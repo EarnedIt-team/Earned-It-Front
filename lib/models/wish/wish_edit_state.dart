@@ -9,7 +9,7 @@ part 'wish_edit_state.freezed.dart';
 abstract class WishEditState with _$WishEditState {
   const factory WishEditState({
     WishModel? initialWish, // 수정 전 원본 데이터
-    XFile? newImage, // 사용자가 새로 선택한 이미지
+    XFile? imageForUpload, // 새로 선택했거나, 기존 이미지를 다운로드한 파일
     @Default(false) bool isTop5,
     @Default(false) bool canSubmit,
     @Default(false) bool isLoading,

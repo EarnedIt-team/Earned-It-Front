@@ -111,9 +111,9 @@ class _WishEditViewState extends ConsumerState<WishEditView> {
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(12),
                             child:
-                                wishEditState.newImage != null
+                                wishEditState.imageForUpload != null
                                     ? Image.file(
-                                      File(wishEditState.newImage!.path),
+                                      File(wishEditState.imageForUpload!.path),
                                       fit: BoxFit.cover,
                                     )
                                     : (wishEditState

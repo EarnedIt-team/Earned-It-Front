@@ -213,7 +213,7 @@ class _WishViewState extends ConsumerState<WishView> {
                       itemBuilder: (context, index) {
                         final item = starWishList[index];
                         // 각 아이템 위젯을 분리하여 재빌드를 최소화
-                        return _WishlistItem(
+                        return WishlistItem(
                           item: item,
                           itemIndex: index,
                           isStar: true,
@@ -243,7 +243,9 @@ class _WishViewState extends ConsumerState<WishView> {
                               minimumSize: Size.zero,
                               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                             ),
-                            onPressed: () {},
+                            onPressed: () {
+                              context.push('/wishALL');
+                            },
                             child: const Text(
                               "자세히보기",
                               style: TextStyle(
@@ -264,7 +266,7 @@ class _WishViewState extends ConsumerState<WishView> {
                       itemCount: allWishList.length,
                       itemBuilder: (context, index) {
                         final item = allWishList[index];
-                        return _WishlistItem(
+                        return WishlistItem(
                           item: item,
                           itemIndex: index,
                           isStar: false,
@@ -283,6 +285,7 @@ class _WishViewState extends ConsumerState<WishView> {
                         ),
                       ),
                     ),
+                  SizedBox(height: context.height(0.05)),
                 ],
               ),
             ),
@@ -294,16 +297,26 @@ class _WishViewState extends ConsumerState<WishView> {
 }
 
 // 👇 3. 각 리스트 아이템을 별도의 ConsumerWidget으로 분리
-class _WishlistItem extends ConsumerWidget {
+class WishlistItem extends ConsumerWidget {
   final WishModel item;
   final int itemIndex;
   final bool isStar;
 
-  const _WishlistItem({
+  const WishlistItem({
+    super.key,
     required this.item,
     required this.itemIndex,
     required this.isStar,
   });
+
+  // 진행률에 따라 색상을 반환하는 함수
+  Color _getProgressColor(double progress) {
+    if (progress >= 1.0) return Colors.green; // 100% 달성 시
+    if (progress >= 0.8) return Colors.purple;
+    if (progress >= 0.5) return Colors.blue;
+    if (progress >= 0.3) return Colors.orange;
+    return Colors.red;
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -326,6 +339,14 @@ class _WishlistItem extends ConsumerWidget {
 
     final itemDisplayAmount = calculateItemDisplayAmount();
 
+    // 1. 진행률 계산 (0.0 ~ 1.0)
+    // item.price가 0인 경우 0으로 나누는 오류를 방지합니다.
+    final double progress =
+        item.price > 0 ? (itemDisplayAmount / item.price) : 0.0;
+
+    // 2. 진행률에 따른 색상 결정
+    final progressColor = _getProgressColor(progress);
+
     return Card(
       color:
           Theme.of(context).brightness == Brightness.dark
@@ -336,73 +357,87 @@ class _WishlistItem extends ConsumerWidget {
       child: ClipRRect(
         child: Slidable(
           key: ValueKey(item.wishId),
-          startActionPane: ActionPane(
-            motion: const StretchMotion(),
-            extentRatio: 0.5,
-            children: <Widget>[
-              SlidableAction(
-                onPressed: (context) {},
-                backgroundColor: Colors.lightBlue,
-                foregroundColor: Colors.white,
-                icon: Icons.check,
-                label: '구매',
-              ),
-              SlidableAction(
-                onPressed: (context) {},
-                backgroundColor: Colors.orangeAccent,
-                foregroundColor: Colors.white,
-                icon: Icons.star,
-                label: isStar ? 'Star 해제' : 'Star 등록',
-              ),
-            ],
-          ),
-          endActionPane: ActionPane(
-            motion: const StretchMotion(),
-            extentRatio: 0.5,
-            children: <Widget>[
-              SlidableAction(
-                onPressed: (context) => context.push('/editWish', extra: item),
-                backgroundColor: Colors.grey.shade600,
-                foregroundColor: Colors.white,
-                icon: Icons.edit,
-                label: '수정',
-              ),
-              SlidableAction(
-                onPressed: (context) {
-                  showDialog(
-                    context: context,
-                    builder:
-                        (ctx) => AlertDialog(
-                          title: const Text('삭제 확인'),
-                          content: Text("'${item.name}' 항목을 정말로 삭제하시겠습니까?"),
-                          actions: [
-                            TextButton(
-                              child: const Text('취소'),
-                              onPressed: () => Navigator.of(ctx).pop(),
-                            ),
-                            TextButton(
-                              child: const Text(
-                                '삭제',
-                                style: TextStyle(color: Colors.red),
-                              ),
-                              onPressed: () {
-                                ref
-                                    .read(wishViewModelProvider.notifier)
-                                    .deleteWishItem(context, item.wishId);
-                                Navigator.of(ctx).pop();
-                              },
-                            ),
-                          ],
-                        ),
-                  );
-                },
-                backgroundColor: const Color(0xFFFE4A49),
-                foregroundColor: Colors.white,
-                icon: Icons.delete,
-                label: '삭제',
-              ),
-            ],
-          ),
+          startActionPane:
+              isStar
+                  ? ActionPane(
+                    motion: const StretchMotion(),
+                    extentRatio: 0.5,
+                    children: <Widget>[
+                      SlidableAction(
+                        onPressed: (context) {},
+                        backgroundColor: Colors.lightBlue,
+                        foregroundColor: Colors.white,
+                        icon: Icons.check,
+                        label: '구매',
+                      ),
+                      SlidableAction(
+                        onPressed: (context) {},
+                        backgroundColor: Colors.orangeAccent,
+                        foregroundColor: Colors.white,
+                        icon: Icons.star,
+                        label: "Star",
+                      ),
+                    ],
+                  )
+                  : null,
+          endActionPane:
+              isStar
+                  ? ActionPane(
+                    motion: const StretchMotion(),
+                    extentRatio: 0.5,
+                    children: <Widget>[
+                      SlidableAction(
+                        onPressed:
+                            (context) => context.push('/editWish', extra: item),
+                        backgroundColor: Colors.grey.shade600,
+                        foregroundColor: Colors.white,
+                        icon: Icons.edit,
+                        label: '수정',
+                      ),
+                      SlidableAction(
+                        onPressed: (context) {
+                          showDialog(
+                            context: context,
+                            builder:
+                                (ctx) => AlertDialog(
+                                  title: const Text('삭제 확인'),
+                                  content: Text(
+                                    "'${item.name}' 항목을 정말로 삭제하시겠습니까?",
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      child: const Text('취소'),
+                                      onPressed: () => Navigator.of(ctx).pop(),
+                                    ),
+                                    TextButton(
+                                      child: const Text(
+                                        '삭제',
+                                        style: TextStyle(color: Colors.red),
+                                      ),
+                                      onPressed: () {
+                                        ref
+                                            .read(
+                                              wishViewModelProvider.notifier,
+                                            )
+                                            .deleteWishItem(
+                                              context,
+                                              item.wishId,
+                                            );
+                                        Navigator.of(ctx).pop();
+                                      },
+                                    ),
+                                  ],
+                                ),
+                          );
+                        },
+                        backgroundColor: const Color(0xFFFE4A49),
+                        foregroundColor: Colors.white,
+                        icon: Icons.delete,
+                        label: '삭제',
+                      ),
+                    ],
+                  )
+                  : null,
           child: InkWell(
             onTap: () {
               /* 상세 페이지 이동 등 */
@@ -473,12 +508,7 @@ class _WishlistItem extends ConsumerWidget {
                               Text(
                                 '${currencyFormat.format(itemDisplayAmount.toInt())}원',
                                 style: TextStyle(
-                                  color:
-                                      itemDisplayAmount >= item.price
-                                          ? Colors.green
-                                          : Theme.of(
-                                            context,
-                                          ).textTheme.bodyLarge?.color,
+                                  color: progressColor,
                                   fontWeight: FontWeight.w600,
                                   fontSize: context.width(0.038),
                                 ),
@@ -502,6 +532,35 @@ class _WishlistItem extends ConsumerWidget {
                       ],
                     ),
                   ),
+                  if (isStar)
+                    SizedBox(
+                      width: context.width(0.1),
+                      height: context.width(0.1),
+                      child: Stack(
+                        fit: StackFit.expand,
+                        children: [
+                          // 원형 진행률 표시기
+                          CircularProgressIndicator(
+                            value: progress, // 진행률 (0.0 ~ 1.0)
+                            strokeWidth: context.width(0.007), // 선의 두께
+                            backgroundColor: Colors.grey[300], // 배경색
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              progressColor,
+                            ), // 진행 색상
+                          ),
+                          // 중앙에 진행률 텍스트 표시
+                          Center(
+                            child: Text(
+                              '${(progress * 100).toInt()}',
+                              style: TextStyle(
+                                fontSize: context.width(0.035),
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                 ],
               ),
             ),

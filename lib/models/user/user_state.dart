@@ -7,6 +7,12 @@ part 'user_state.g.dart';
 @freezed
 abstract class UserState with _$UserState {
   const factory UserState({
+    /// 사용자 닉네임
+    @Default('') String name,
+
+    /// 프로필 이미지
+    @Default('') String profileImage,
+
     /// 월 수익 설정 여부
     @JsonKey(name: 'hasSalary') @Default(false) bool isearningsPerSecond,
 
@@ -21,12 +27,6 @@ abstract class UserState with _$UserState {
 
     /// 약관 동의 여부 (Default = true)
     @Default(true) bool hasAgreedTerm,
-
-    /// 즐겨찾기 위시리스트 (Top5)
-    @Default([]) List<WishModel> starWishes,
-
-    /// 전체 위시리스트
-    @Default([]) List<WishModel> totalWishes,
   }) = _UserState;
 
   // JSON 직렬화를 위한 fromJson 팩토리 생성자 추가

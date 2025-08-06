@@ -1,6 +1,8 @@
 import 'package:earned_it/models/user/user_state.dart';
 import 'package:earned_it/models/wish/wish_model.dart';
 import 'package:earned_it/services/auth/user_service.dart';
+import 'package:earned_it/services/wish_service.dart';
+import 'package:earned_it/view_models/wish/wish_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
@@ -18,12 +20,6 @@ class UserNotifier extends Notifier<UserState> {
     return const UserState();
   }
 
-  /// 전체 위시리스트를 업데이트하는 메소드
-  void updateTotalWishes(List<WishModel> newTotalWishes) {
-    // copyWith를 사용하여 totalWishes만 새로운 값으로 교체합니다. (임시로 starWishes)
-    state = state.copyWith(starWishes: newTotalWishes);
-  }
-
   /// 사용자 정보를 불러옵니다.
   Future<void> loadUser() async {
     try {
@@ -31,13 +27,7 @@ class UserNotifier extends Notifier<UserState> {
 
       final userService = ref.read(userServiceProvider);
       final response = await userService.loadUserInfo(accessToken!);
-
-      final List<dynamic> rawStarWishes = response.data["starWishes"];
-
-      final List<WishModel> starWishesList =
-          rawStarWishes
-              .map((json) => WishModel.fromJson(json as Map<String, dynamic>))
-              .toList();
+      final responseData = response.data as Map<String, dynamic>;
 
       state = state.copyWith(
         // 월 수익
@@ -52,12 +42,42 @@ class UserNotifier extends Notifier<UserState> {
         // 수익 설정 여부
         isearningsPerSecond:
             response.data["userInfo"]["hasSalary"] ?? state.isearningsPerSecond,
-        // 위시리스트 (TOP5)
-        starWishes: starWishesList,
       );
-      print("저장 완료");
+
+      // 위시리스트(Star) 관련 데이터는 WishNotifier에 업데이트를 위임합니다.
+      ref
+          .read(wishViewModelProvider.notifier)
+          .updateStarWishesFromServer(responseData);
+
+      print("유저 저장 완료 ${responseData}");
     } catch (e) {
       print("유저 정보 불러오기 에러 $e");
+    }
+  }
+
+  /// 사용자 정보를 불러옵니다.
+  Future<void> loadProfile() async {
+    try {
+      final String? accessToken = await _storage.read(key: 'accessToken');
+
+      final userService = ref.read(userServiceProvider);
+      final response = await userService.loadProfile(accessToken!);
+      final responseData = response.data as Map<String, dynamic>;
+
+      state = state.copyWith(
+        // 프로필 사진
+        profileImage: response.data["profileImage"] ?? state.profileImage,
+
+        // 닉네임
+        name: response.data["nickname"] ?? state.name,
+
+        // 월 수익
+        monthlySalary: response.data["monthlySalary"] ?? state.monthlySalary,
+      );
+
+      print("프로필 저장 완료 ${responseData}");
+    } catch (e) {
+      print("프로필 정보 불러오기 에러 $e");
     }
   }
 
@@ -79,6 +99,11 @@ class UserNotifier extends Notifier<UserState> {
       isearningsPerSecond: hasSalary ?? state.isearningsPerSecond,
       hasAgreedTerm: hasAgreedTerm ?? state.hasAgreedTerm,
     );
+  }
+
+  /// 로컬에서 닉네임 정보를 업데이트하는 메소드
+  void updateNickName({required String nickName}) {
+    state = state.copyWith(name: nickName);
   }
 
   /// 급여 정보를 업데이트하는 메소드

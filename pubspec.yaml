@@ -2,7 +2,7 @@ name: earned_it
 description: "A new Flutter project."
 publish_to: 'none'
 
-version: 1.0.4+1
+version: 1.0.7+1
 
 environment:
   sdk: ^3.7.0
@@ -35,6 +35,8 @@ dependencies:
   shared_preferences: ^2.5.3
   lottie: ^3.3.1
   image_picker: ^1.1.2
+  flutter_slidable: ^4.0.0
+  flutter_launcher_icons: ^0.14.4
 
 dev_dependencies:
   flutter_test:
@@ -45,13 +47,20 @@ dev_dependencies:
   build_runner: ^2.5.4
   json_serializable: ^6.9.5
 
+flutter_icons:
+  ios: true
+  android: true
+  image_path: "assets/images/app_icon.png"
+  remove_alpha_ios: true
+
 flutter:
 
   uses-material-design: true
 
   assets:
     - assets/.env
-    - assets/lottie/empty_wish.json
+    
+    - assets/images/default_profile.png
     - assets/images/logo_light.png
     - assets/images/logo_dark.png
     - assets/images/time.png
@@ -66,7 +75,10 @@ flutter:
     - assets/images/money/money_middle.png
     - assets/images/money/money_largeSmall.png
     - assets/images/money/money_largeMiddle.png
+    - assets/images/piece/unknow_piece.png
 
+    - assets/lottie/empty_wish.json
+    - assets/lottie/check_wish.json
 
   fonts:
     - family: Mainfonts

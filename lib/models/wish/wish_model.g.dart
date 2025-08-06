@@ -7,7 +7,7 @@ part of 'wish_model.dart';
 // **************************************************************************
 
 _WishModel _$WishModelFromJson(Map<String, dynamic> json) => _WishModel(
-  id: (json['id'] as num?)?.toInt() ?? 0,
+  wishId: (json['wishId'] as num?)?.toInt() ?? 0,
   userId: (json['userId'] as num?)?.toInt() ?? 0,
   name: json['name'] as String? ?? '',
   price: (json['price'] as num?)?.toInt() ?? 0,
@@ -21,7 +21,7 @@ _WishModel _$WishModelFromJson(Map<String, dynamic> json) => _WishModel(
 
 Map<String, dynamic> _$WishModelToJson(_WishModel instance) =>
     <String, dynamic>{
-      'id': instance.id,
+      'wishId': instance.wishId,
       'userId': instance.userId,
       'name': instance.name,
       'price': instance.price,

@@ -41,4 +41,25 @@ class SettingService {
       throw Exception("서버에서 에러가 발생했습니다.");
     }
   }
+
+  /// 사용자의 월 수익을 설정합니다.
+  Future<ApiResponse> setNickName(String accessToken, String nickname) async {
+    try {
+      final Map<String, String> requestBody = <String, String>{
+        "nickname": nickname,
+      };
+
+      final ApiResponse response = await _restClient.setNickName(
+        accessToken,
+        requestBody,
+      );
+      return response;
+      // 400 에러 등
+    } on DioException catch (e) {
+      rethrow;
+    } catch (e) {
+      // DioException이 아닌 다른 예외 발생 시 (네트워크 연결 끊김 등)
+      throw Exception("서버에서 에러가 발생했습니다.");
+    }
+  }
 }

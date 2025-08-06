@@ -1,3 +1,4 @@
+import 'package:earned_it/models/wish/wish_model.dart';
 import 'package:earned_it/views/home/home_view.dart';
 import 'package:earned_it/views/auth/login/forgot_password_view.dart';
 import 'package:earned_it/views/auth/login/login_view.dart';
@@ -5,14 +6,21 @@ import 'package:earned_it/views/navigation_view.dart';
 import 'package:earned_it/views/onboarding/onboarding_view.dart';
 import 'package:earned_it/views/puzzle/puzzle_view.dart';
 import 'package:earned_it/views/auth/signup/sign_view.dart';
+import 'package:earned_it/views/setting/nickname_edit_view.dart';
 import 'package:earned_it/views/setting/set_salary_view.dart';
 import 'package:earned_it/views/setting/setting_view.dart';
 import 'package:earned_it/views/splash_view.dart';
 import 'package:earned_it/views/wish/wish_add_view.dart';
+import 'package:earned_it/views/wish/wish_all_view.dart';
+import 'package:earned_it/views/wish/wish_edit_view.dart';
+import 'package:earned_it/views/wish/wish_search_view.dart';
 import 'package:earned_it/views/wish/wish_view.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:go_router/go_router.dart';
+
+final container = ProviderContainer();
 
 final GoRouter routes = GoRouter(
   initialLocation: '/',
@@ -51,11 +59,35 @@ final GoRouter routes = GoRouter(
           (BuildContext context, GoRouterState state) => const SetSalaryView(),
     ),
     GoRoute(
+      path: '/editName',
+      builder:
+          (BuildContext context, GoRouterState state) =>
+              const NicknameEditView(),
+    ),
+    GoRoute(
       path: '/addWish',
       builder:
           (BuildContext context, GoRouterState state) => const WishAddView(),
     ),
-
+    GoRoute(
+      path: '/editWish',
+      builder: (BuildContext context, GoRouterState state) {
+        // extra로 전달된 WishModel 객체를 추출합니다.
+        final wishItem = state.extra as WishModel;
+        // WishEditView에 추출한 객체를 전달하여 화면을 생성합니다.
+        return WishEditView(wishItem: wishItem);
+      },
+    ),
+    GoRoute(
+      path: '/wishSearch',
+      builder:
+          (BuildContext context, GoRouterState state) => const WishSearchView(),
+    ),
+    GoRoute(
+      path: '/wishALL',
+      builder:
+          (BuildContext context, GoRouterState state) => const WishAllView(),
+    ),
     // =================================================
     // 셸(Shell) 경로: 하단 네비게이션 바가 유지되는 화면들
     // =================================================
@@ -68,27 +100,47 @@ final GoRouter routes = GoRouter(
       routes: <RouteBase>[
         GoRoute(
           path: '/home', // 이전의 '/', '/main'을 '/home'으로 통일합니다.
-          builder: (BuildContext context, GoRouterState state) {
-            return const HomeView();
-          },
+          pageBuilder:
+              (context, state) => CustomTransitionPage<void>(
+                key: state.pageKey,
+                child: const HomeView(),
+                transitionsBuilder:
+                    (context, animation, secondaryAnimation, child) =>
+                        FadeTransition(opacity: animation, child: child),
+              ),
         ),
         GoRoute(
           path: '/wish',
-          builder: (BuildContext context, GoRouterState state) {
-            return const WishView();
-          },
+          pageBuilder:
+              (context, state) => CustomTransitionPage<void>(
+                key: state.pageKey,
+                child: const WishView(),
+                transitionsBuilder:
+                    (context, animation, secondaryAnimation, child) =>
+                        FadeTransition(opacity: animation, child: child),
+              ),
         ),
         GoRoute(
           path: '/puzzle',
-          builder: (BuildContext context, GoRouterState state) {
-            return const PuzzleView();
-          },
+          pageBuilder:
+              (context, state) => CustomTransitionPage<void>(
+                key: state.pageKey,
+                child: const PuzzleView(),
+                transitionsBuilder:
+                    (context, animation, secondaryAnimation, child) =>
+                        FadeTransition(opacity: animation, child: child),
+              ),
         ),
         GoRoute(
           path: '/setting',
-          builder: (BuildContext context, GoRouterState state) {
-            return const SettingView();
-          },
+          pageBuilder:
+              (context, state) => CustomTransitionPage<void>(
+                key: state.pageKey,
+                child: const SettingView(),
+                transitionsBuilder:
+                    (context, animation, secondaryAnimation, child) =>
+                        FadeTransition(opacity: animation, child: child),
+              ),
         ),
       ],
     ),

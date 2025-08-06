@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:earned_it/models/api_response.dart';
 import 'package:retrofit/retrofit.dart';
@@ -7,6 +9,10 @@ part 'rest_client.g.dart';
 @RestApi(baseUrl: "")
 abstract class RestClient {
   factory RestClient(Dio dio, {String baseUrl}) = _RestClient;
+
+  /// 프로필 기본 조회 API
+  @GET("/api/profile")
+  Future<ApiResponse> loadProfile(@Header("Authorization") String accessToken);
 
   /// 이메일 인증 코드 요청 API
   @POST("/api/auth/email/send")
@@ -48,11 +54,77 @@ abstract class RestClient {
     @Body() dynamic body,
   );
 
+  /// Star 위시리스트 불러오기 API
+  @GET("/api/star")
+  Future<ApiResponse> loadStarInfo(@Header("Authorization") String accessToken);
+
   /// 월 수익 설정 API
   @POST("/api/profile/salary")
   Future<ApiResponse> setSalary(
     @Query("userId") String userId,
     @Header("Authorization") String accesstoken,
     @Body() Map<String, int> body,
+  );
+
+  /// 닉네임 변경 API
+  @PATCH("/api/profile/nickname")
+  Future<ApiResponse> setNickName(
+    @Header("Authorization") String accesstoken,
+    @Body() Map<String, String> body,
+  );
+
+  /// 위시아이템 추가 API
+  @POST("/api/wish")
+  @MultiPart()
+  Future<ApiResponse> addWishItem(
+    @Header("Authorization") String accesstoken, {
+    @Part(name: "wish") required String wish,
+    @Part(name: "image") required File itemImage,
+  });
+
+  /// 위시아이템 삭제 API
+  @DELETE("/api/wish/{wishId}")
+  Future<ApiResponse> deleteWishItem(
+    @Header("Authorization") String accesstoken,
+    @Path("wishId") int wishId,
+  );
+
+  /// 위시아이템 수정 API
+  @PATCH("/api/wish/{wishId}")
+  @MultiPart()
+  Future<ApiResponse> editWishItem(
+    @Header("Authorization") String accesstoken,
+    @Path("wishId") int wishId, {
+    @Part(name: "wish") required String wish,
+    @Part(name: "image") File? itemImage,
+  });
+
+  /// 위시아이템 Star 여부 수정 API
+  @PATCH("/api/star/{wishId}")
+  Future<ApiResponse> editStarWishItem(
+    @Header("Authorization") String accesstoken,
+    @Path("wishId") int wishId,
+  );
+
+  /// 위시아이템 구매 여부 수정 API
+  @PATCH("/api/wish/{wishId}/toggle-bought")
+  Future<ApiResponse> editBoughtWishItem(
+    @Header("Authorization") String accesstoken,
+    @Path("wishId") int wishId,
+  );
+
+  /// 위시아이템 하이라이트(3개) 불러오기 API
+  @GET("/api/wish/highlight")
+  Future<ApiResponse> loadHighLightWishInfo(
+    @Header("Authorization") String accessToken,
+  );
+
+  /// 위시리스트 전체 목록 불러오기
+  @GET("/api/wish")
+  Future<ApiResponse> getWishList(
+    @Header("Authorization") String accessToken,
+    @Query("page") int page,
+    @Query("size") int size,
+    @Query("sort") String sort, // 예: "price,asc" 또는 "createdAt,desc"
   );
 }

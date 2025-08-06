@@ -95,9 +95,6 @@ class LoginViewModel extends Notifier<LoginState> {
         refreshToken: response.data['refreshToken'] as String,
       );
 
-      // 👇 1. 자동 로그인 성공 시 유저 정보 불러오기
-      await ref.read(userProvider.notifier).loadUser();
-
       if (context.mounted) context.go("/home");
     } catch (e) {
       await _clearLoginData();
@@ -166,9 +163,6 @@ class LoginViewModel extends Notifier<LoginState> {
       refreshToken: data['refreshToken'] as String,
       userId: (data['userId'] as int).toString(),
     );
-
-    // 👇 2. 자체/소셜 로그인 성공 시 유저 정보 불러오기
-    await ref.read(userProvider.notifier).loadUser();
 
     if (context.mounted) context.go('/home');
   }

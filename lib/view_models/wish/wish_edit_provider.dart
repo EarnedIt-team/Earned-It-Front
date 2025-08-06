@@ -3,8 +3,10 @@ import 'package:dio/dio.dart';
 import 'package:earned_it/config/exception.dart';
 import 'package:earned_it/models/wish/wish_edit_state.dart';
 import 'package:earned_it/models/wish/wish_model.dart';
+import 'package:earned_it/services/auth/login_service.dart';
 import 'package:earned_it/services/wish_service.dart';
 import 'package:earned_it/view_models/user_provider.dart';
+import 'package:earned_it/view_models/wish/wish_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -23,6 +25,7 @@ class WishEditViewModel extends AutoDisposeNotifier<WishEditState> {
   late final WishService _wishService;
   final ImagePicker _picker = ImagePicker();
   final _storage = const FlutterSecureStorage();
+  late final LoginService _loginService;
 
   @override
   WishEditState build() {
@@ -31,6 +34,7 @@ class WishEditViewModel extends AutoDisposeNotifier<WishEditState> {
     vendorController = TextEditingController();
     priceController = TextEditingController();
     urlController = TextEditingController();
+    _loginService = ref.read(loginServiceProvider);
 
     nameController.addListener(_updateCanSubmit);
     vendorController.addListener(_updateCanSubmit);
@@ -163,7 +167,13 @@ class WishEditViewModel extends AutoDisposeNotifier<WishEditState> {
         newImage: state.imageForUpload, // nullable로 전달
       );
 
-      await ref.read(userProvider.notifier).loadUser();
+      // 로컬 업데이트
+      ref
+          .read(wishViewModelProvider.notifier)
+          .updateWishItemLocally(updatedWish);
+
+      await ref.read(wishViewModelProvider.notifier).loadStarWish();
+      await ref.read(wishViewModelProvider.notifier).loadHighLightWish();
 
       if (context.mounted) {
         toastification.show(
@@ -184,12 +194,30 @@ class WishEditViewModel extends AutoDisposeNotifier<WishEditState> {
     }
   }
 
-  // 에러 처리 헬퍼 메서드들 (생략)
-  void _handleApiError(BuildContext context, DioException e) {
-    /* ... */
+  Future<void> _handleApiError(BuildContext context, DioException e) async {
+    if (e.response?.data['code'] == "AUTH_REQUIRED") {
+      toastification.show(
+        context: context,
+        title: const Text("토큰이 만료되어 재발급합니다. 잠시 후 다시 시도해주세요."),
+        autoCloseDuration: const Duration(seconds: 3),
+      );
+      try {
+        final String? refreshToken = await _storage.read(key: 'refreshToken');
+        await _loginService.checkToken(refreshToken!);
+      } catch (_) {
+        if (context.mounted) context.go('/login');
+      }
+    } else {
+      _handleGeneralError(context, e);
+    }
   }
+
   void _handleGeneralError(BuildContext context, Object e) {
-    /* ... */
+    toastification.show(
+      context: context,
+      title: Text(e.toDisplayString()),
+      autoCloseDuration: const Duration(seconds: 3),
+    );
   }
 }
 

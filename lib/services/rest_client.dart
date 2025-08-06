@@ -50,6 +50,10 @@ abstract class RestClient {
     @Body() dynamic body,
   );
 
+  /// Star 위시리스트 불러오기 API
+  @GET("/api/star")
+  Future<ApiResponse> loadStarInfo(@Header("Authorization") String accessToken);
+
   /// 월 수익 설정 API
   @POST("/api/profile/salary")
   Future<ApiResponse> setSalary(
@@ -83,6 +87,20 @@ abstract class RestClient {
     @Part(name: "wish") required String wish,
     @Part(name: "image") File? itemImage,
   });
+
+  /// 위시아이템 Star 여부 수정 API
+  @PATCH("/api/star/{wishId}")
+  Future<ApiResponse> editStarWishItem(
+    @Header("Authorization") String accesstoken,
+    @Path("wishId") int wishId,
+  );
+
+  /// 위시아이템 구매 여부 수정 API
+  @PATCH("/api/wish/{wishId}/toggle-bought")
+  Future<ApiResponse> editBoughtWishItem(
+    @Header("Authorization") String accesstoken,
+    @Path("wishId") int wishId,
+  );
 
   /// 위시아이템 하이라이트(3개) 불러오기 API
   @GET("/api/wish/highlight")

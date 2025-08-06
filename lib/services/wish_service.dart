@@ -74,6 +74,52 @@ class WishService {
     }
   }
 
+  /// 위시리스트 아이템의 구매 여부를 수정하고 서버로 업데이트합니다.
+  Future<ApiResponse> editBoughtWishItem({
+    required String accessToken,
+    required int wishId,
+  }) async {
+    try {
+      String token = "Bearer $accessToken";
+      final ApiResponse response = await _restClient.editBoughtWishItem(
+        token,
+        wishId,
+      );
+
+      if (response.code != "SUCCESS") {
+        throw Exception(response.message);
+      }
+      return response;
+    } on DioException catch (e) {
+      throw Exception(e.response?.data["message"] ?? "요청 처리 중 에러가 발생했습니다.");
+    } catch (e) {
+      throw Exception("서버에서 에러가 발생했습니다.");
+    }
+  }
+
+  /// 위시리스트 아이템의 Star 여부를 수정하고 서버로 업데이트합니다.
+  Future<ApiResponse> editStarWishItem({
+    required String accessToken,
+    required int wishId,
+  }) async {
+    try {
+      String token = "Bearer $accessToken";
+      final ApiResponse response = await _restClient.editStarWishItem(
+        token,
+        wishId,
+      );
+
+      if (response.code != "SUCCESS") {
+        throw Exception(response.message);
+      }
+      return response;
+    } on DioException catch (e) {
+      throw Exception(e.response?.data["message"] ?? "요청 처리 중 에러가 발생했습니다.");
+    } catch (e) {
+      throw Exception("서버에서 에러가 발생했습니다.");
+    }
+  }
+
   /// 선택한 위시아이템의 정보를 수정해서 서버로 전달합니다.
   Future<ApiResponse> editWishItem({
     required String accessToken,
@@ -101,6 +147,26 @@ class WishService {
     } on DioException catch (e) {
       throw Exception(e.response?.data["message"] ?? "요청 처리 중 에러가 발생했습니다.");
     } catch (e) {
+      throw Exception("서버에서 에러가 발생했습니다.");
+    }
+  }
+
+  /// Star 위시 정보를 서버에서 불러옵니다.
+  Future<ApiResponse> loadStarWish(String accessToken) async {
+    try {
+      String token = "Bearer $accessToken";
+
+      final ApiResponse response = await _restClient.loadStarInfo(token);
+      // 통신은 성공했지만, 처리가 되지 않았을 때
+      if (response.code != "SUCCESS") {
+        throw Exception(response.message);
+      }
+      return response;
+      // 400 에러 등
+    } on DioException catch (e) {
+      throw Exception(e.response!.data["message"]);
+    } catch (e) {
+      // DioException이 아닌 다른 예외 발생 시 (네트워크 연결 끊김 등)
       throw Exception("서버에서 에러가 발생했습니다.");
     }
   }

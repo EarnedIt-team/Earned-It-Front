@@ -4,6 +4,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:earned_it/config/design.dart';
 import 'package:earned_it/view_models/home_provider.dart';
 import 'package:earned_it/view_models/user_provider.dart';
+import 'package:earned_it/view_models/wish/wish_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -16,7 +17,7 @@ final carouselIndexProvider = StateProvider<int>((ref) => 0);
 // 데이터 준비 상태를 알려주는 Provider (autoDispose 유지)
 final isHomeReadyProvider = Provider.autoDispose<bool>((ref) {
   final userReady = ref.watch(
-    userProvider.select((s) => s.starWishes.isNotEmpty),
+    wishViewModelProvider.select((s) => s.starWishes.isNotEmpty),
   );
   final homeReady = ref.watch(
     homeViewModelProvider.select((s) => s.currentEarnedAmount > 0),
@@ -33,6 +34,15 @@ class HomeView extends ConsumerStatefulWidget {
 
 class _HomeViewState extends ConsumerState<HomeView> {
   @override
+  void initState() {
+    super.initState();
+    // 👇 2. initState에서 로딩 상태를 제어하도록 수정
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await ref.read(userProvider.notifier).loadUser();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     final userState = ref.watch(userProvider);
     final homeState = ref.watch(homeViewModelProvider);
@@ -46,7 +56,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
           if (!mounted) return;
 
           final currentHomeState = ref.read(homeViewModelProvider);
-          final currentUserState = ref.read(userProvider);
+          final currentUserState = ref.read(wishViewModelProvider);
           final wishList = currentUserState.starWishes;
 
           // 👇 2. 위치 계산 로직 보강
@@ -247,7 +257,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
   }
 
   Widget _buildWishlist(BuildContext context, WidgetRef ref) {
-    final userState = ref.watch(userProvider);
+    final userState = ref.watch(wishViewModelProvider);
     final homeProvider = ref.read(homeViewModelProvider.notifier);
     final carouselIndex = ref.watch(carouselIndexProvider);
     final wishList = userState.starWishes;
@@ -291,32 +301,35 @@ class _HomeViewState extends ConsumerState<HomeView> {
             itemCount: wishList.length,
             itemBuilder: (context, index, realIndex) {
               final currentItem = wishList[index];
-              return Opacity(
-                opacity: index != carouselIndex ? 0.5 : 1.0,
-                child: Image.network(
-                  currentItem.itemImage,
-                  width: context.height(0.3),
-                  height: context.height(0.3),
-                  fit: BoxFit.contain,
-                  loadingBuilder: (context, child, loadingProgress) {
-                    if (loadingProgress == null) return child;
-                    return Center(
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        value:
-                            loadingProgress.expectedTotalBytes != null
-                                ? loadingProgress.cumulativeBytesLoaded /
-                                    loadingProgress.expectedTotalBytes!
-                                : null,
-                      ),
-                    );
-                  },
-                  errorBuilder:
-                      (context, error, stackTrace) => const Icon(
-                        Icons.image_not_supported,
-                        size: 50,
-                        color: Colors.grey,
-                      ),
+              return ClipRRect(
+                borderRadius: BorderRadius.circular(context.height(0.01)),
+                child: Opacity(
+                  opacity: index != carouselIndex ? 0.5 : 1.0,
+                  child: Image.network(
+                    currentItem.itemImage,
+                    width: context.height(0.25),
+                    height: context.height(0.25),
+                    fit: BoxFit.cover,
+                    loadingBuilder: (context, child, loadingProgress) {
+                      if (loadingProgress == null) return child;
+                      return Center(
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          value:
+                              loadingProgress.expectedTotalBytes != null
+                                  ? loadingProgress.cumulativeBytesLoaded /
+                                      loadingProgress.expectedTotalBytes!
+                                  : null,
+                        ),
+                      );
+                    },
+                    errorBuilder:
+                        (context, error, stackTrace) => const Icon(
+                          Icons.image_not_supported,
+                          size: 50,
+                          color: Colors.grey,
+                        ),
+                  ),
                 ),
               );
             },
@@ -455,8 +468,9 @@ class _HomeViewState extends ConsumerState<HomeView> {
     int itemIndex,
   ) {
     final userState = ref.read(userProvider);
+    final wishState = ref.read(wishViewModelProvider);
     final homeState = ref.read(homeViewModelProvider);
-    final wishList = userState.starWishes;
+    final wishList = wishState.starWishes;
 
     if (wishList.isEmpty) return (progress: 0.0, timeText: '');
 

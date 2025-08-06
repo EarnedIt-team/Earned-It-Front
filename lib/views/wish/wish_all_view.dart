@@ -1,11 +1,8 @@
-import 'dart:io';
 import 'package:earned_it/config/design.dart';
 import 'package:earned_it/models/wish/wish_model.dart';
-import 'package:earned_it/view_models/home_provider.dart';
 import 'package:earned_it/view_models/user_provider.dart';
 import 'package:earned_it/view_models/wish/wish_provider.dart';
 import 'package:earned_it/views/loading_overlay_view.dart';
-import 'package:earned_it/views/wish/wish_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -33,7 +30,7 @@ class _WishAllViewState extends ConsumerState<WishAllView> {
       ref.read(wishAllViewLoadingProvider.notifier).state = true;
       try {
         // 데이터 로드
-        await ref.read(userProvider.notifier).loadAllWish();
+        await ref.read(wishViewModelProvider.notifier).loadAllWish();
       } finally {
         // 성공/실패 여부와 관계없이 로딩 해제
         if (mounted) {
@@ -45,10 +42,11 @@ class _WishAllViewState extends ConsumerState<WishAllView> {
 
   @override
   Widget build(BuildContext context) {
-    final userState = ref.watch(userProvider);
+    final userState = ref.watch(wishViewModelProvider);
     // star가 아닌 아이템들만 필터링하여 '전체' 리스트로 사용
     final allWishes = userState.totalWishes;
     final isLoading = ref.watch(wishAllViewLoadingProvider); // 로딩 상태 감시
+    final wishState = ref.watch(wishViewModelProvider);
 
     return Stack(
       children: [
@@ -82,7 +80,7 @@ class _WishAllViewState extends ConsumerState<WishAllView> {
                     },
                   ),
         ),
-        if (isLoading) overlayView(),
+        if (isLoading || wishState.isLoading) overlayView(),
       ],
     );
   }
@@ -126,14 +124,22 @@ class AllWishlistItem extends ConsumerWidget {
             extentRatio: 0.5,
             children: <Widget>[
               SlidableAction(
-                onPressed: (context) {},
+                onPressed: (context) {
+                  ref
+                      .read(wishViewModelProvider.notifier)
+                      .editBoughtWishItem(context, item.wishId);
+                },
                 backgroundColor: Colors.lightBlue,
                 foregroundColor: Colors.white,
                 icon: Icons.check,
                 label: '구매',
               ),
               SlidableAction(
-                onPressed: (context) {},
+                onPressed: (context) {
+                  ref
+                      .read(wishViewModelProvider.notifier)
+                      .editStarWishItem(context, item.wishId);
+                },
                 backgroundColor: Colors.orangeAccent,
                 foregroundColor: Colors.white,
                 icon: Icons.star,
@@ -235,30 +241,54 @@ class AllWishlistItem extends ConsumerWidget {
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: context.width(0.04),
+                            height: 1,
                           ),
-                          maxLines: 2,
+                          maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
-                        const SizedBox(height: 4),
+
                         Text(
                           item.name,
                           style: TextStyle(
                             color:
                                 Theme.of(context).brightness == Brightness.dark
-                                    ? const Color.fromARGB(255, 180, 180, 180)
-                                    : const Color.fromARGB(255, 108, 108, 108),
-                            fontSize: context.width(0.038),
+                                    ? Colors.grey
+                                    : const Color.fromARGB(255, 114, 114, 114),
+                            fontSize: context.width(0.04),
+                            height: 1.5,
                           ),
                         ),
+                        const SizedBox(height: 5),
                         Text(
-                          '${currencyFormat.format(item.price)}원',
+                          '${currencyFormat.format(item.price)} 원',
                           style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: context.width(0.038),
+                            fontSize: context.width(0.04),
+                            color: Colors.grey,
                           ),
                         ),
                       ],
                     ),
+                  ),
+                  item.bought || item.starred
+                      ? const SizedBox(width: 10)
+                      : const SizedBox.shrink(),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      item.bought
+                          ? const Icon(
+                            Icons.check_circle,
+                            color: Colors.lightBlue,
+                          )
+                          : const SizedBox.shrink(),
+                      item.bought && item.starred
+                          ? const SizedBox(height: 5)
+                          : const SizedBox.shrink(),
+                      item.starred
+                          ? const Icon(Icons.stars, color: primaryColor)
+                          : const SizedBox.shrink(),
+                    ],
                   ),
                 ],
               ),

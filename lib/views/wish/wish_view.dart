@@ -22,6 +22,16 @@ class _WishViewState extends ConsumerState<WishView> {
   final ScrollController _scrollController = ScrollController();
 
   @override
+  void initState() {
+    super.initState();
+    // 👇 2. initState에서 로딩 상태를 제어하도록 수정
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await ref.read(wishViewModelProvider.notifier).loadStarWish();
+      await ref.read(wishViewModelProvider.notifier).loadHighLightWish();
+    });
+  }
+
+  @override
   void dispose() {
     _scrollController.dispose();
     super.dispose();
@@ -29,10 +39,9 @@ class _WishViewState extends ConsumerState<WishView> {
 
   @override
   Widget build(BuildContext context) {
-    // 👇 1. homeState는 watch하지 않고, userState만 watch합니다.
-    final userState = ref.watch(userProvider);
-    final starWishList = userState.starWishes;
-    final allWishList = userState.Wishes3;
+    final wishState = ref.watch(wishViewModelProvider);
+    final starWishList = wishState.starWishes;
+    final allWishList = wishState.Wishes3;
     final currencyFormat = NumberFormat.decimalPattern('ko_KR');
 
     return GestureDetector(
@@ -53,7 +62,7 @@ class _WishViewState extends ConsumerState<WishView> {
               actions: <Widget>[
                 IconButton(
                   onPressed: () => context.push('/addWish'),
-                  icon: const Icon(Icons.add_circle),
+                  icon: const Icon(Icons.add),
                 ),
               ],
               actionsPadding: EdgeInsets.symmetric(
@@ -108,7 +117,7 @@ class _WishViewState extends ConsumerState<WishView> {
                       padding: EdgeInsets.only(
                         left: context.middlePadding,
                         right: context.middlePadding,
-                        bottom: context.middlePadding,
+                        bottom: context.middlePadding / 2,
                       ),
                       // 👇 2. 실시간 데이터가 필요한 헤더 부분만 Consumer로 감쌉니다.
                       child: Consumer(
@@ -137,8 +146,8 @@ class _WishViewState extends ConsumerState<WishView> {
                                   Text(
                                     "Star",
                                     style: TextStyle(
-                                      fontSize: context.width(0.06),
-                                      fontWeight: FontWeight.bold,
+                                      fontSize: context.width(0.07),
+                                      fontWeight: FontWeight.w500,
                                       color: primaryColor,
                                       height: 1.0,
                                     ),
@@ -161,7 +170,7 @@ class _WishViewState extends ConsumerState<WishView> {
                                     Text(
                                       "${currencyFormat.format(totalPrice)} 원 / ",
                                       style: TextStyle(
-                                        fontSize: context.width(0.035),
+                                        fontSize: context.width(0.03),
                                         color: Colors.grey,
                                         height: 1.5,
                                       ),
@@ -190,7 +199,7 @@ class _WishViewState extends ConsumerState<WishView> {
                                                       ? Colors.white
                                                       : Colors.black,
                                               fontSize: context.width(0.05),
-                                              fontWeight: FontWeight.bold,
+
                                               height: 1.5,
                                             ),
                                           ),
@@ -198,7 +207,7 @@ class _WishViewState extends ConsumerState<WishView> {
                                             " 원",
                                             style: TextStyle(
                                               fontSize: context.width(0.05),
-                                              fontWeight: FontWeight.bold,
+
                                               height: 1.5,
                                             ),
                                           ),
@@ -232,7 +241,12 @@ class _WishViewState extends ConsumerState<WishView> {
                   // --- All 위시리스트 섹션 ---
                   if (allWishList.isNotEmpty)
                     Padding(
-                      padding: EdgeInsets.all(context.middlePadding),
+                      padding: EdgeInsets.only(
+                        top: context.middlePadding / 2,
+                        left: context.middlePadding,
+                        right: context.middlePadding,
+                        bottom: context.middlePadding / 2,
+                      ),
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -244,13 +258,13 @@ class _WishViewState extends ConsumerState<WishView> {
                               Text(
                                 "ALL",
                                 style: TextStyle(
-                                  fontSize: context.width(0.06),
-                                  fontWeight: FontWeight.bold,
+                                  fontSize: context.width(0.07),
+                                  fontWeight: FontWeight.w500,
                                   height: 1.0,
                                 ),
                               ),
                               Text(
-                                " (${userState.currentWishCount}/100)",
+                                " (${wishState.currentWishCount}/100)",
                                 style: TextStyle(
                                   fontSize: context.width(0.035),
                                   fontWeight: FontWeight.w600,
@@ -269,7 +283,7 @@ class _WishViewState extends ConsumerState<WishView> {
                               context.push('/wishALL');
                             },
                             child: const Text(
-                              "자세히보기",
+                              "더보기",
                               style: TextStyle(
                                 color: Colors.grey,
                                 fontWeight: FontWeight.bold,
@@ -347,7 +361,7 @@ class _WishlistItem extends ConsumerWidget {
     // 각 아이템의 진행률 계산 로직
     double calculateItemDisplayAmount() {
       final homeState = ref.watch(homeViewModelProvider);
-      final starWishList = ref.read(userProvider).starWishes;
+      final starWishList = ref.read(wishViewModelProvider).starWishes;
 
       if (!isStar || starWishList.isEmpty) return 0.0;
 
@@ -386,14 +400,22 @@ class _WishlistItem extends ConsumerWidget {
                     extentRatio: 0.5,
                     children: <Widget>[
                       SlidableAction(
-                        onPressed: (context) {},
+                        onPressed: (context) {
+                          ref
+                              .read(wishViewModelProvider.notifier)
+                              .editBoughtWishItem(context, item.wishId);
+                        },
                         backgroundColor: Colors.lightBlue,
                         foregroundColor: Colors.white,
                         icon: Icons.check,
                         label: '구매',
                       ),
                       SlidableAction(
-                        onPressed: (context) {},
+                        onPressed: (context) {
+                          ref
+                              .read(wishViewModelProvider.notifier)
+                              .editStarWishItem(context, item.wishId);
+                        },
                         backgroundColor: Colors.orangeAccent,
                         foregroundColor: Colors.white,
                         icon: Icons.star,
@@ -507,48 +529,54 @@ class _WishlistItem extends ConsumerWidget {
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: context.width(0.04),
+                            height: 1,
                           ),
-                          maxLines: 2,
+                          maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
-                        const SizedBox(height: 4),
+
                         Text(
                           item.name,
                           style: TextStyle(
                             color:
                                 Theme.of(context).brightness == Brightness.dark
-                                    ? const Color.fromARGB(255, 180, 180, 180)
-                                    : const Color.fromARGB(255, 108, 108, 108),
-                            fontSize: context.width(0.038),
+                                    ? Colors.grey
+                                    : const Color.fromARGB(255, 114, 114, 114),
+                            fontSize: context.width(0.04),
+                            height: 1.5,
                           ),
                         ),
+                        const SizedBox(height: 5),
                         if (isStar)
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.baseline,
                             textBaseline: TextBaseline.alphabetic,
                             children: [
                               Text(
-                                '${currencyFormat.format(itemDisplayAmount.toInt())}원',
+                                '${currencyFormat.format(itemDisplayAmount.toInt())} 원',
                                 style: TextStyle(
                                   color: progressColor,
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: context.width(0.038),
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: context.width(0.04),
+                                  height: 1.5,
                                 ),
                               ),
                               Text(
-                                ' / ${currencyFormat.format(item.price)}원',
+                                ' / ${currencyFormat.format(item.price)} 원',
                                 style: TextStyle(
-                                  fontSize: context.width(0.038),
+                                  fontSize: context.width(0.03),
+                                  color: Colors.grey,
+                                  height: 1.5,
                                 ),
                               ),
                             ],
                           )
                         else
                           Text(
-                            '${currencyFormat.format(item.price)}원',
+                            '${currencyFormat.format(item.price)} 원',
                             style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: context.width(0.038),
+                              fontSize: context.width(0.04),
+                              color: Colors.grey,
                             ),
                           ),
                       ],
@@ -583,6 +611,27 @@ class _WishlistItem extends ConsumerWidget {
                         ],
                       ),
                     ),
+                  item.bought || item.starred
+                      ? const SizedBox(width: 10)
+                      : const SizedBox.shrink(),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      item.bought
+                          ? const Icon(
+                            Icons.check_circle,
+                            color: Colors.lightBlue,
+                          )
+                          : const SizedBox.shrink(),
+                      item.bought && item.starred
+                          ? const SizedBox(height: 5)
+                          : const SizedBox.shrink(),
+                      item.starred
+                          ? const Icon(Icons.stars, color: primaryColor)
+                          : const SizedBox.shrink(),
+                    ],
+                  ),
                 ],
               ),
             ),

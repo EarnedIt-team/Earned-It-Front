@@ -15,8 +15,11 @@ import 'package:earned_it/views/wish/wish_edit_view.dart';
 import 'package:earned_it/views/wish/wish_search_view.dart';
 import 'package:earned_it/views/wish/wish_view.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:go_router/go_router.dart';
+
+final container = ProviderContainer();
 
 final GoRouter routes = GoRouter(
   initialLocation: '/',
@@ -90,27 +93,47 @@ final GoRouter routes = GoRouter(
       routes: <RouteBase>[
         GoRoute(
           path: '/home', // 이전의 '/', '/main'을 '/home'으로 통일합니다.
-          builder: (BuildContext context, GoRouterState state) {
-            return const HomeView();
-          },
+          pageBuilder:
+              (context, state) => CustomTransitionPage<void>(
+                key: state.pageKey,
+                child: const HomeView(),
+                transitionsBuilder:
+                    (context, animation, secondaryAnimation, child) =>
+                        FadeTransition(opacity: animation, child: child),
+              ),
         ),
         GoRoute(
           path: '/wish',
-          builder: (BuildContext context, GoRouterState state) {
-            return const WishView();
-          },
+          pageBuilder:
+              (context, state) => CustomTransitionPage<void>(
+                key: state.pageKey,
+                child: const WishView(),
+                transitionsBuilder:
+                    (context, animation, secondaryAnimation, child) =>
+                        FadeTransition(opacity: animation, child: child),
+              ),
         ),
         GoRoute(
           path: '/puzzle',
-          builder: (BuildContext context, GoRouterState state) {
-            return const PuzzleView();
-          },
+          pageBuilder:
+              (context, state) => CustomTransitionPage<void>(
+                key: state.pageKey,
+                child: const PuzzleView(),
+                transitionsBuilder:
+                    (context, animation, secondaryAnimation, child) =>
+                        FadeTransition(opacity: animation, child: child),
+              ),
         ),
         GoRoute(
           path: '/setting',
-          builder: (BuildContext context, GoRouterState state) {
-            return const SettingView();
-          },
+          pageBuilder:
+              (context, state) => CustomTransitionPage<void>(
+                key: state.pageKey,
+                child: const SettingView(),
+                transitionsBuilder:
+                    (context, animation, secondaryAnimation, child) =>
+                        FadeTransition(opacity: animation, child: child),
+              ),
         ),
       ],
     ),

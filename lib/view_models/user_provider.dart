@@ -2,6 +2,7 @@ import 'package:earned_it/models/user/user_state.dart';
 import 'package:earned_it/models/wish/wish_model.dart';
 import 'package:earned_it/services/auth/user_service.dart';
 import 'package:earned_it/services/wish_service.dart';
+import 'package:earned_it/view_models/wish/wish_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
@@ -32,13 +33,7 @@ class UserNotifier extends Notifier<UserState> {
 
       final userService = ref.read(userServiceProvider);
       final response = await userService.loadUserInfo(accessToken!);
-
-      final List<dynamic> rawStarWishes = response.data["starWishes"];
-
-      final List<WishModel> starWishesList =
-          rawStarWishes
-              .map((json) => WishModel.fromJson(json as Map<String, dynamic>))
-              .toList();
+      final responseData = response.data as Map<String, dynamic>;
 
       state = state.copyWith(
         // 월 수익
@@ -53,66 +48,37 @@ class UserNotifier extends Notifier<UserState> {
         // 수익 설정 여부
         isearningsPerSecond:
             response.data["userInfo"]["hasSalary"] ?? state.isearningsPerSecond,
-        // 위시리스트 (TOP5)
-        starWishes: starWishesList,
       );
+
+      // 위시리스트(Star) 관련 데이터는 WishNotifier에 업데이트를 위임합니다.
+      ref
+          .read(wishViewModelProvider.notifier)
+          .updateStarWishesFromServer(responseData);
+
       print("저장 완료");
     } catch (e) {
       print("유저 정보 불러오기 에러 $e");
     }
   }
 
-  /// 사용자의 하이라이트(3개) 위시리스트를 불러옵니다.
-  Future<void> loadHighLightWish() async {
-    try {
-      final String? accessToken = await _storage.read(key: 'accessToken');
+  /// 로컬 상태에서 특정 위시 아이템을 즉시 제거합니다.
+  void removeWishItemLocally(int wishId) {
+    // 기존 리스트를 복사하여 불변성을 유지
+    final newStarWishes = List<WishModel>.from(state.starWishes)
+      ..removeWhere((item) => item.wishId == wishId);
 
-      final wishService = ref.read(wishServiceProvider);
-      final response = await wishService.loadHighLightWish(accessToken!);
+    final newHighLightWishes = List<WishModel>.from(state.Wishes3)
+      ..removeWhere((item) => item.wishId == wishId);
 
-      final currentWishCount = response.data["wishInfo"]["currentWishCount"];
-      final List<dynamic> rawHighLightWishes = response.data["wishHighlight"];
+    final newTotalWishes = List<WishModel>.from(state.totalWishes)
+      ..removeWhere((item) => item.wishId == wishId);
 
-      final List<WishModel> highLightWishList =
-          rawHighLightWishes
-              .map((json) => WishModel.fromJson(json as Map<String, dynamic>))
-              .toList();
-
-      state = state.copyWith(
-        Wishes3: highLightWishList,
-        currentWishCount: currentWishCount,
-      );
-      print("저장 완료");
-    } catch (e) {
-      print("유저 정보 불러오기 에러 $e");
-    }
-  }
-
-  /// 사용자의 전체 위시리스트를 불러옵니다.
-  Future<void> loadAllWish() async {
-    try {
-      final String? accessToken = await _storage.read(key: 'accessToken');
-
-      final wishService = ref.read(wishServiceProvider);
-      final response = await wishService.getWishList(
-        accessToken: accessToken!,
-        page: 0,
-        size: 20,
-        sort: "name,asc",
-      );
-
-      final List<dynamic> rawAllWishes = response.data["content"];
-
-      final List<WishModel> allWishList =
-          rawAllWishes
-              .map((json) => WishModel.fromJson(json as Map<String, dynamic>))
-              .toList();
-
-      state = state.copyWith(totalWishes: allWishList);
-      print("저장 완료");
-    } catch (e) {
-      print("유저 정보 불러오기 에러 $e");
-    }
+    // 제거된 새 리스트로 상태를 업데이트
+    state = state.copyWith(
+      starWishes: newStarWishes,
+      Wishes3: newHighLightWishes,
+      totalWishes: newTotalWishes,
+    );
   }
 
   /// 유저 정보를 부분적으로 또는 전체적으로 갱신하는 메소드입니다.

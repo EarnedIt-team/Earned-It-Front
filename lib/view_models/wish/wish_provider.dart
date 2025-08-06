@@ -131,7 +131,7 @@ class WishViewModel extends Notifier<WishState> {
       );
 
       // 로컬에서 동일한 정보 삭제
-      ref.read(userProvider.notifier).removeWishItemLocally(wishId);
+      ref.read(wishViewModelProvider.notifier).removeWishItemLocally(wishId);
 
       await ref.read(wishViewModelProvider.notifier).loadStarWish();
       await ref.read(wishViewModelProvider.notifier).loadHighLightWish();
@@ -149,6 +149,26 @@ class WishViewModel extends Notifier<WishState> {
     } finally {
       state = state.copyWith(isLoading: false);
     }
+  }
+
+  /// 로컬 상태에서 특정 위시 아이템을 즉시 제거합니다.
+  void removeWishItemLocally(int wishId) {
+    // 기존 리스트를 복사하여 불변성을 유지
+    final newStarWishes = List<WishModel>.from(state.starWishes)
+      ..removeWhere((item) => item.wishId == wishId);
+
+    final newHighLightWishes = List<WishModel>.from(state.Wishes3)
+      ..removeWhere((item) => item.wishId == wishId);
+
+    final newTotalWishes = List<WishModel>.from(state.totalWishes)
+      ..removeWhere((item) => item.wishId == wishId);
+
+    // 제거된 새 리스트로 상태를 업데이트
+    state = state.copyWith(
+      starWishes: newStarWishes,
+      Wishes3: newHighLightWishes,
+      totalWishes: newTotalWishes,
+    );
   }
 
   /// 로컬 상태에서 전체 위시리스트에서 해당 아이템을 찾아 수정된 내용으로 교체
@@ -219,7 +239,7 @@ class WishViewModel extends Notifier<WishState> {
         state.starWishes.map((item) {
           if (item.wishId == wishId) {
             // freezed의 copyWith를 사용하여 bought 값만 변경
-            return item.copyWith(starred: !item.bought);
+            return item.copyWith(bought: !item.bought);
           }
           return item;
         }).toList();
@@ -228,7 +248,7 @@ class WishViewModel extends Notifier<WishState> {
         state.totalWishes.map((item) {
           if (item.wishId == wishId) {
             // freezed의 copyWith를 사용하여 bought 값만 변경
-            return item.copyWith(starred: !item.bought);
+            return item.copyWith(bought: !item.bought);
           }
           return item;
         }).toList();
@@ -237,7 +257,7 @@ class WishViewModel extends Notifier<WishState> {
         state.Wishes3.map((item) {
           if (item.wishId == wishId) {
             // freezed의 copyWith를 사용하여 bought 값만 변경
-            return item.copyWith(starred: !item.bought);
+            return item.copyWith(bought: !item.bought);
           }
           return item;
         }).toList();

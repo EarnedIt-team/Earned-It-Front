@@ -1,38 +1,236 @@
+import 'package:earned_it/config/design.dart';
 import 'package:earned_it/view_models/theme_provider.dart';
+import 'package:earned_it/view_models/user_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart'; // Riverpod import
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 
-// 1. StatefulWidget을 ConsumerWidget으로 변경
-class SettingView extends ConsumerWidget {
+class SettingView extends ConsumerStatefulWidget {
   const SettingView({super.key});
 
   @override
-  // 2. build 메서드에 WidgetRef ref 파라미터 추가
-  Widget build(BuildContext context, WidgetRef ref) {
-    // 현재 테마 모드를 가져옴
+  ConsumerState<SettingView> createState() => _SettingViewState();
+}
+
+class _SettingViewState extends ConsumerState<SettingView> {
+  @override
+  void initState() {
+    super.initState();
+    // 👇 2. initState에서 로딩 상태를 제어하도록 수정
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await ref.read(userProvider.notifier).loadProfile();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final currentThemeMode = ref.watch(themeProvider);
+    final userState = ref.watch(userProvider);
+    final numberFormat = NumberFormat('#,###', 'ko_KR');
 
     return Scaffold(
       appBar: AppBar(
+        scrolledUnderElevation: 0,
         title: const Row(
-          spacing: 10,
           children: <Widget>[
             Icon(Icons.account_circle),
+            SizedBox(width: 10), // spacing -> SizedBox로 수정
             Text("마이페이지", style: TextStyle(fontWeight: FontWeight.bold)),
           ],
         ),
         centerTitle: false,
       ),
-      // 3. 설정 목록에 더 적합한 ListView로 변경
+
       body: ListView(
         children: <Widget>[
-          // 4. 테마 설정 옵션 ListTile 추가
+          SizedBox(height: context.height(0.015)),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: context.middlePadding),
+            child: Container(
+              width: double.infinity,
+              height: context.height(0.2),
+              decoration: BoxDecoration(
+                border: Border.all(width: 1, color: primaryColor),
+                borderRadius: BorderRadius.circular(context.width(0.03)),
+              ),
+
+              child: Row(
+                children: <Widget>[
+                  Container(
+                    margin: const EdgeInsets.all(10),
+                    width: context.width(0.3),
+                    height: context.height(0.2),
+                    decoration: BoxDecoration(
+                      color:
+                          Theme.of(context).brightness == Brightness.dark
+                              ? const Color.fromARGB(128, 214, 214, 214)
+                              : Colors.white,
+                      border: Border.all(width: 1, color: Colors.grey),
+                      borderRadius: BorderRadius.circular(context.width(0.03)),
+                    ),
+                    child: Image.asset(
+                      "assets/images/default_profile.png",
+                      fit: BoxFit.cover,
+                      color:
+                          Theme.of(context).brightness == Brightness.dark
+                              ? Colors.grey
+                              : Colors.grey,
+                      width: context.width(0.2),
+                    ),
+                  ),
+
+                  Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.only(
+                        left: context.middlePadding / 2,
+                        right: context.middlePadding,
+                        top: context.middlePadding / 4,
+                        bottom: context.middlePadding / 4,
+                      ),
+                      child: Container(
+                        height: context.height(0.2), // 첫 번째 컨테이너와 높이를 맞춰줍니다.
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(
+                            context.width(0.03),
+                          ),
+                        ),
+                        // 예시 텍스트
+                        child: Column(
+                          children: <Widget>[
+                            Column(
+                              children: <Widget>[
+                                const SizedBox(height: 5),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: <Widget>[
+                                    Text(
+                                      "신분증",
+                                      style: TextStyle(
+                                        fontSize: context.width(0.04),
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+
+                                const SizedBox(height: 5),
+
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      "이름",
+                                      style: TextStyle(
+                                        fontSize: context.width(0.045),
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    Text(
+                                      userState.name,
+                                      style: TextStyle(
+                                        fontSize: context.width(0.04),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: <Widget>[
+                                    Text(
+                                      "월급",
+                                      style: TextStyle(
+                                        fontSize: context.width(0.045),
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: <Widget>[
+                                    Text(
+                                      "${numberFormat.format(userState.monthlySalary)} 원",
+                                      style: TextStyle(
+                                        fontSize: context.width(0.04),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+
+                            Spacer(),
+
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Image.asset(
+                                  Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? "assets/images/logo_dark.png"
+                                      : "assets/images/logo_light.png",
+                                  width: context.width(0.2),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          // --- 프로필 섹션 ---
+          _buildSectionHeader("프로필"),
+          ListTile(
+            leading: const Icon(Icons.edit_outlined),
+            title: const Text('닉네임 수정'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () {
+              context.push('/editName');
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.photo_camera_outlined),
+            title: const Text('대표 사진 변경'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () {
+              // TODO: 대표 사진 변경 로직 구현
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.attach_money_outlined),
+            title: const Text("월 수익 설정"),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () {
+              context.push('/setSalary');
+            },
+          ),
+          const Divider(),
+          // --- 앱 설정 섹션 ---
+          _buildSectionHeader("앱 설정"),
           ListTile(
             leading: const Icon(Icons.brightness_6_outlined),
-            title: const Text('테마'),
-            subtitle: Text(_themeModeToString(currentThemeMode)),
+            title: const Text('테마 설정'),
+            trailing: Text(
+              _themeModeToString(currentThemeMode),
+              style: TextStyle(
+                fontSize: context.width(0.035),
+                color: const Color.fromARGB(255, 168, 121, 39),
+              ),
+            ),
             onTap: () {
               showDialog(
                 context: context,
@@ -49,12 +247,11 @@ class SettingView extends ConsumerWidget {
                                 groupValue: currentThemeMode,
                                 onChanged: (newTheme) {
                                   if (newTheme != null) {
-                                    // 테마 변경 및 저장
                                     ref
                                         .read(themeProvider.notifier)
                                         .changeTheme(newTheme);
                                   }
-                                  context.pop();
+                                  Navigator.of(context).pop();
                                 },
                               );
                             }).toList(),
@@ -63,25 +260,21 @@ class SettingView extends ConsumerWidget {
               );
             },
           ),
-
           const Divider(),
-
+          // --- 계정 섹션 ---
+          _buildSectionHeader("계정"),
           ListTile(
-            leading: const Icon(Icons.attach_money_outlined),
-            title: const Text("월 수익 설정"),
+            leading: const Icon(Icons.description_outlined),
+            title: const Text('이용약관'),
             trailing: const Icon(Icons.chevron_right),
             onTap: () {
-              context.push('/setSalary');
+              // TODO: 이용약관 페이지로 이동
             },
           ),
-
-          const Divider(),
-
           ListTile(
             leading: const Icon(Icons.logout, color: Colors.red),
             title: const Text("로그아웃", style: TextStyle(color: Colors.red)),
             onTap: () async {
-              // 로그아웃 확인 다이얼로그 추가 (사용자 실수 방지)
               showDialog(
                 context: context,
                 builder:
@@ -110,12 +303,36 @@ class SettingView extends ConsumerWidget {
               );
             },
           ),
+          ListTile(
+            leading: const Icon(
+              Icons.person_remove_outlined,
+              color: Colors.red,
+            ),
+            title: const Text("회원탈퇴", style: TextStyle(color: Colors.red)),
+            onTap: () {
+              // TODO: 회원탈퇴 로직 구현
+            },
+          ),
         ],
       ),
     );
   }
 
-  // ThemeMode를 사용자 친화적인 문자열로 변환하는 헬퍼 함수
+  // 3. 헬퍼 메서드들을 State 클래스 안으로 이동
+  Widget _buildSectionHeader(String title) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 8.0),
+      child: Text(
+        title,
+        style: const TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: 16,
+          color: Colors.grey,
+        ),
+      ),
+    );
+  }
+
   String _themeModeToString(ThemeMode themeMode) {
     switch (themeMode) {
       case ThemeMode.light:

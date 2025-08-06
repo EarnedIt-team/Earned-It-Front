@@ -10,6 +10,10 @@ part 'rest_client.g.dart';
 abstract class RestClient {
   factory RestClient(Dio dio, {String baseUrl}) = _RestClient;
 
+  /// 프로필 기본 조회 API
+  @GET("/api/profile")
+  Future<ApiResponse> loadProfile(@Header("Authorization") String accessToken);
+
   /// 이메일 인증 코드 요청 API
   @POST("/api/auth/email/send")
   Future<ApiResponse> sendEmail(@Query('email') String email);
@@ -60,6 +64,13 @@ abstract class RestClient {
     @Query("userId") String userId,
     @Header("Authorization") String accesstoken,
     @Body() Map<String, int> body,
+  );
+
+  /// 닉네임 변경 API
+  @PATCH("/api/profile/nickname")
+  Future<ApiResponse> setNickName(
+    @Header("Authorization") String accesstoken,
+    @Body() Map<String, String> body,
   );
 
   /// 위시아이템 추가 API

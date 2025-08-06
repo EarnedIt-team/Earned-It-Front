@@ -6,6 +6,7 @@ import 'package:earned_it/views/navigation_view.dart';
 import 'package:earned_it/views/onboarding/onboarding_view.dart';
 import 'package:earned_it/views/puzzle/puzzle_view.dart';
 import 'package:earned_it/views/auth/signup/sign_view.dart';
+import 'package:earned_it/views/setting/nickname_edit_view.dart';
 import 'package:earned_it/views/setting/set_salary_view.dart';
 import 'package:earned_it/views/setting/setting_view.dart';
 import 'package:earned_it/views/splash_view.dart';
@@ -56,6 +57,12 @@ final GoRouter routes = GoRouter(
       path: '/setSalary',
       builder:
           (BuildContext context, GoRouterState state) => const SetSalaryView(),
+    ),
+    GoRoute(
+      path: '/editName',
+      builder:
+          (BuildContext context, GoRouterState state) =>
+              const NicknameEditView(),
     ),
     GoRoute(
       path: '/addWish',

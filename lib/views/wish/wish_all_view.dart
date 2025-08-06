@@ -42,11 +42,10 @@ class _WishAllViewState extends ConsumerState<WishAllView> {
 
   @override
   Widget build(BuildContext context) {
-    final userState = ref.watch(wishViewModelProvider);
-    // star가 아닌 아이템들만 필터링하여 '전체' 리스트로 사용
-    final allWishes = userState.totalWishes;
-    final isLoading = ref.watch(wishAllViewLoadingProvider); // 로딩 상태 감시
     final wishState = ref.watch(wishViewModelProvider);
+    // star가 아닌 아이템들만 필터링하여 '전체' 리스트로 사용
+    final allWishes = wishState.totalWishes;
+    final isLoading = ref.watch(wishAllViewLoadingProvider); // 로딩 상태 감시
 
     return Stack(
       children: [

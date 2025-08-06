@@ -20,12 +20,6 @@ class UserNotifier extends Notifier<UserState> {
     return const UserState();
   }
 
-  /// 전체 위시리스트를 업데이트하는 메소드
-  void updateTotalWishes(List<WishModel> newTotalWishes) {
-    // copyWith를 사용하여 totalWishes만 새로운 값으로 교체합니다. (임시로 starWishes)
-    state = state.copyWith(starWishes: newTotalWishes);
-  }
-
   /// 사용자 정보를 불러옵니다.
   Future<void> loadUser() async {
     try {
@@ -55,30 +49,36 @@ class UserNotifier extends Notifier<UserState> {
           .read(wishViewModelProvider.notifier)
           .updateStarWishesFromServer(responseData);
 
-      print("저장 완료");
+      print("유저 저장 완료 ${responseData}");
     } catch (e) {
       print("유저 정보 불러오기 에러 $e");
     }
   }
 
-  /// 로컬 상태에서 특정 위시 아이템을 즉시 제거합니다.
-  void removeWishItemLocally(int wishId) {
-    // 기존 리스트를 복사하여 불변성을 유지
-    final newStarWishes = List<WishModel>.from(state.starWishes)
-      ..removeWhere((item) => item.wishId == wishId);
+  /// 사용자 정보를 불러옵니다.
+  Future<void> loadProfile() async {
+    try {
+      final String? accessToken = await _storage.read(key: 'accessToken');
 
-    final newHighLightWishes = List<WishModel>.from(state.Wishes3)
-      ..removeWhere((item) => item.wishId == wishId);
+      final userService = ref.read(userServiceProvider);
+      final response = await userService.loadProfile(accessToken!);
+      final responseData = response.data as Map<String, dynamic>;
 
-    final newTotalWishes = List<WishModel>.from(state.totalWishes)
-      ..removeWhere((item) => item.wishId == wishId);
+      state = state.copyWith(
+        // 프로필 사진
+        profileImage: response.data["profileImage"] ?? state.profileImage,
 
-    // 제거된 새 리스트로 상태를 업데이트
-    state = state.copyWith(
-      starWishes: newStarWishes,
-      Wishes3: newHighLightWishes,
-      totalWishes: newTotalWishes,
-    );
+        // 닉네임
+        name: response.data["nickname"] ?? state.name,
+
+        // 월 수익
+        monthlySalary: response.data["monthlySalary"] ?? state.monthlySalary,
+      );
+
+      print("프로필 저장 완료 ${responseData}");
+    } catch (e) {
+      print("프로필 정보 불러오기 에러 $e");
+    }
   }
 
   /// 유저 정보를 부분적으로 또는 전체적으로 갱신하는 메소드입니다.
@@ -99,6 +99,11 @@ class UserNotifier extends Notifier<UserState> {
       isearningsPerSecond: hasSalary ?? state.isearningsPerSecond,
       hasAgreedTerm: hasAgreedTerm ?? state.hasAgreedTerm,
     );
+  }
+
+  /// 로컬에서 닉네임 정보를 업데이트하는 메소드
+  void updateNickName({required String nickName}) {
+    state = state.copyWith(name: nickName);
   }
 
   /// 급여 정보를 업데이트하는 메소드

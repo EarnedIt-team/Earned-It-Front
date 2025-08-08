@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:earned_it/config/design.dart';
 import 'package:earned_it/view_models/setting/set_profileimage_provider.dart';
+import 'package:earned_it/view_models/setting/state_auth_provider.dart';
 import 'package:earned_it/view_models/user_provider.dart';
 import 'package:earned_it/view_models/wish/wish_provider.dart';
 import 'package:earned_it/views/loading_overlay_view.dart';
@@ -49,7 +50,12 @@ class NavigationView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final wishState = ref.watch(wishViewModelProvider);
-    final isImageLoading = ref.watch(profileImageLoadingProvider);
+    final isImageLoading = ref.watch(
+      profileImageLoadingProvider,
+    ); // 설정에서 이미지 정보 처리 시,
+    final isAuthLoading = ref.watch(
+      stateAuthLoadingProvider,
+    ); // 설정에서 계정 정보 처리 시,
 
     ref.listen<bool>(isOpenEditProfileImage, (previous, next) {
       if (next == true) {
@@ -140,7 +146,8 @@ class NavigationView extends ConsumerWidget {
             onTap: (index) => _onItemTapped(index, context),
           ),
         ),
-        if (wishState.isLoading || isImageLoading) overlayView(),
+        if (wishState.isLoading || isImageLoading || isAuthLoading)
+          overlayView(),
       ],
     );
   }

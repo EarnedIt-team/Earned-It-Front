@@ -43,6 +43,10 @@ abstract class RestClient {
   @POST("/api/auth/refresh")
   Future<ApiResponse> checkToken(@Header("Authorization") String refreshtoken);
 
+  // 로그아웃 API
+  @POST("/api/auth/signout")
+  Future<ApiResponse> signout(@Header("Authorization") String accessToken);
+
   /// 유저 정보 불러오기 API
   @GET("/api/mainpage")
   Future<ApiResponse> loadUserInfo(@Header("Authorization") String accessToken);

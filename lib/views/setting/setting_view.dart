@@ -1,6 +1,7 @@
 import 'package:earned_it/config/design.dart';
 import 'package:earned_it/view_models/theme_provider.dart';
 import 'package:earned_it/view_models/user_provider.dart';
+import 'package:earned_it/view_models/wish/wish_provider.dart';
 import 'package:earned_it/views/navigation_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -338,7 +339,12 @@ class _SettingViewState extends ConsumerState<SettingView> {
                             onPressed: () async {
                               await const FlutterSecureStorage().deleteAll();
                               if (context.mounted) {
+                                context.pop();
                                 context.go('/login');
+                                // provider 강제 파괴
+                                ref.invalidate(userProvider);
+                                ref.invalidate(wishViewModelProvider);
+                                ref.invalidate(themeProvider);
                               }
                             },
                           ),

@@ -16,14 +16,12 @@ final wishViewModelProvider = NotifierProvider<WishViewModel, WishState>(
 );
 
 class WishViewModel extends Notifier<WishState> {
-  late final WishService _wishService;
-  late final LoginService _loginService;
+  late final WishService _wishService = ref.read(wishServiceProvider);
+  late final LoginService _loginService = ref.read(loginServiceProvider);
   final _storage = const FlutterSecureStorage();
 
   @override
   WishState build() {
-    _wishService = ref.read(wishServiceProvider);
-    _loginService = ref.read(loginServiceProvider);
     return const WishState(); // isLoading이 false인 초기 상태
   }
 

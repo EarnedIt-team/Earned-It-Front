@@ -73,6 +73,20 @@ abstract class RestClient {
     @Body() Map<String, String> body,
   );
 
+  /// 프로필 사진 변경 API
+  @PATCH("/api/profile/image")
+  @MultiPart()
+  Future<ApiResponse> setProfileImage(
+    @Header("Authorization") String accesstoken, {
+    @Part(name: "profileImage") required File itemImage,
+  });
+
+  /// 프로필 사진 삭제 API
+  @PATCH("/api/profile/image/delete")
+  Future<ApiResponse> deleteProfileImage(
+    @Header("Authorization") String accesstoken,
+  );
+
   /// 위시아이템 추가 API
   @POST("/api/wish")
   @MultiPart()

@@ -44,13 +44,13 @@ class _SettingViewState extends ConsumerState<SettingView> {
         centerTitle: false,
       ),
 
-      body: ListView(
-        children: <Widget>[
-          SizedBox(height: context.height(0.015)),
-          const SizedBox(height: 15),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: context.middlePadding),
-            child: Container(
+      body: Padding(
+        padding: EdgeInsets.symmetric(horizontal: context.middlePadding),
+        child: ListView(
+          children: <Widget>[
+            SizedBox(height: context.height(0.015)),
+            const SizedBox(height: 15),
+            Container(
               width: double.infinity,
               height: context.height(0.2),
               decoration: BoxDecoration(
@@ -68,15 +68,44 @@ class _SettingViewState extends ConsumerState<SettingView> {
                       border: Border.all(width: 1, color: Colors.grey),
                       borderRadius: BorderRadius.circular(context.width(0.03)),
                     ),
-                    child: Image.asset(
-                      "assets/images/default_profile.png",
-                      fit: BoxFit.cover,
-                      color:
-                          Theme.of(context).brightness == Brightness.dark
-                              ? const Color.fromARGB(255, 82, 82, 82)
-                              : Colors.grey,
-                      width: context.width(0.2),
-                    ),
+                    child:
+                        // 프로필 이미지가 존재 할 경우,
+                        userState.profileImage.isNotEmpty
+                            ? ClipRRect(
+                              borderRadius: BorderRadius.circular(
+                                context.width(0.03),
+                              ),
+                              child: Image.network(
+                                userState.profileImage,
+                                fit: BoxFit.cover,
+                                width: context.width(0.2),
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Container(
+                                    color: Colors.grey.shade200,
+                                    child: const Icon(
+                                      Icons.image_not_supported_outlined,
+                                      color: Colors.grey,
+                                    ),
+                                  );
+                                },
+                              ),
+                            )
+                            // 프로필 이미지가 없을 경우,
+                            : ClipRRect(
+                              borderRadius: BorderRadius.circular(
+                                context.width(0.03),
+                              ),
+                              child: Image.asset(
+                                "assets/images/default_profile.png",
+                                fit: BoxFit.cover,
+                                color:
+                                    Theme.of(context).brightness ==
+                                            Brightness.dark
+                                        ? const Color.fromARGB(255, 82, 82, 82)
+                                        : Colors.grey,
+                                width: context.width(0.2),
+                              ),
+                            ),
                   ),
 
                   Expanded(
@@ -189,130 +218,150 @@ class _SettingViewState extends ConsumerState<SettingView> {
                 ],
               ),
             ),
-          ),
-          // --- 프로필 섹션 ---
-          const SizedBox(height: 15),
-          _buildSectionHeader("프로필"),
-          ListTile(
-            leading: const Icon(Icons.edit_outlined),
-            title: const Text('닉네임 수정'),
-            trailing: const Icon(Icons.chevron_right, color: primaryColor),
-            onTap: () {
-              context.push('/editName');
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.photo_camera_outlined),
-            title: const Text('프로필 사진 변경'),
-            trailing: const Icon(Icons.chevron_right, color: primaryColor),
-            onTap: () {
-              ref.read(isOpenEditProfileImage.notifier).state = true;
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.attach_money_outlined),
-            title: const Text("월 수익 설정"),
-            trailing: const Icon(Icons.chevron_right, color: primaryColor),
-            onTap: () {
-              context.push('/setSalary');
-            },
-          ),
-          const Divider(),
-          // --- 앱 설정 섹션 ---
-          _buildSectionHeader("앱 설정"),
-          ListTile(
-            leading: const Icon(Icons.brightness_6_outlined),
-            title: const Text('테마 설정'),
-            trailing: Text(
-              _themeModeToString(currentThemeMode),
-              style: TextStyle(
-                fontSize: context.width(0.035),
-                color: const Color.fromARGB(255, 168, 121, 39),
+
+            // --- 프로필 섹션 ---
+            const SizedBox(height: 15),
+            _buildSectionHeader("프로필"),
+            ListTile(
+              contentPadding: EdgeInsets.symmetric(
+                horizontal: context.middlePadding / 2,
               ),
+              leading: const Icon(Icons.edit_outlined),
+              title: const Text('닉네임 수정'),
+              trailing: const Icon(Icons.chevron_right, color: primaryColor),
+              onTap: () {
+                context.push('/editName');
+              },
             ),
-            onTap: () {
-              showDialog(
-                context: context,
-                builder:
-                    (_) => AlertDialog(
-                      title: const Text('테마 선택'),
-                      content: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children:
-                            ThemeMode.values.map((theme) {
-                              return RadioListTile<ThemeMode>(
-                                title: Text(_themeModeToString(theme)),
-                                value: theme,
-                                groupValue: currentThemeMode,
-                                onChanged: (newTheme) {
-                                  if (newTheme != null) {
-                                    ref
-                                        .read(themeProvider.notifier)
-                                        .changeTheme(newTheme);
-                                  }
-                                  context.pop();
-                                },
-                              );
-                            }).toList(),
+            ListTile(
+              contentPadding: EdgeInsets.symmetric(
+                horizontal: context.middlePadding / 2,
+              ),
+              leading: const Icon(Icons.photo_camera_outlined),
+              title: const Text('프로필 사진 변경'),
+              trailing: const Icon(Icons.chevron_right, color: primaryColor),
+              onTap: () {
+                ref.read(isOpenEditProfileImage.notifier).state = true;
+              },
+            ),
+            ListTile(
+              contentPadding: EdgeInsets.symmetric(
+                horizontal: context.middlePadding / 2,
+              ),
+              leading: const Icon(Icons.attach_money_outlined),
+              title: const Text("월 수익 설정"),
+              trailing: const Icon(Icons.chevron_right, color: primaryColor),
+              onTap: () {
+                context.push('/setSalary');
+              },
+            ),
+            // --- 앱 설정 섹션 ---
+            _buildSectionHeader("앱 설정"),
+            ListTile(
+              contentPadding: EdgeInsets.symmetric(
+                horizontal: context.middlePadding / 2,
+              ),
+              leading: const Icon(Icons.brightness_6_outlined),
+              title: const Text('테마 설정'),
+              trailing: Text(
+                _themeModeToString(currentThemeMode),
+                style: TextStyle(
+                  fontSize: context.width(0.035),
+                  color: const Color.fromARGB(255, 168, 121, 39),
+                ),
+              ),
+              onTap: () {
+                showDialog(
+                  context: context,
+                  builder:
+                      (_) => AlertDialog(
+                        title: const Text('테마 선택'),
+                        content: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children:
+                              ThemeMode.values.map((theme) {
+                                return RadioListTile<ThemeMode>(
+                                  title: Text(_themeModeToString(theme)),
+                                  value: theme,
+                                  groupValue: currentThemeMode,
+                                  onChanged: (newTheme) {
+                                    if (newTheme != null) {
+                                      ref
+                                          .read(themeProvider.notifier)
+                                          .changeTheme(newTheme);
+                                    }
+                                    context.pop();
+                                  },
+                                );
+                              }).toList(),
+                        ),
                       ),
-                    ),
-              );
-            },
-          ),
-          const Divider(),
-          // --- 계정 섹션 ---
-          _buildSectionHeader("계정"),
-          ListTile(
-            leading: const Icon(Icons.description_outlined),
-            title: const Text('이용약관'),
-            trailing: const Icon(Icons.chevron_right, color: primaryColor),
-            onTap: () {
-              // TODO: 이용약관 페이지로 이동
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.logout, color: Colors.red),
-            title: const Text("로그아웃", style: TextStyle(color: Colors.red)),
-            onTap: () async {
-              showDialog(
-                context: context,
-                builder:
-                    (ctx) => AlertDialog(
-                      title: const Text('로그아웃'),
-                      content: const Text('정말로 로그아웃 하시겠습니까?'),
-                      actions: [
-                        TextButton(
-                          child: const Text('취소'),
-                          onPressed: () => Navigator.of(ctx).pop(),
-                        ),
-                        TextButton(
-                          child: const Text(
-                            '로그아웃',
-                            style: TextStyle(color: Colors.red),
-                          ),
-                          onPressed: () async {
-                            await const FlutterSecureStorage().deleteAll();
-                            if (context.mounted) {
-                              context.go('/login');
-                            }
-                          },
-                        ),
-                      ],
-                    ),
-              );
-            },
-          ),
-          ListTile(
-            leading: const Icon(
-              Icons.person_remove_outlined,
-              color: Colors.red,
+                );
+              },
             ),
-            title: const Text("회원탈퇴", style: TextStyle(color: Colors.red)),
-            onTap: () {
-              // TODO: 회원탈퇴 로직 구현
-            },
-          ),
-        ],
+            // --- 계정 섹션 ---
+            _buildSectionHeader("계정"),
+            ListTile(
+              contentPadding: EdgeInsets.symmetric(
+                horizontal: context.middlePadding / 2,
+              ),
+              leading: const Icon(Icons.description_outlined),
+              title: const Text('이용약관'),
+              trailing: const Icon(Icons.chevron_right, color: primaryColor),
+              onTap: () {
+                // TODO: 이용약관 페이지로 이동
+              },
+            ),
+            ListTile(
+              contentPadding: EdgeInsets.symmetric(
+                horizontal: context.middlePadding / 2,
+              ),
+              leading: const Icon(Icons.logout, color: Colors.red),
+              title: const Text("로그아웃", style: TextStyle(color: Colors.red)),
+              onTap: () async {
+                showDialog(
+                  context: context,
+                  builder:
+                      (ctx) => AlertDialog(
+                        title: const Text('로그아웃'),
+                        content: const Text('정말로 로그아웃 하시겠습니까?'),
+                        actions: [
+                          TextButton(
+                            child: const Text('취소'),
+                            onPressed: () => Navigator.of(ctx).pop(),
+                          ),
+                          TextButton(
+                            child: const Text(
+                              '로그아웃',
+                              style: TextStyle(color: Colors.red),
+                            ),
+                            onPressed: () async {
+                              await const FlutterSecureStorage().deleteAll();
+                              if (context.mounted) {
+                                context.go('/login');
+                              }
+                            },
+                          ),
+                        ],
+                      ),
+                );
+              },
+            ),
+            ListTile(
+              contentPadding: EdgeInsets.symmetric(
+                horizontal: context.middlePadding / 2,
+              ),
+              leading: const Icon(
+                Icons.person_remove_outlined,
+                color: Colors.red,
+              ),
+              title: const Text("회원탈퇴", style: TextStyle(color: Colors.red)),
+              onTap: () {
+                // TODO: 회원탈퇴 로직 구현
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -320,7 +369,11 @@ class _SettingViewState extends ConsumerState<SettingView> {
   // 3. 헬퍼 메서드들을 State 클래스 안으로 이동
   Widget _buildSectionHeader(String title) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 8.0),
+      padding: EdgeInsets.only(
+        left: context.middlePadding / 2,
+        top: context.middlePadding / 2,
+        bottom: context.middlePadding,
+      ),
       child: Text(
         title,
         style: const TextStyle(

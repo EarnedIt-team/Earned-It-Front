@@ -1,8 +1,13 @@
+import 'dart:io';
 import 'dart:typed_data';
 import 'package:dio/dio.dart';
+import 'package:earned_it/config/exception.dart';
+import 'package:earned_it/services/auth/login_service.dart';
+import 'package:earned_it/services/setting_service.dart';
 import 'package:earned_it/view_models/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
@@ -17,22 +22,21 @@ final profileImageViewModelProvider = Provider.autoDispose((ref) {
 });
 
 class ProfileImageViewModel {
+  final FlutterSecureStorage _storage = const FlutterSecureStorage();
   final Ref _ref;
   final ImagePicker _picker = ImagePicker();
   final ImageCropper _cropper = ImageCropper();
 
   ProfileImageViewModel(this._ref);
 
-  /// 1. 갤러리에서 이미지 선택 -> 2. 이미지 자르기 -> 3. 서버에 업로드
   Future<void> pickAndEditImage(BuildContext context) async {
-    // 👇 1. (핵심 수정) 함수 시작 시 BottomSheet를 닫는 코드를 제거합니다.
-    // if (context.mounted) Navigator.of(context).pop(); // 이 줄 제거!
-
     try {
       // 갤러리에서 이미지 선택
       final pickedFile = await _picker.pickImage(
         source: ImageSource.gallery,
-        imageQuality: 80,
+        imageQuality: 50,
+        maxWidth: 1080,
+        maxHeight: 1920,
       );
 
       if (pickedFile == null || !context.mounted) return;
@@ -50,7 +54,7 @@ class ProfileImageViewModel {
             lockAspectRatio: true,
           ),
           IOSUiSettings(
-            title: '프로필 이미지 변경',
+            title: '이미지 편집',
             aspectRatioLockEnabled: true,
             doneButtonTitle: '완료',
             cancelButtonTitle: '취소',
@@ -60,11 +64,11 @@ class ProfileImageViewModel {
 
       if (croppedFile == null || !context.mounted) return;
 
-      // 잘린 이미지를 바이트로 변환하여 업로드
-      final imageBytes = await croppedFile.readAsBytes();
-
       const maxSizeInBytes = 5 * 1024 * 1024;
-      if (imageBytes.lengthInBytes > maxSizeInBytes) {
+      final imageFile = File(croppedFile.path);
+      final imageSize = await imageFile.length();
+
+      if (imageSize > maxSizeInBytes) {
         toastification.show(
           context: context,
           type: ToastificationType.error,
@@ -73,7 +77,7 @@ class ProfileImageViewModel {
         return;
       }
 
-      await _uploadEditedImage(context, imageBytes);
+      await _uploadEditedImage(context, croppedFile);
     } catch (e) {
       debugPrint('Image processing error: $e');
       if (context.mounted) {
@@ -89,15 +93,22 @@ class ProfileImageViewModel {
   /// 편집된 이미지를 서버에 업로드합니다.
   Future<void> _uploadEditedImage(
     BuildContext context,
-    Uint8List imageBytes,
+    CroppedFile croppedImage,
   ) async {
     _ref.read(profileImageLoadingProvider.notifier).state = true;
     try {
-      // TODO: 여기에 실제 서버로 이미지를 업로드하는 API 호출 로직을 구현합니다.
-      print('✅ ${imageBytes.lengthInBytes} 바이트 크기의 이미지를 서버로 전송합니다.');
-      await Future.delayed(const Duration(seconds: 2));
+      // 1. AccessToken 가져오기
+      final accessToken = await _storage.read(key: 'accessToken');
+      if (accessToken == null) {
+        throw Exception("로그인이 필요합니다.");
+      }
 
-      // await _ref.read(userProvider.notifier).loadUser();
+      final imageFile = File(croppedImage.path);
+
+      // 2. SettingService를 통해 API 호출
+      await _ref
+          .read(settingServiceProvider)
+          .setProfileImage(accessToken: accessToken, imageFile: imageFile);
 
       if (context.mounted) {
         toastification.show(
@@ -105,13 +116,44 @@ class ProfileImageViewModel {
           type: ToastificationType.success,
           title: const Text('프로필 이미지가 변경되었습니다.'),
         );
-        // 👇 2. 모든 작업이 성공적으로 끝난 후 BottomSheet를 닫습니다.
         Navigator.of(context).pop();
       }
     } on DioException catch (e) {
-      // TODO: API 에러 처리
+      _ref.read(profileImageLoadingProvider.notifier).state = false;
+
+      if (e.response?.data['code'] == "AUTH_REQUIRED") {
+        print("토큰이 만료되어 재발급합니다.");
+        final String? refreshToken = await _storage.read(key: 'refreshToken');
+        try {
+          await _ref.read(loginServiceProvider).checkToken(refreshToken!);
+          toastification.show(
+            alignment: Alignment.topCenter,
+            style: ToastificationStyle.simple,
+            context: context,
+            title: const Text("잠시 후, 다시 시도해주세요."),
+            autoCloseDuration: const Duration(seconds: 3),
+          );
+        } catch (e) {
+          context.go('/login');
+          toastification.show(
+            alignment: Alignment.topCenter,
+            style: ToastificationStyle.simple,
+            context: context,
+            title: const Text("다시 로그인해주세요."),
+            autoCloseDuration: const Duration(seconds: 3),
+          );
+        }
+      }
     } catch (e) {
-      // TODO: 일반 에러 처리
+      print('프로필 이미지 설정 중 에러 발생: $e');
+      _ref.read(profileImageLoadingProvider.notifier).state = false;
+      toastification.show(
+        alignment: Alignment.topCenter,
+        style: ToastificationStyle.simple,
+        context: context,
+        title: Text(e.toDisplayString()),
+        autoCloseDuration: const Duration(seconds: 3),
+      );
     } finally {
       if (_ref.exists(profileImageLoadingProvider)) {
         _ref.read(profileImageLoadingProvider.notifier).state = false;

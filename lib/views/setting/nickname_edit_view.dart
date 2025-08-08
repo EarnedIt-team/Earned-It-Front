@@ -70,7 +70,7 @@ class NicknameEditView extends ConsumerWidget {
                             ? () => nicknameEditNotifier.submitUpdate(context)
                             : null,
                     child: Text(
-                      "수정하기",
+                      "수정 완료",
                       style: TextStyle(
                         color:
                             nicknameEditState.canSubmit

@@ -1,6 +1,7 @@
 import 'package:earned_it/config/design.dart';
 import 'package:earned_it/view_models/theme_provider.dart';
 import 'package:earned_it/view_models/user_provider.dart';
+import 'package:earned_it/views/navigation_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -46,6 +47,7 @@ class _SettingViewState extends ConsumerState<SettingView> {
       body: ListView(
         children: <Widget>[
           SizedBox(height: context.height(0.015)),
+          const SizedBox(height: 15),
           Padding(
             padding: EdgeInsets.symmetric(horizontal: context.middlePadding),
             child: Container(
@@ -63,10 +65,6 @@ class _SettingViewState extends ConsumerState<SettingView> {
                     width: context.width(0.3),
                     height: context.height(0.2),
                     decoration: BoxDecoration(
-                      color:
-                          Theme.of(context).brightness == Brightness.dark
-                              ? const Color.fromARGB(128, 214, 214, 214)
-                              : Colors.white,
                       border: Border.all(width: 1, color: Colors.grey),
                       borderRadius: BorderRadius.circular(context.width(0.03)),
                     ),
@@ -75,7 +73,7 @@ class _SettingViewState extends ConsumerState<SettingView> {
                       fit: BoxFit.cover,
                       color:
                           Theme.of(context).brightness == Brightness.dark
-                              ? Colors.grey
+                              ? const Color.fromARGB(255, 82, 82, 82)
                               : Colors.grey,
                       width: context.width(0.2),
                     ),
@@ -119,7 +117,7 @@ class _SettingViewState extends ConsumerState<SettingView> {
 
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
+                                  children: <Widget>[
                                     Text(
                                       "이름",
                                       style: TextStyle(
@@ -193,6 +191,7 @@ class _SettingViewState extends ConsumerState<SettingView> {
             ),
           ),
           // --- 프로필 섹션 ---
+          const SizedBox(height: 15),
           _buildSectionHeader("프로필"),
           ListTile(
             leading: const Icon(Icons.edit_outlined),
@@ -204,10 +203,10 @@ class _SettingViewState extends ConsumerState<SettingView> {
           ),
           ListTile(
             leading: const Icon(Icons.photo_camera_outlined),
-            title: const Text('대표 사진 변경'),
+            title: const Text('프로필 사진 변경'),
             trailing: const Icon(Icons.chevron_right),
             onTap: () {
-              // TODO: 대표 사진 변경 로직 구현
+              ref.read(isOpenEditProfileImage.notifier).state = true;
             },
           ),
           ListTile(
@@ -251,7 +250,7 @@ class _SettingViewState extends ConsumerState<SettingView> {
                                         .read(themeProvider.notifier)
                                         .changeTheme(newTheme);
                                   }
-                                  Navigator.of(context).pop();
+                                  context.pop();
                                 },
                               );
                             }).toList(),

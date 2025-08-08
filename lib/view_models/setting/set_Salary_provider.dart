@@ -198,13 +198,20 @@ class SetSalaryViewModel extends AutoDisposeNotifier<SetSalaryState> {
       print('월 급여 설정 완료: ${response.data}');
       state = state.copyWith(isLoading: false, errorMessage: '');
 
-      // 유저 정보 업데이트
+      // 👇 1. (핵심 수정) response.data에서 값을 안전하게 추출합니다.
+      // as int? 와 같이 nullable 타입으로 캐스팅하고, ?? 연산자로 기본값을 지정합니다.
+      final int newAmount = response.data['amount'] as int? ?? 0;
+      final int newPayday = response.data['payday'] as int? ?? 0;
+      final double newAmountPerSec =
+          response.data['amountPerSec'] as double? ?? 0.0;
+
+      // 2. 안전하게 추출한 값으로 유저 정보를 업데이트합니다.
       ref
           .read(userProvider.notifier)
           .updateSalaryInfo(
-            newMonthlySalary: response.data['amount'], // 월 급여
-            newPayday: response.data['payday'], // 월급날
-            newEarningsPerSecond: response.data['amountPerSec'], // 초당 수익
+            newMonthlySalary: newAmount,
+            newPayday: newPayday,
+            newEarningsPerSecond: newAmountPerSec,
           );
 
       toastification.show(
@@ -218,7 +225,7 @@ class SetSalaryViewModel extends AutoDisposeNotifier<SetSalaryState> {
 
       context.pop();
     } on DioException catch (e) {
-      state = state.copyWith(isLoading: false); // 로딩 상태 해제
+      state = state.copyWith(isLoading: false);
 
       if (e.response?.data['code'] == "AUTH_REQUIRED") {
         print("토큰이 만료되어 재발급합니다.");

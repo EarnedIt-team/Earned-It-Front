@@ -31,17 +31,13 @@ class UserNotifier extends Notifier<UserState> {
 
       state = state.copyWith(
         // 월 수익
-        monthlySalary:
-            response.data["userInfo"]["amount"] ?? state.monthlySalary,
+        monthlySalary: response.data["userInfo"]["amount"] ?? 1000,
         // 월 수익 날짜
-        payday: response.data["userInfo"]["payday"] ?? state.payday,
+        payday: response.data["userInfo"]["payday"] ?? 1,
         // 초당 수익
-        earningsPerSecond:
-            response.data["userInfo"]["amountPerSec"] ??
-            state.earningsPerSecond,
+        earningsPerSecond: response.data["userInfo"]["amountPerSec"] ?? 0.0,
         // 수익 설정 여부
-        isearningsPerSecond:
-            response.data["userInfo"]["hasSalary"] ?? state.isearningsPerSecond,
+        isearningsPerSecond: response.data["userInfo"]["hasSalary"] ?? false,
       );
 
       // 위시리스트(Star) 관련 데이터는 WishNotifier에 업데이트를 위임합니다.
@@ -66,13 +62,13 @@ class UserNotifier extends Notifier<UserState> {
 
       state = state.copyWith(
         // 프로필 사진
-        profileImage: response.data["profileImage"] ?? state.profileImage,
+        profileImage: response.data["profileImage"] ?? "",
 
         // 닉네임
-        name: response.data["nickname"] ?? state.name,
+        name: response.data["nickname"] ?? "",
 
         // 월 수익
-        monthlySalary: response.data["monthlySalary"] ?? state.monthlySalary,
+        monthlySalary: response.data["monthlySalary"] ?? 1000,
       );
 
       print("프로필 저장 완료 ${responseData}");
@@ -119,6 +115,11 @@ class UserNotifier extends Notifier<UserState> {
       earningsPerSecond: newEarningsPerSecond,
       isearningsPerSecond: true, // 수익 정보가 설정되었음을 표시
     );
+  }
+
+  /// 로컬에서 프로필 사진를 업데이트하는 메소드
+  void updateUserProfileImage(String? imageUrl) {
+    state = state.copyWith(profileImage: imageUrl ?? "");
   }
 
   /// 상태를 초기화하는 메소드

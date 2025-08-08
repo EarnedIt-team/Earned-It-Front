@@ -37,6 +37,7 @@ dependencies:
   image_picker: ^1.1.2
   flutter_slidable: ^4.0.0
   flutter_launcher_icons: ^0.14.4
+  image_cropper:
 
 dev_dependencies:
   flutter_test:
@@ -79,6 +80,8 @@ flutter:
 
     - assets/lottie/empty_wish.json
     - assets/lottie/check_wish.json
+    - assets/lottie/isNot_Salary.json
+    - assets/lottie/empty_piece.json
 
   fonts:
     - family: Mainfonts

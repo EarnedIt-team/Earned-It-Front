@@ -39,6 +39,10 @@ class _HomeViewState extends ConsumerState<HomeView> {
     // 👇 2. initState에서 로딩 상태를 제어하도록 수정
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await ref.read(userProvider.notifier).loadUser();
+
+      if (ref.read(userProvider.notifier).state.isearningsPerSecond == false) {
+        context.go("/initHome");
+      }
     });
   }
 

@@ -1,11 +1,17 @@
+import 'dart:typed_data';
+
 import 'package:earned_it/config/design.dart';
+import 'package:earned_it/view_models/setting/set_profileimage_provider.dart';
+import 'package:earned_it/view_models/user_provider.dart';
 import 'package:earned_it/view_models/wish/wish_provider.dart';
 import 'package:earned_it/views/loading_overlay_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:toastification/toastification.dart';
 
-// 2. StatelessWidget -> ConsumerWidget으로 변경
+final isOpenEditProfileImage = StateProvider<bool>((ref) => false);
+
 class NavigationView extends ConsumerWidget {
   final Widget child;
 
@@ -41,10 +47,70 @@ class NavigationView extends ConsumerWidget {
   }
 
   @override
-  // 3. build 메서드에 WidgetRef ref 파라미터 추가
   Widget build(BuildContext context, WidgetRef ref) {
-    // 4. ref.watch를 통해 wishState를 가져옴
     final wishState = ref.watch(wishViewModelProvider);
+    final isImageLoading = ref.watch(profileImageLoadingProvider);
+
+    ref.listen<bool>(isOpenEditProfileImage, (previous, next) {
+      if (next == true) {
+        showModalBottomSheet(
+          context: context,
+          // ... (BottomSheet UI는 동일)
+          builder: (BuildContext context) {
+            return SafeArea(
+              child: Padding(
+                padding: EdgeInsets.all(context.middlePadding),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    SizedBox(
+                      width: double.infinity,
+                      height: context.height(0.06),
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: primaryColor,
+                        ),
+                        // 👇 2. onPressed에서 ViewModel의 메서드 호출
+                        onPressed: () {
+                          ref
+                              .read(profileImageViewModelProvider)
+                              .pickAndEditImage(context);
+                        },
+                        child: const Text(
+                          "앨범에서 선택",
+                          style: TextStyle(color: Colors.black),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    SizedBox(
+                      width: double.infinity,
+                      height: context.height(0.06),
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                        ),
+                        onPressed: () {
+                          ref
+                              .read(profileImageViewModelProvider)
+                              .deleteProfileImage(context);
+                        },
+                        child: const Text(
+                          "기본 이미지로 변경",
+                          style: TextStyle(color: Colors.black),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        ).whenComplete(() {
+          ref.read(isOpenEditProfileImage.notifier).state = false;
+        });
+      }
+    });
 
     return Stack(
       children: [
@@ -74,7 +140,7 @@ class NavigationView extends ConsumerWidget {
             onTap: (index) => _onItemTapped(index, context),
           ),
         ),
-        if (wishState.isLoading) overlayView(),
+        if (wishState.isLoading || isImageLoading) overlayView(),
       ],
     );
   }

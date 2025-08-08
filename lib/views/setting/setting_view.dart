@@ -196,7 +196,7 @@ class _SettingViewState extends ConsumerState<SettingView> {
           ListTile(
             leading: const Icon(Icons.edit_outlined),
             title: const Text('닉네임 수정'),
-            trailing: const Icon(Icons.chevron_right),
+            trailing: const Icon(Icons.chevron_right, color: primaryColor),
             onTap: () {
               context.push('/editName');
             },
@@ -204,7 +204,7 @@ class _SettingViewState extends ConsumerState<SettingView> {
           ListTile(
             leading: const Icon(Icons.photo_camera_outlined),
             title: const Text('프로필 사진 변경'),
-            trailing: const Icon(Icons.chevron_right),
+            trailing: const Icon(Icons.chevron_right, color: primaryColor),
             onTap: () {
               ref.read(isOpenEditProfileImage.notifier).state = true;
             },
@@ -212,7 +212,7 @@ class _SettingViewState extends ConsumerState<SettingView> {
           ListTile(
             leading: const Icon(Icons.attach_money_outlined),
             title: const Text("월 수익 설정"),
-            trailing: const Icon(Icons.chevron_right),
+            trailing: const Icon(Icons.chevron_right, color: primaryColor),
             onTap: () {
               context.push('/setSalary');
             },
@@ -265,7 +265,7 @@ class _SettingViewState extends ConsumerState<SettingView> {
           ListTile(
             leading: const Icon(Icons.description_outlined),
             title: const Text('이용약관'),
-            trailing: const Icon(Icons.chevron_right),
+            trailing: const Icon(Icons.chevron_right, color: primaryColor),
             onTap: () {
               // TODO: 이용약관 페이지로 이동
             },

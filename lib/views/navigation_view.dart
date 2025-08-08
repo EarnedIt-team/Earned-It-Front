@@ -1,11 +1,14 @@
 import 'dart:typed_data';
 
 import 'package:earned_it/config/design.dart';
+import 'package:earned_it/view_models/setting/set_profileimage_provider.dart';
+import 'package:earned_it/view_models/user_provider.dart';
 import 'package:earned_it/view_models/wish/wish_provider.dart';
 import 'package:earned_it/views/loading_overlay_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:toastification/toastification.dart';
 
 final isOpenEditProfileImage = StateProvider<bool>((ref) => false);
 
@@ -46,75 +49,55 @@ class NavigationView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final wishState = ref.watch(wishViewModelProvider);
+    final userState = ref.watch(userProvider);
+    final isImageLoading = ref.watch(profileImageLoadingProvider);
 
     ref.listen<bool>(isOpenEditProfileImage, (previous, next) {
       if (next == true) {
         showModalBottomSheet(
           context: context,
-          isScrollControlled: true,
+          // ... (BottomSheet UI는 동일)
           builder: (BuildContext context) {
             return SafeArea(
               child: Padding(
                 padding: EdgeInsets.all(context.middlePadding),
-                child: Row(
-                  children: [
-                    // 👇 1. Column을 Expanded로 감싸서 가로 공간을 모두 차지하도록 함
-                    Expanded(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: <Widget>[
-                          SizedBox(
-                            width: double.infinity,
-                            height: context.height(0.06),
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: primaryColor,
-                              ),
-                              onPressed: () {
-                                // Navigator.push(
-                                //   context,
-                                //   MaterialPageRoute(
-                                //     builder:
-                                //         (BuildContext context) =>
-                                //             ProImageEditor.asset(
-                                //               '',
-                                //               callbacks:
-                                //                   ProImageEditorCallbacks(
-                                //                     onImageEditingComplete: (
-                                //                       Uint8List bytes,
-                                //                     ) async {
-                                //                       print("이미지 수정 완료");
-                                //                     },
-                                //                   ),
-                                //             ),
-                                //   ),
-                                // );
-                              },
-                              child: const Text(
-                                "앨범에서 선택",
-                                style: TextStyle(color: Colors.black),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          SizedBox(
-                            width: double.infinity,
-                            height: context.height(0.06),
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.white,
-                              ),
-                              onPressed: () {
-                                // TODO: 기본 이미지로 변경하는 로직
-                              },
-                              child: const Text(
-                                "기본 이미지로 변경",
-                                style: TextStyle(color: Colors.black),
-                              ),
-                            ),
-                          ),
-                        ],
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    SizedBox(
+                      width: double.infinity,
+                      height: context.height(0.06),
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: primaryColor,
+                        ),
+                        // 👇 2. onPressed에서 ViewModel의 메서드 호출
+                        onPressed: () {
+                          ref
+                              .read(profileImageViewModelProvider)
+                              .pickAndEditImage(context);
+                        },
+                        child: const Text(
+                          "앨범에서 선택",
+                          style: TextStyle(color: Colors.black),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    SizedBox(
+                      width: double.infinity,
+                      height: context.height(0.06),
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                        ),
+                        onPressed: () {
+                          // ... (기본 이미지로 변경 로직)
+                        },
+                        child: const Text(
+                          "기본 이미지로 변경",
+                          style: TextStyle(color: Colors.black),
+                        ),
                       ),
                     ),
                   ],

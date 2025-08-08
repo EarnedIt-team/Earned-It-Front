@@ -117,6 +117,11 @@ class UserNotifier extends Notifier<UserState> {
     );
   }
 
+  /// 로컬에서 프로필 사진를 업데이트하는 메소드
+  void updateUserProfileImage(String? imageUrl) {
+    state = state.copyWith(profileImage: imageUrl ?? "");
+  }
+
   /// 상태를 초기화하는 메소드
   void reset() {
     state = const UserState(); // 다시 초기 상태로 되돌립니다.

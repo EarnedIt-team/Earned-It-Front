@@ -49,7 +49,6 @@ class NavigationView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final wishState = ref.watch(wishViewModelProvider);
-    final userState = ref.watch(userProvider);
     final isImageLoading = ref.watch(profileImageLoadingProvider);
 
     ref.listen<bool>(isOpenEditProfileImage, (previous, next) {
@@ -92,7 +91,9 @@ class NavigationView extends ConsumerWidget {
                           backgroundColor: Colors.white,
                         ),
                         onPressed: () {
-                          // ... (기본 이미지로 변경 로직)
+                          ref
+                              .read(profileImageViewModelProvider)
+                              .deleteProfileImage(context);
                         },
                         child: const Text(
                           "기본 이미지로 변경",
@@ -139,7 +140,7 @@ class NavigationView extends ConsumerWidget {
             onTap: (index) => _onItemTapped(index, context),
           ),
         ),
-        if (wishState.isLoading) overlayView(),
+        if (wishState.isLoading || isImageLoading) overlayView(),
       ],
     );
   }

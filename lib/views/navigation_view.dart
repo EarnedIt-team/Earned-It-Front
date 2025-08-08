@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:earned_it/config/design.dart';
 import 'package:earned_it/view_models/wish/wish_provider.dart';
 import 'package:earned_it/views/loading_overlay_view.dart';
@@ -69,7 +71,26 @@ class NavigationView extends ConsumerWidget {
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: primaryColor,
                               ),
-                              onPressed: () {},
+                              onPressed: () {
+                                // Navigator.push(
+                                //   context,
+                                //   MaterialPageRoute(
+                                //     builder:
+                                //         (BuildContext context) =>
+                                //             ProImageEditor.asset(
+                                //               '',
+                                //               callbacks:
+                                //                   ProImageEditorCallbacks(
+                                //                     onImageEditingComplete: (
+                                //                       Uint8List bytes,
+                                //                     ) async {
+                                //                       print("이미지 수정 완료");
+                                //                     },
+                                //                   ),
+                                //             ),
+                                //   ),
+                                // );
+                              },
                               child: const Text(
                                 "앨범에서 선택",
                                 style: TextStyle(color: Colors.black),

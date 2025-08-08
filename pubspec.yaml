@@ -79,6 +79,7 @@ flutter:
 
     - assets/lottie/empty_wish.json
     - assets/lottie/check_wish.json
+    - assets/lottie/isNot_Salary.json
 
   fonts:
     - family: Mainfonts

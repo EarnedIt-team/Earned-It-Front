@@ -2,6 +2,7 @@ import 'package:earned_it/models/wish/wish_model.dart';
 import 'package:earned_it/views/home/home_view.dart';
 import 'package:earned_it/views/auth/login/forgot_password_view.dart';
 import 'package:earned_it/views/auth/login/login_view.dart';
+import 'package:earned_it/views/home/init_home_view.dart';
 import 'package:earned_it/views/navigation_view.dart';
 import 'package:earned_it/views/onboarding/onboarding_view.dart';
 import 'package:earned_it/views/puzzle/puzzle_view.dart';
@@ -52,6 +53,11 @@ final GoRouter routes = GoRouter(
       builder:
           (BuildContext context, GoRouterState state) =>
               const ForgotPasswordView(),
+    ),
+    GoRoute(
+      path: '/initHome',
+      builder:
+          (BuildContext context, GoRouterState state) => const InitHomeView(),
     ),
     GoRoute(
       path: '/setSalary',

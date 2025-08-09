@@ -2,6 +2,7 @@ import 'package:earned_it/models/user/user_state.dart';
 import 'package:earned_it/models/wish/wish_model.dart';
 import 'package:earned_it/services/auth/user_service.dart';
 import 'package:earned_it/services/wish_service.dart';
+import 'package:earned_it/view_models/piece_provider.dart';
 import 'package:earned_it/view_models/wish/wish_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -44,6 +45,9 @@ class UserNotifier extends Notifier<UserState> {
       ref
           .read(wishViewModelProvider.notifier)
           .updateStarWishesFromServer(responseData);
+
+      // 퍼즐(piece) 관련 데이터는 pieceProvider에 업데이트를 위임합니다.
+      ref.read(pieceProvider.notifier).updateRecentlyPiece(responseData);
 
       print("유저 저장 완료 ${responseData}");
     } catch (e) {

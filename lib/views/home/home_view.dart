@@ -5,6 +5,7 @@ import 'package:earned_it/config/design.dart';
 import 'package:earned_it/view_models/home_provider.dart';
 import 'package:earned_it/view_models/user_provider.dart';
 import 'package:earned_it/view_models/wish/wish_provider.dart';
+import 'package:earned_it/views/home/home_piece_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -160,7 +161,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
             child:
                 homeState.toggleIndex == 0
                     ? _buildWishlist(context, ref)
-                    : _buildPuzzle(),
+                    : const HomePieceView(),
           ),
           SizedBox(height: context.height(0.02)),
         ],
@@ -461,10 +462,6 @@ class _HomeViewState extends ConsumerState<HomeView> {
         SizedBox(height: context.height(0.03)),
       ],
     );
-  }
-
-  Widget _buildPuzzle() {
-    return const Center(child: Text("퍼즐"));
   }
 
   ({double progress, String timeText}) _calculateDisplayInfo(

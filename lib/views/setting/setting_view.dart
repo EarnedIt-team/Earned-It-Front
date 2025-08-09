@@ -359,7 +359,7 @@ class _SettingViewState extends ConsumerState<SettingView> {
               ),
               title: const Text("회원탈퇴", style: TextStyle(color: Colors.red)),
               onTap: () {
-                // TODO: 회원탈퇴 로직 구현
+                ref.read(isOpenReSign.notifier).state = true;
               },
             ),
           ],

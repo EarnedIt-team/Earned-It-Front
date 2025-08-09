@@ -1,4 +1,5 @@
 import 'package:earned_it/config/design.dart';
+import 'package:earned_it/view_models/setting/state_auth_provider.dart';
 import 'package:earned_it/view_models/theme_provider.dart';
 import 'package:earned_it/view_models/user_provider.dart';
 import 'package:earned_it/view_models/wish/wish_provider.dart';
@@ -336,16 +337,11 @@ class _SettingViewState extends ConsumerState<SettingView> {
                               '로그아웃',
                               style: TextStyle(color: Colors.red),
                             ),
-                            onPressed: () async {
-                              await const FlutterSecureStorage().deleteAll();
-                              if (context.mounted) {
-                                context.pop();
-                                context.go('/login');
-                                // provider 강제 파괴
-                                ref.invalidate(userProvider);
-                                ref.invalidate(wishViewModelProvider);
-                                ref.invalidate(themeProvider);
-                              }
+                            onPressed: () {
+                              context.pop();
+                              ref
+                                  .read(stateAuthViewModelProvider)
+                                  .signout(context);
                             },
                           ),
                         ],
@@ -363,7 +359,7 @@ class _SettingViewState extends ConsumerState<SettingView> {
               ),
               title: const Text("회원탈퇴", style: TextStyle(color: Colors.red)),
               onTap: () {
-                // TODO: 회원탈퇴 로직 구현
+                ref.read(isOpenReSign.notifier).state = true;
               },
             ),
           ],

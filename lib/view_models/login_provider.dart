@@ -11,11 +11,12 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:go_router/go_router.dart';
 import 'package:toastification/toastification.dart';
 
-final loginViewModelProvider = NotifierProvider<LoginViewModel, LoginState>(
-  LoginViewModel.new,
-);
+final loginViewModelProvider =
+    NotifierProvider.autoDispose<LoginViewModel, LoginState>(
+      LoginViewModel.new,
+    );
 
-class LoginViewModel extends Notifier<LoginState> {
+class LoginViewModel extends AutoDisposeNotifier<LoginState> {
   late final TextEditingController _idTextController;
   late final TextEditingController _passwordTextController;
   late final LoginService _loginService;

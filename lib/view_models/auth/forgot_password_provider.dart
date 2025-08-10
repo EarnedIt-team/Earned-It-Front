@@ -1,17 +1,24 @@
 import 'dart:async';
+import 'package:dio/dio.dart';
+import 'package:earned_it/config/exception.dart';
 import 'package:earned_it/models/user/forgot_password_state.dart';
+import 'package:earned_it/services/auth/forgot_password_service.dart';
+import 'package:earned_it/services/auth/login_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:toastification/toastification.dart';
 
 // 1. 비밀번호 찾기 단계를 정의하는 Enum
 enum ForgotPasswordStep { enterEmail, verifyCode, resetPassword }
 
-// 3. 로직을 처리하는 Notifier(ViewModel) 클래스
 class ForgotPasswordViewModel extends AutoDisposeNotifier<ForgotPasswordState> {
   late final TextEditingController emailController;
   late final TextEditingController codeController;
   late final TextEditingController passwordController;
   late final TextEditingController confirmPasswordController;
+  late final ForgotPasswordService _forgotPasswordService;
+  late final LoginService _loginService; //  LoginService 변수 추가
   Timer? _timer;
 
   String get timerText {
@@ -25,6 +32,9 @@ class ForgotPasswordViewModel extends AutoDisposeNotifier<ForgotPasswordState> {
 
   @override
   ForgotPasswordState build() {
+    _forgotPasswordService = ref.read(forgotPasswordServiceProvider);
+    _loginService = ref.read(loginServiceProvider); //  LoginService 초기화
+
     emailController = TextEditingController()..addListener(_validateForms);
     codeController = TextEditingController()..addListener(_validateForms);
     passwordController = TextEditingController()..addListener(_validateForms);
@@ -63,49 +73,102 @@ class ForgotPasswordViewModel extends AutoDisposeNotifier<ForgotPasswordState> {
   Future<void> requestVerificationCode(BuildContext context) async {
     if (!state.isEmailValid) return;
     state = state.copyWith(isLoading: true);
-    // TODO: 실제 이메일 인증 요청 API 호출
-    await Future.delayed(const Duration(seconds: 1));
-    state = state.copyWith(
-      isLoading: false,
-      currentStep: ForgotPasswordStep.verifyCode,
-    );
-    _startTimer();
+    try {
+      await _forgotPasswordService.sendpasswordEmail(emailController.text);
+
+      toastification.show(
+        context: context,
+        type: ToastificationType.success,
+        title: const Text('인증번호가 발송되었습니다.'),
+      );
+
+      state = state.copyWith(currentStep: ForgotPasswordStep.verifyCode);
+      _startTimer();
+    } on DioException catch (e) {
+      // 👈 4. DioException 별도 처리
+      if (context.mounted) _handleApiError(context, e);
+    } catch (e) {
+      if (context.mounted) _handleGeneralError(context, e);
+    } finally {
+      if (context.mounted) state = state.copyWith(isLoading: false);
+    }
   }
 
-  // 👇 (핵심 수정) 재전송 로직을 처리하는 메서드 추가
   /// 2. 인증 코드 재전송
   Future<void> resendVerificationCode(BuildContext context) async {
     state = state.copyWith(isLoading: true);
-    codeController.clear(); // 인증 코드 필드 초기화
+    codeController.clear();
+    try {
+      await _forgotPasswordService.sendpasswordEmail(emailController.text);
 
-    // TODO: 실제 이메일 인증 재전송 API 호출
-    await Future.delayed(const Duration(seconds: 1));
-
-    state = state.copyWith(isLoading: false);
-    _startTimer(); // 타이머 초기화 및 재시작
+      toastification.show(
+        context: context,
+        type: ToastificationType.info,
+        title: const Text('인증번호가 재전송되었습니다.'),
+      );
+      _startTimer();
+    } on DioException catch (e) {
+      if (context.mounted) _handleApiError(context, e);
+    } catch (e) {
+      if (context.mounted) _handleGeneralError(context, e);
+    } finally {
+      if (context.mounted) state = state.copyWith(isLoading: false);
+    }
   }
 
   /// 3. 인증 코드 확인
   Future<void> verifyCode(BuildContext context) async {
     state = state.copyWith(isLoading: true);
-    // TODO: 실제 인증 코드 확인 API 호출
-    await Future.delayed(const Duration(seconds: 1));
-    _timer?.cancel();
-    state = state.copyWith(
-      isLoading: false,
-      isCodeVerified: true,
-      currentStep: ForgotPasswordStep.resetPassword,
-    );
+    try {
+      await _forgotPasswordService.verifyPasswordEmail(
+        emailController.text,
+        codeController.text,
+      );
+      _timer?.cancel();
+
+      toastification.show(
+        context: context,
+        type: ToastificationType.success,
+        title: const Text('인증이 완료되었습니다.'),
+      );
+
+      state = state.copyWith(
+        isCodeVerified: true,
+        currentStep: ForgotPasswordStep.resetPassword,
+      );
+    } on DioException catch (e) {
+      if (context.mounted) _handleApiError(context, e);
+    } catch (e) {
+      if (context.mounted) _handleGeneralError(context, e);
+    } finally {
+      if (context.mounted) state = state.copyWith(isLoading: false);
+    }
   }
 
   /// 4. 비밀번호 변경 요청
   Future<void> resetPassword(BuildContext context) async {
     if (!state.isPasswordValid || !state.isPasswordConfirmed) return;
     state = state.copyWith(isLoading: true);
-    // TODO: 실제 비밀번호 변경 API 호출
-    await Future.delayed(const Duration(seconds: 1));
-    state = state.copyWith(isLoading: false);
-    if (context.mounted) Navigator.of(context).pop();
+    try {
+      await _forgotPasswordService.resetPassword(
+        emailController.text,
+        passwordController.text,
+      );
+
+      toastification.show(
+        context: context,
+        type: ToastificationType.success,
+        title: const Text('비밀번호가 성공적으로 변경되었습니다.'),
+      );
+
+      if (context.mounted) context.go('/login');
+    } on DioException catch (e) {
+      if (context.mounted) _handleApiError(context, e);
+    } catch (e) {
+      if (context.mounted) _handleGeneralError(context, e);
+    } finally {
+      if (context.mounted) state = state.copyWith(isLoading: false);
+    }
   }
 
   void _startTimer() {
@@ -126,6 +189,29 @@ class ForgotPasswordViewModel extends AutoDisposeNotifier<ForgotPasswordState> {
       state = state.copyWith(
         isObscurePasswordConfirm: !state.isObscurePasswordConfirm,
       );
+
+  // --- 에러 처리 헬퍼 메서드 ---
+  // 👇 5. _handleApiError 메서드 추가
+  Future<void> _handleApiError(BuildContext context, DioException e) async {
+    // 비밀번호 찾기 흐름에서는 토큰 만료 에러가 발생할 가능성이 낮지만,
+    // 다른 ViewModel과의 일관성을 위해 구조를 유지합니다.
+    if (e.response?.data['code'] == "AUTH_REQUIRED") {
+      _handleGeneralError(context, "인증 정보가 유효하지 않습니다. 다시 시도해주세요.");
+    } else {
+      _handleGeneralError(context, e);
+    }
+  }
+
+  void _handleGeneralError(BuildContext context, Object e) {
+    state = state.copyWith(isLoading: false);
+    toastification.show(
+      context: context,
+      type: ToastificationType.error,
+      style: ToastificationStyle.flat,
+      title: Text(e.toDisplayString()),
+      autoCloseDuration: const Duration(seconds: 3),
+    );
+  }
 }
 
 final forgotPasswordViewModelProvider =

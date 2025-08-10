@@ -1,19 +1,25 @@
-import 'dart:typed_data';
-
 import 'package:earned_it/config/design.dart';
+import 'package:earned_it/models/user/user_state.dart';
+import 'package:earned_it/view_models/checkedIn_provider.dart';
 import 'package:earned_it/view_models/setting/set_profileimage_provider.dart';
 import 'package:earned_it/view_models/setting/state_auth_provider.dart';
 import 'package:earned_it/view_models/user_provider.dart';
 import 'package:earned_it/view_models/wish/wish_provider.dart';
+import 'package:earned_it/views/checkedIn_Modal.dart';
 import 'package:earned_it/views/loading_overlay_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:toastification/toastification.dart';
+import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 final isOpenEditProfileImage = StateProvider<bool>((ref) => false);
 final isOpenReSign = StateProvider<bool>((ref) => false);
 final isAgreedReSign = StateProvider<bool>((ref) => false);
+final isOpenCheckedIn = StateProvider<bool>((ref) => false);
+final hasCheckedIn = StateProvider<bool>(
+  (ref) => false,
+); // 사용자가 오늘은 더이상 출석체크를 원치 않을 때,
 
 class NavigationView extends ConsumerWidget {
   final Widget child;
@@ -52,12 +58,51 @@ class NavigationView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final wishState = ref.watch(wishViewModelProvider);
+    final userState = ref.watch(userProvider);
     final isImageLoading = ref.watch(
       profileImageLoadingProvider,
     ); // 설정에서 이미지 정보 처리 시,
     final isAuthLoading = ref.watch(
       stateAuthLoadingProvider,
     ); // 설정에서 계정 정보 처리 시,
+
+    ref.listen<UserState>(userProvider, (previous, next) async {
+      // 1. async 추가
+      final String currentLocation = GoRouterState.of(context).uri.toString();
+      final isCheckedIn = next.isCheckedIn;
+
+      // 조건 1: 이미 출석체크를 했으면 모달을 띄우지 않음
+      if (isCheckedIn) return;
+
+      // 👇 2. 오늘 하루 보지 않기를 선택했는지 확인하는 로직 추가
+      final prefs = await SharedPreferences.getInstance();
+      final lastHiddenDate = prefs.getString('hideCheckedInModalDate');
+      final today = DateFormat('yyyy-MM-dd').format(DateTime.now());
+      final hasHiddenToday = lastHiddenDate == today;
+
+      // 최종 조건: 홈 화면이고, 출석체크를 안했고, 오늘 하루 보지 않기를 선택하지 않았을 때
+      if (currentLocation == '/home' && !isCheckedIn && !hasHiddenToday) {
+        showModalBottomSheet(
+          context: context,
+          isScrollControlled: true,
+          builder: (context) => const CheckedInModal(),
+        );
+      }
+    });
+
+    ref.listen<bool>(isOpenCheckedIn, (previous, next) {
+      if (next == true) {
+        showModalBottomSheet(
+          context: context,
+          isScrollControlled: true,
+          // 👇 builder에서 새로 만든 위젯을 반환합니다.
+          builder: (context) => const CheckedInModal(),
+        ).whenComplete(() {
+          ref.read(isOpenCheckedIn.notifier).state = false;
+        });
+        ;
+      }
+    });
 
     ref.listen<bool>(isOpenEditProfileImage, (previous, next) {
       if (next == true) {

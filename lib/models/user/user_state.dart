@@ -27,6 +27,9 @@ abstract class UserState with _$UserState {
 
     /// 약관 동의 여부 (Default = true)
     @Default(true) bool hasAgreedTerm,
+
+    /// 출석 체크 여부 (Default = false)
+    @Default(false) bool isCheckedIn,
   }) = _UserState;
 
   // JSON 직렬화를 위한 fromJson 팩토리 생성자 추가

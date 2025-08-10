@@ -82,6 +82,7 @@ flutter:
     - assets/lottie/check_wish.json
     - assets/lottie/isNot_Salary.json
     - assets/lottie/empty_piece.json
+    - assets/lottie/giftBox.json
 
   fonts:
     - family: Mainfonts

@@ -1,6 +1,8 @@
 import 'package:earned_it/config/design.dart';
 import 'package:earned_it/view_models/home_provider.dart';
 import 'package:earned_it/view_models/piece_provider.dart';
+import 'package:earned_it/views/checkedIn_Modal.dart';
+import 'package:earned_it/views/navigation_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -94,7 +96,6 @@ class _HomePieceViewState extends ConsumerState<HomePieceView> {
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(30.0),
                                   ),
-                                  // mini: true,
                                   child: Icon(
                                     Icons.cached,
                                     size: context.width(0.08),
@@ -187,7 +188,7 @@ class _HomePieceViewState extends ConsumerState<HomePieceView> {
                         SizedBox(height: context.height(0.03)),
                         ElevatedButton(
                           onPressed: () {
-                            // 출석체크
+                            ref.read(isOpenCheckedIn.notifier).state = true;
                           },
                           child: const Text("출석체크하기"),
                         ),

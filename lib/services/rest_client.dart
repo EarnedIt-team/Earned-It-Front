@@ -62,6 +62,12 @@ abstract class RestClient {
     @Body() dynamic body,
   );
 
+  // 보상 후보 요청 API
+  @GET("/api/daily-check/candidates")
+  Future<ApiResponse> getCandidates(
+    @Header("Authorization") String accessToken,
+  );
+
   /// Star 위시리스트 불러오기 API
   @GET("/api/star")
   Future<ApiResponse> loadStarInfo(@Header("Authorization") String accessToken);

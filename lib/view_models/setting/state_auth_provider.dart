@@ -6,10 +6,12 @@ import 'package:earned_it/services/auth/resign_service.dart';
 import 'package:earned_it/view_models/theme_provider.dart';
 import 'package:earned_it/view_models/user_provider.dart';
 import 'package:earned_it/view_models/wish/wish_provider.dart';
+import 'package:earned_it/views/home/home_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toastification/toastification.dart';
 
 // 로딩 상태 Provider
@@ -50,6 +52,11 @@ class StateAuthViewModel {
         _ref.invalidate(userProvider);
         _ref.invalidate(wishViewModelProvider);
         _ref.invalidate(themeProvider);
+        _ref.invalidate(carouselIndexProvider); // 홈 인덱스 초기화
+        final prefs = await SharedPreferences.getInstance();
+        final lastHiddenDate = prefs.remove(
+          'hideCheckedInModalDate',
+        ); // 출석체크 비활성화 여부 초기화
       }
     } on DioException catch (e) {
       _ref.read(stateAuthLoadingProvider.notifier).state = false;
@@ -118,6 +125,11 @@ class StateAuthViewModel {
         _ref.invalidate(userProvider);
         _ref.invalidate(wishViewModelProvider);
         _ref.invalidate(themeProvider);
+        _ref.invalidate(carouselIndexProvider); // 홈 인덱스 초기화
+        final prefs = await SharedPreferences.getInstance();
+        final lastHiddenDate = prefs.remove(
+          'hideCheckedInModalDate',
+        ); // 출석체크 비활성화 여부 초기화
       }
     } on DioException catch (e) {
       _ref.read(stateAuthLoadingProvider.notifier).state = false;

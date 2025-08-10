@@ -22,7 +22,8 @@ mixin _$UserState {
 @JsonKey(name: 'amount') int get monthlySalary;/// 월급날
  int get payday;/// 초당 수익
 @JsonKey(name: 'amountPerSec') double get earningsPerSecond;/// 약관 동의 여부 (Default = true)
- bool get hasAgreedTerm;
+ bool get hasAgreedTerm;/// 출석 체크 여부 (Default = false)
+ bool get isCheckedIn;
 /// Create a copy of UserState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -35,16 +36,16 @@ $UserStateCopyWith<UserState> get copyWith => _$UserStateCopyWithImpl<UserState>
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is UserState&&(identical(other.name, name) || other.name == name)&&(identical(other.profileImage, profileImage) || other.profileImage == profileImage)&&(identical(other.isearningsPerSecond, isearningsPerSecond) || other.isearningsPerSecond == isearningsPerSecond)&&(identical(other.monthlySalary, monthlySalary) || other.monthlySalary == monthlySalary)&&(identical(other.payday, payday) || other.payday == payday)&&(identical(other.earningsPerSecond, earningsPerSecond) || other.earningsPerSecond == earningsPerSecond)&&(identical(other.hasAgreedTerm, hasAgreedTerm) || other.hasAgreedTerm == hasAgreedTerm));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is UserState&&(identical(other.name, name) || other.name == name)&&(identical(other.profileImage, profileImage) || other.profileImage == profileImage)&&(identical(other.isearningsPerSecond, isearningsPerSecond) || other.isearningsPerSecond == isearningsPerSecond)&&(identical(other.monthlySalary, monthlySalary) || other.monthlySalary == monthlySalary)&&(identical(other.payday, payday) || other.payday == payday)&&(identical(other.earningsPerSecond, earningsPerSecond) || other.earningsPerSecond == earningsPerSecond)&&(identical(other.hasAgreedTerm, hasAgreedTerm) || other.hasAgreedTerm == hasAgreedTerm)&&(identical(other.isCheckedIn, isCheckedIn) || other.isCheckedIn == isCheckedIn));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,name,profileImage,isearningsPerSecond,monthlySalary,payday,earningsPerSecond,hasAgreedTerm);
+int get hashCode => Object.hash(runtimeType,name,profileImage,isearningsPerSecond,monthlySalary,payday,earningsPerSecond,hasAgreedTerm,isCheckedIn);
 
 @override
 String toString() {
-  return 'UserState(name: $name, profileImage: $profileImage, isearningsPerSecond: $isearningsPerSecond, monthlySalary: $monthlySalary, payday: $payday, earningsPerSecond: $earningsPerSecond, hasAgreedTerm: $hasAgreedTerm)';
+  return 'UserState(name: $name, profileImage: $profileImage, isearningsPerSecond: $isearningsPerSecond, monthlySalary: $monthlySalary, payday: $payday, earningsPerSecond: $earningsPerSecond, hasAgreedTerm: $hasAgreedTerm, isCheckedIn: $isCheckedIn)';
 }
 
 
@@ -55,7 +56,7 @@ abstract mixin class $UserStateCopyWith<$Res>  {
   factory $UserStateCopyWith(UserState value, $Res Function(UserState) _then) = _$UserStateCopyWithImpl;
 @useResult
 $Res call({
- String name, String profileImage,@JsonKey(name: 'hasSalary') bool isearningsPerSecond,@JsonKey(name: 'amount') int monthlySalary, int payday,@JsonKey(name: 'amountPerSec') double earningsPerSecond, bool hasAgreedTerm
+ String name, String profileImage,@JsonKey(name: 'hasSalary') bool isearningsPerSecond,@JsonKey(name: 'amount') int monthlySalary, int payday,@JsonKey(name: 'amountPerSec') double earningsPerSecond, bool hasAgreedTerm, bool isCheckedIn
 });
 
 
@@ -72,7 +73,7 @@ class _$UserStateCopyWithImpl<$Res>
 
 /// Create a copy of UserState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? name = null,Object? profileImage = null,Object? isearningsPerSecond = null,Object? monthlySalary = null,Object? payday = null,Object? earningsPerSecond = null,Object? hasAgreedTerm = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? name = null,Object? profileImage = null,Object? isearningsPerSecond = null,Object? monthlySalary = null,Object? payday = null,Object? earningsPerSecond = null,Object? hasAgreedTerm = null,Object? isCheckedIn = null,}) {
   return _then(_self.copyWith(
 name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,profileImage: null == profileImage ? _self.profileImage : profileImage // ignore: cast_nullable_to_non_nullable
@@ -81,6 +82,7 @@ as bool,monthlySalary: null == monthlySalary ? _self.monthlySalary : monthlySala
 as int,payday: null == payday ? _self.payday : payday // ignore: cast_nullable_to_non_nullable
 as int,earningsPerSecond: null == earningsPerSecond ? _self.earningsPerSecond : earningsPerSecond // ignore: cast_nullable_to_non_nullable
 as double,hasAgreedTerm: null == hasAgreedTerm ? _self.hasAgreedTerm : hasAgreedTerm // ignore: cast_nullable_to_non_nullable
+as bool,isCheckedIn: null == isCheckedIn ? _self.isCheckedIn : isCheckedIn // ignore: cast_nullable_to_non_nullable
 as bool,
   ));
 }
@@ -166,10 +168,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String name,  String profileImage, @JsonKey(name: 'hasSalary')  bool isearningsPerSecond, @JsonKey(name: 'amount')  int monthlySalary,  int payday, @JsonKey(name: 'amountPerSec')  double earningsPerSecond,  bool hasAgreedTerm)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String name,  String profileImage, @JsonKey(name: 'hasSalary')  bool isearningsPerSecond, @JsonKey(name: 'amount')  int monthlySalary,  int payday, @JsonKey(name: 'amountPerSec')  double earningsPerSecond,  bool hasAgreedTerm,  bool isCheckedIn)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _UserState() when $default != null:
-return $default(_that.name,_that.profileImage,_that.isearningsPerSecond,_that.monthlySalary,_that.payday,_that.earningsPerSecond,_that.hasAgreedTerm);case _:
+return $default(_that.name,_that.profileImage,_that.isearningsPerSecond,_that.monthlySalary,_that.payday,_that.earningsPerSecond,_that.hasAgreedTerm,_that.isCheckedIn);case _:
   return orElse();
 
 }
@@ -187,10 +189,10 @@ return $default(_that.name,_that.profileImage,_that.isearningsPerSecond,_that.mo
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String name,  String profileImage, @JsonKey(name: 'hasSalary')  bool isearningsPerSecond, @JsonKey(name: 'amount')  int monthlySalary,  int payday, @JsonKey(name: 'amountPerSec')  double earningsPerSecond,  bool hasAgreedTerm)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String name,  String profileImage, @JsonKey(name: 'hasSalary')  bool isearningsPerSecond, @JsonKey(name: 'amount')  int monthlySalary,  int payday, @JsonKey(name: 'amountPerSec')  double earningsPerSecond,  bool hasAgreedTerm,  bool isCheckedIn)  $default,) {final _that = this;
 switch (_that) {
 case _UserState():
-return $default(_that.name,_that.profileImage,_that.isearningsPerSecond,_that.monthlySalary,_that.payday,_that.earningsPerSecond,_that.hasAgreedTerm);case _:
+return $default(_that.name,_that.profileImage,_that.isearningsPerSecond,_that.monthlySalary,_that.payday,_that.earningsPerSecond,_that.hasAgreedTerm,_that.isCheckedIn);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -207,10 +209,10 @@ return $default(_that.name,_that.profileImage,_that.isearningsPerSecond,_that.mo
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String name,  String profileImage, @JsonKey(name: 'hasSalary')  bool isearningsPerSecond, @JsonKey(name: 'amount')  int monthlySalary,  int payday, @JsonKey(name: 'amountPerSec')  double earningsPerSecond,  bool hasAgreedTerm)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String name,  String profileImage, @JsonKey(name: 'hasSalary')  bool isearningsPerSecond, @JsonKey(name: 'amount')  int monthlySalary,  int payday, @JsonKey(name: 'amountPerSec')  double earningsPerSecond,  bool hasAgreedTerm,  bool isCheckedIn)?  $default,) {final _that = this;
 switch (_that) {
 case _UserState() when $default != null:
-return $default(_that.name,_that.profileImage,_that.isearningsPerSecond,_that.monthlySalary,_that.payday,_that.earningsPerSecond,_that.hasAgreedTerm);case _:
+return $default(_that.name,_that.profileImage,_that.isearningsPerSecond,_that.monthlySalary,_that.payday,_that.earningsPerSecond,_that.hasAgreedTerm,_that.isCheckedIn);case _:
   return null;
 
 }
@@ -222,7 +224,7 @@ return $default(_that.name,_that.profileImage,_that.isearningsPerSecond,_that.mo
 @JsonSerializable()
 
 class _UserState implements UserState {
-  const _UserState({this.name = '', this.profileImage = '', @JsonKey(name: 'hasSalary') this.isearningsPerSecond = false, @JsonKey(name: 'amount') this.monthlySalary = 0, this.payday = 0, @JsonKey(name: 'amountPerSec') this.earningsPerSecond = 0.0, this.hasAgreedTerm = true});
+  const _UserState({this.name = '', this.profileImage = '', @JsonKey(name: 'hasSalary') this.isearningsPerSecond = false, @JsonKey(name: 'amount') this.monthlySalary = 0, this.payday = 0, @JsonKey(name: 'amountPerSec') this.earningsPerSecond = 0.0, this.hasAgreedTerm = true, this.isCheckedIn = false});
   factory _UserState.fromJson(Map<String, dynamic> json) => _$UserStateFromJson(json);
 
 /// 사용자 닉네임
@@ -239,6 +241,8 @@ class _UserState implements UserState {
 @override@JsonKey(name: 'amountPerSec') final  double earningsPerSecond;
 /// 약관 동의 여부 (Default = true)
 @override@JsonKey() final  bool hasAgreedTerm;
+/// 출석 체크 여부 (Default = false)
+@override@JsonKey() final  bool isCheckedIn;
 
 /// Create a copy of UserState
 /// with the given fields replaced by the non-null parameter values.
@@ -253,16 +257,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UserState&&(identical(other.name, name) || other.name == name)&&(identical(other.profileImage, profileImage) || other.profileImage == profileImage)&&(identical(other.isearningsPerSecond, isearningsPerSecond) || other.isearningsPerSecond == isearningsPerSecond)&&(identical(other.monthlySalary, monthlySalary) || other.monthlySalary == monthlySalary)&&(identical(other.payday, payday) || other.payday == payday)&&(identical(other.earningsPerSecond, earningsPerSecond) || other.earningsPerSecond == earningsPerSecond)&&(identical(other.hasAgreedTerm, hasAgreedTerm) || other.hasAgreedTerm == hasAgreedTerm));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UserState&&(identical(other.name, name) || other.name == name)&&(identical(other.profileImage, profileImage) || other.profileImage == profileImage)&&(identical(other.isearningsPerSecond, isearningsPerSecond) || other.isearningsPerSecond == isearningsPerSecond)&&(identical(other.monthlySalary, monthlySalary) || other.monthlySalary == monthlySalary)&&(identical(other.payday, payday) || other.payday == payday)&&(identical(other.earningsPerSecond, earningsPerSecond) || other.earningsPerSecond == earningsPerSecond)&&(identical(other.hasAgreedTerm, hasAgreedTerm) || other.hasAgreedTerm == hasAgreedTerm)&&(identical(other.isCheckedIn, isCheckedIn) || other.isCheckedIn == isCheckedIn));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,name,profileImage,isearningsPerSecond,monthlySalary,payday,earningsPerSecond,hasAgreedTerm);
+int get hashCode => Object.hash(runtimeType,name,profileImage,isearningsPerSecond,monthlySalary,payday,earningsPerSecond,hasAgreedTerm,isCheckedIn);
 
 @override
 String toString() {
-  return 'UserState(name: $name, profileImage: $profileImage, isearningsPerSecond: $isearningsPerSecond, monthlySalary: $monthlySalary, payday: $payday, earningsPerSecond: $earningsPerSecond, hasAgreedTerm: $hasAgreedTerm)';
+  return 'UserState(name: $name, profileImage: $profileImage, isearningsPerSecond: $isearningsPerSecond, monthlySalary: $monthlySalary, payday: $payday, earningsPerSecond: $earningsPerSecond, hasAgreedTerm: $hasAgreedTerm, isCheckedIn: $isCheckedIn)';
 }
 
 
@@ -273,7 +277,7 @@ abstract mixin class _$UserStateCopyWith<$Res> implements $UserStateCopyWith<$Re
   factory _$UserStateCopyWith(_UserState value, $Res Function(_UserState) _then) = __$UserStateCopyWithImpl;
 @override @useResult
 $Res call({
- String name, String profileImage,@JsonKey(name: 'hasSalary') bool isearningsPerSecond,@JsonKey(name: 'amount') int monthlySalary, int payday,@JsonKey(name: 'amountPerSec') double earningsPerSecond, bool hasAgreedTerm
+ String name, String profileImage,@JsonKey(name: 'hasSalary') bool isearningsPerSecond,@JsonKey(name: 'amount') int monthlySalary, int payday,@JsonKey(name: 'amountPerSec') double earningsPerSecond, bool hasAgreedTerm, bool isCheckedIn
 });
 
 
@@ -290,7 +294,7 @@ class __$UserStateCopyWithImpl<$Res>
 
 /// Create a copy of UserState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? name = null,Object? profileImage = null,Object? isearningsPerSecond = null,Object? monthlySalary = null,Object? payday = null,Object? earningsPerSecond = null,Object? hasAgreedTerm = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? name = null,Object? profileImage = null,Object? isearningsPerSecond = null,Object? monthlySalary = null,Object? payday = null,Object? earningsPerSecond = null,Object? hasAgreedTerm = null,Object? isCheckedIn = null,}) {
   return _then(_UserState(
 name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,profileImage: null == profileImage ? _self.profileImage : profileImage // ignore: cast_nullable_to_non_nullable
@@ -299,6 +303,7 @@ as bool,monthlySalary: null == monthlySalary ? _self.monthlySalary : monthlySala
 as int,payday: null == payday ? _self.payday : payday // ignore: cast_nullable_to_non_nullable
 as int,earningsPerSecond: null == earningsPerSecond ? _self.earningsPerSecond : earningsPerSecond // ignore: cast_nullable_to_non_nullable
 as double,hasAgreedTerm: null == hasAgreedTerm ? _self.hasAgreedTerm : hasAgreedTerm // ignore: cast_nullable_to_non_nullable
+as bool,isCheckedIn: null == isCheckedIn ? _self.isCheckedIn : isCheckedIn // ignore: cast_nullable_to_non_nullable
 as bool,
   ));
 }

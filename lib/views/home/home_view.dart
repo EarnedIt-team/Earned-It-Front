@@ -5,6 +5,7 @@ import 'package:earned_it/config/design.dart';
 import 'package:earned_it/view_models/home_provider.dart';
 import 'package:earned_it/view_models/user_provider.dart';
 import 'package:earned_it/view_models/wish/wish_provider.dart';
+import 'package:earned_it/views/home/home_piece_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -12,7 +13,7 @@ import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-final carouselIndexProvider = StateProvider<int>((ref) => 0);
+final carouselIndexProvider = StateProvider.autoDispose<int>((ref) => 0);
 
 // 데이터 준비 상태를 알려주는 Provider (autoDispose 유지)
 final isHomeReadyProvider = Provider.autoDispose<bool>((ref) {
@@ -160,7 +161,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
             child:
                 homeState.toggleIndex == 0
                     ? _buildWishlist(context, ref)
-                    : _buildPuzzle(),
+                    : const HomePieceView(),
           ),
           SizedBox(height: context.height(0.02)),
         ],
@@ -172,6 +173,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
   Widget _buildTopSection(BuildContext context, WidgetRef ref) {
     final userState = ref.watch(userProvider);
     final homeState = ref.watch(homeViewModelProvider);
+    final decimalFormat = NumberFormat('#,##0.00', 'ko_KR');
 
     return Padding(
       padding: EdgeInsets.only(
@@ -197,7 +199,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
                     if (userState.isearningsPerSecond) ...<InlineSpan>[
                       TextSpan(
                         text:
-                            '  ( ${userState.earningsPerSecond.toStringAsFixed(2)}',
+                            '  ( ${decimalFormat.format(userState.earningsPerSecond)}',
                         style: TextStyle(
                           fontSize: context.height(0.018),
                           fontWeight: FontWeight.w100,
@@ -461,10 +463,6 @@ class _HomeViewState extends ConsumerState<HomeView> {
         SizedBox(height: context.height(0.03)),
       ],
     );
-  }
-
-  Widget _buildPuzzle() {
-    return const Center(child: Text("퍼즐"));
   }
 
   ({double progress, String timeText}) _calculateDisplayInfo(

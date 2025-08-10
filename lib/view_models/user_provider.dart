@@ -2,6 +2,7 @@ import 'package:earned_it/models/user/user_state.dart';
 import 'package:earned_it/models/wish/wish_model.dart';
 import 'package:earned_it/services/auth/user_service.dart';
 import 'package:earned_it/services/wish_service.dart';
+import 'package:earned_it/view_models/piece_provider.dart';
 import 'package:earned_it/view_models/wish/wish_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -38,6 +39,8 @@ class UserNotifier extends Notifier<UserState> {
         earningsPerSecond: response.data["userInfo"]["amountPerSec"] ?? 0.0,
         // 수익 설정 여부
         isearningsPerSecond: response.data["userInfo"]["hasSalary"] ?? false,
+        // 출석 체크 여부
+        isCheckedIn: response.data["userInfo"]["checkedIn"] ?? false,
       );
 
       // 위시리스트(Star) 관련 데이터는 WishNotifier에 업데이트를 위임합니다.
@@ -45,7 +48,10 @@ class UserNotifier extends Notifier<UserState> {
           .read(wishViewModelProvider.notifier)
           .updateStarWishesFromServer(responseData);
 
-      print("유저 저장 완료 ${responseData}");
+      // 퍼즐(piece) 관련 데이터는 pieceProvider에 업데이트를 위임합니다.
+      ref.read(pieceProvider.notifier).updateRecentlyPiece(responseData);
+
+      print("유저 저장 완료");
     } catch (e) {
       print("유저 정보 불러오기 에러 $e");
     }
@@ -95,6 +101,11 @@ class UserNotifier extends Notifier<UserState> {
       isearningsPerSecond: hasSalary ?? state.isearningsPerSecond,
       hasAgreedTerm: hasAgreedTerm ?? state.hasAgreedTerm,
     );
+  }
+
+  /// 로컬에서 출석체크 여부 정보를 업데이트하는 메소드
+  void updateCheckIn({required bool isCheckIn}) {
+    state = state.copyWith(isCheckedIn: isCheckIn);
   }
 
   /// 로컬에서 닉네임 정보를 업데이트하는 메소드

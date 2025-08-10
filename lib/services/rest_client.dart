@@ -62,6 +62,19 @@ abstract class RestClient {
     @Body() dynamic body,
   );
 
+  /// 보상 후보 요청 API
+  @GET("/api/daily-check/candidates")
+  Future<ApiResponse> getCandidates(
+    @Header("Authorization") String accessToken,
+  );
+
+  /// 보상 선택 API
+  @POST("/api/daily-check/select")
+  Future<ApiResponse> selectDailyCheck(
+    @Header("Authorization") String accessToken,
+    @Body() Map<String, dynamic> body,
+  );
+
   /// Star 위시리스트 불러오기 API
   @GET("/api/star")
   Future<ApiResponse> loadStarInfo(@Header("Authorization") String accessToken);
@@ -148,5 +161,24 @@ abstract class RestClient {
     @Query("page") int page,
     @Query("size") int size,
     @Query("sort") String sort, // 예: "price,asc" 또는 "createdAt,desc"
+  );
+
+  /// 가장 최근에 획득한 조각 불러오기 API
+  @GET("/api/piece/recent")
+  Future<ApiResponse> loadRecentPiece(
+    @Header("Authorization") String accessToken,
+  );
+
+  /// 퍼즐 리스트 불러오기 API
+  @GET("/api/puzzle")
+  Future<ApiResponse> loadPieceList(
+    @Header("Authorization") String accessToken,
+  );
+
+  /// 조각 상세정보 불러오기 API
+  @GET("/api/piece/{pieceId}")
+  Future<ApiResponse> loadPieceInfo(
+    @Header("Authorization") String accesstoken,
+    @Path("pieceId") int pieceId,
   );
 }

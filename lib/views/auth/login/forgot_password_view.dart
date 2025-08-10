@@ -145,7 +145,7 @@ class ForgotPasswordView extends ConsumerWidget {
       return Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(text),
+          Text(text, style: const TextStyle(fontWeight: FontWeight.bold)),
           const SizedBox(width: 8),
           const Icon(Icons.arrow_forward_ios, size: 16),
         ],
@@ -155,6 +155,7 @@ class ForgotPasswordView extends ConsumerWidget {
     switch (state.currentStep) {
       case ForgotPasswordStep.enterEmail:
         return ElevatedButton(
+          style: ElevatedButton.styleFrom(backgroundColor: primaryColor),
           onPressed:
               state.isEmailValid
                   ? () => notifier.requestVerificationCode(context)
@@ -163,6 +164,7 @@ class ForgotPasswordView extends ConsumerWidget {
         );
       case ForgotPasswordStep.verifyCode:
         return ElevatedButton(
+          style: ElevatedButton.styleFrom(backgroundColor: primaryColor),
           onPressed:
               notifier.codeController.text.isNotEmpty
                   ? () => notifier.verifyCode(context)
@@ -171,6 +173,7 @@ class ForgotPasswordView extends ConsumerWidget {
         );
       case ForgotPasswordStep.resetPassword:
         return ElevatedButton(
+          style: ElevatedButton.styleFrom(backgroundColor: primaryColor),
           onPressed:
               state.isPasswordValid && state.isPasswordConfirmed
                   ? () => notifier.resetPassword(context)

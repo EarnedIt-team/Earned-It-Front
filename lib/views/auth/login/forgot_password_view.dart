@@ -145,9 +145,15 @@ class ForgotPasswordView extends ConsumerWidget {
       return Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(text, style: const TextStyle(fontWeight: FontWeight.bold)),
+          Text(
+            text,
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
+          ),
           const SizedBox(width: 8),
-          const Icon(Icons.arrow_forward_ios, size: 16),
+          const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.black),
         ],
       );
     }

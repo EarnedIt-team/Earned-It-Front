@@ -15,11 +15,10 @@ final pieceProvider = NotifierProvider<PieceNotifier, PieceState>(
 
 class PieceNotifier extends Notifier<PieceState> {
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
-  late final PieceService _pieceService;
+  late final PieceService _pieceService = ref.read(pieceServiceProvider);
 
   @override
   PieceState build() {
-    _pieceService = ref.read(pieceServiceProvider);
     return const PieceState();
   }
 

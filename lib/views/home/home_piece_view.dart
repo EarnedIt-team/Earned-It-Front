@@ -19,6 +19,15 @@ class HomePieceView extends ConsumerStatefulWidget {
 
 class _HomePieceViewState extends ConsumerState<HomePieceView> {
   @override
+  void initState() {
+    super.initState();
+    // 모달이 열릴 때 보상 후보 데이터를 불러옵니다.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(pieceProvider.notifier).loadRecentPiece(context);
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     final userState = ref.watch(userProvider);
     final pieceState = ref.watch(pieceProvider);

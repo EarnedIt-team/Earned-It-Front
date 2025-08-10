@@ -162,4 +162,10 @@ abstract class RestClient {
     @Query("size") int size,
     @Query("sort") String sort, // 예: "price,asc" 또는 "createdAt,desc"
   );
+
+  /// 가장 최근에 획득한 조각 불러오기 API
+  @GET("/api/piece/recent")
+  Future<ApiResponse> loadRecentPiece(
+    @Header("Authorization") String accessToken,
+  );
 }

@@ -103,6 +103,11 @@ class UserNotifier extends Notifier<UserState> {
     );
   }
 
+  /// 로컬에서 출석체크 여부 정보를 업데이트하는 메소드
+  void updateCheckIn({required bool isCheckIn}) {
+    state = state.copyWith(isCheckedIn: isCheckIn);
+  }
+
   /// 로컬에서 닉네임 정보를 업데이트하는 메소드
   void updateNickName({required String nickName}) {
     state = state.copyWith(name: nickName);

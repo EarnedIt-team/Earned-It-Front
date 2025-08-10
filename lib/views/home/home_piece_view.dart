@@ -1,12 +1,14 @@
 import 'package:earned_it/config/design.dart';
 import 'package:earned_it/view_models/home_provider.dart';
 import 'package:earned_it/view_models/piece_provider.dart';
+import 'package:earned_it/view_models/user_provider.dart';
 import 'package:earned_it/views/checkedIn_Modal.dart';
 import 'package:earned_it/views/navigation_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
+import 'package:toastification/toastification.dart';
 
 class HomePieceView extends ConsumerStatefulWidget {
   const HomePieceView({super.key});
@@ -18,6 +20,7 @@ class HomePieceView extends ConsumerStatefulWidget {
 class _HomePieceViewState extends ConsumerState<HomePieceView> {
   @override
   Widget build(BuildContext context) {
+    final userState = ref.watch(userProvider);
     final pieceState = ref.watch(pieceProvider);
     final homeState = ref.watch(homeViewModelProvider); // 👈 2. homeState watch
     final currencyFormat = NumberFormat.decimalPattern('ko_KR');
@@ -92,7 +95,24 @@ class _HomePieceViewState extends ConsumerState<HomePieceView> {
                                 bottom: 0,
                                 right: 0,
                                 child: FloatingActionButton(
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    if (!userState.isCheckedIn) {
+                                      ref.read(isOpenCheckedIn.notifier).state =
+                                          true;
+                                    } else {
+                                      toastification.show(
+                                        context: context,
+                                        type: ToastificationType.error,
+                                        style: ToastificationStyle.flat,
+                                        title: const Text(
+                                          '출석 체크는 하루에 한번 가능합니다.',
+                                        ),
+                                        autoCloseDuration: const Duration(
+                                          seconds: 3,
+                                        ),
+                                      );
+                                    }
+                                  },
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(30.0),
                                   ),

@@ -43,6 +43,18 @@ abstract class RestClient {
   @POST("/api/auth/refresh")
   Future<ApiResponse> checkToken(@Header("Authorization") String refreshtoken);
 
+  /// 비밀번호 재설정 이메일 전송 요청 API
+  @POST("/api/auth/password/email")
+  Future<ApiResponse> sendpasswordEmail(@Query('email') String email);
+
+  /// 비밀번호 재설정용 인증 코드 검증 요청 API
+  @POST("/api/auth/password/verify")
+  Future<ApiResponse> verifyPasswordEmail(@Body() Map<String, String> body);
+
+  /// 비밀번호 재설정 요청 API
+  @POST("/api/auth/password/reset")
+  Future<ApiResponse> resetPassword(@Body() Map<String, String> body);
+
   // 로그아웃 API
   @POST("/api/auth/signout")
   Future<ApiResponse> signout(@Header("Authorization") String accessToken);

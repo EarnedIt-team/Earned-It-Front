@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:earned_it/config/design.dart';
-import 'package:earned_it/view_models/login_provider.dart'; // import 경로 확인
+import 'package:earned_it/view_models/auth/login_provider.dart'; // import 경로 확인
 import 'package:earned_it/views/auth/agreement_modal.dart';
 import 'package:earned_it/views/loading_overlay_view.dart';
 import 'package:flutter/material.dart';

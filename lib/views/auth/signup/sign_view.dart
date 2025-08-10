@@ -1,5 +1,5 @@
 import 'package:earned_it/config/design.dart';
-import 'package:earned_it/view_models/self_signup_provider.dart';
+import 'package:earned_it/view_models/auth/self_signup_provider.dart';
 import 'package:earned_it/views/loading_overlay_view.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';

@@ -16,8 +16,8 @@ mixin _$PieceState {
 
 // 처리 여부
  bool get isLoading;// 가장 최근에 획득한 조각
- PieceInfoModel? get recentlyPiece;/// 현재까지 획득한 조각
- List<PieceInfoModel> get pieces;
+ PieceInfoModel? get recentlyPiece;/// 현재까지 획득한 조각 리스트 (퍼즐 View)
+ List<ThemeModel> get pieces;
 /// Create a copy of PieceState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -48,7 +48,7 @@ abstract mixin class $PieceStateCopyWith<$Res>  {
   factory $PieceStateCopyWith(PieceState value, $Res Function(PieceState) _then) = _$PieceStateCopyWithImpl;
 @useResult
 $Res call({
- bool isLoading, PieceInfoModel? recentlyPiece, List<PieceInfoModel> pieces
+ bool isLoading, PieceInfoModel? recentlyPiece, List<ThemeModel> pieces
 });
 
 
@@ -70,7 +70,7 @@ class _$PieceStateCopyWithImpl<$Res>
 isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
 as bool,recentlyPiece: freezed == recentlyPiece ? _self.recentlyPiece : recentlyPiece // ignore: cast_nullable_to_non_nullable
 as PieceInfoModel?,pieces: null == pieces ? _self.pieces : pieces // ignore: cast_nullable_to_non_nullable
-as List<PieceInfoModel>,
+as List<ThemeModel>,
   ));
 }
 /// Create a copy of PieceState
@@ -167,7 +167,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool isLoading,  PieceInfoModel? recentlyPiece,  List<PieceInfoModel> pieces)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool isLoading,  PieceInfoModel? recentlyPiece,  List<ThemeModel> pieces)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _PieceState() when $default != null:
 return $default(_that.isLoading,_that.recentlyPiece,_that.pieces);case _:
@@ -188,7 +188,7 @@ return $default(_that.isLoading,_that.recentlyPiece,_that.pieces);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool isLoading,  PieceInfoModel? recentlyPiece,  List<PieceInfoModel> pieces)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool isLoading,  PieceInfoModel? recentlyPiece,  List<ThemeModel> pieces)  $default,) {final _that = this;
 switch (_that) {
 case _PieceState():
 return $default(_that.isLoading,_that.recentlyPiece,_that.pieces);case _:
@@ -208,7 +208,7 @@ return $default(_that.isLoading,_that.recentlyPiece,_that.pieces);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool isLoading,  PieceInfoModel? recentlyPiece,  List<PieceInfoModel> pieces)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool isLoading,  PieceInfoModel? recentlyPiece,  List<ThemeModel> pieces)?  $default,) {final _that = this;
 switch (_that) {
 case _PieceState() when $default != null:
 return $default(_that.isLoading,_that.recentlyPiece,_that.pieces);case _:
@@ -223,17 +223,17 @@ return $default(_that.isLoading,_that.recentlyPiece,_that.pieces);case _:
 
 
 class _PieceState implements PieceState {
-  const _PieceState({this.isLoading = false, this.recentlyPiece, final  List<PieceInfoModel> pieces = const []}): _pieces = pieces;
+  const _PieceState({this.isLoading = false, this.recentlyPiece, final  List<ThemeModel> pieces = const []}): _pieces = pieces;
   
 
 // 처리 여부
 @override@JsonKey() final  bool isLoading;
 // 가장 최근에 획득한 조각
 @override final  PieceInfoModel? recentlyPiece;
-/// 현재까지 획득한 조각
- final  List<PieceInfoModel> _pieces;
-/// 현재까지 획득한 조각
-@override@JsonKey() List<PieceInfoModel> get pieces {
+/// 현재까지 획득한 조각 리스트 (퍼즐 View)
+ final  List<ThemeModel> _pieces;
+/// 현재까지 획득한 조각 리스트 (퍼즐 View)
+@override@JsonKey() List<ThemeModel> get pieces {
   if (_pieces is EqualUnmodifiableListView) return _pieces;
   // ignore: implicit_dynamic_type
   return EqualUnmodifiableListView(_pieces);
@@ -270,7 +270,7 @@ abstract mixin class _$PieceStateCopyWith<$Res> implements $PieceStateCopyWith<$
   factory _$PieceStateCopyWith(_PieceState value, $Res Function(_PieceState) _then) = __$PieceStateCopyWithImpl;
 @override @useResult
 $Res call({
- bool isLoading, PieceInfoModel? recentlyPiece, List<PieceInfoModel> pieces
+ bool isLoading, PieceInfoModel? recentlyPiece, List<ThemeModel> pieces
 });
 
 
@@ -292,7 +292,7 @@ class __$PieceStateCopyWithImpl<$Res>
 isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
 as bool,recentlyPiece: freezed == recentlyPiece ? _self.recentlyPiece : recentlyPiece // ignore: cast_nullable_to_non_nullable
 as PieceInfoModel?,pieces: null == pieces ? _self._pieces : pieces // ignore: cast_nullable_to_non_nullable
-as List<PieceInfoModel>,
+as List<ThemeModel>,
   ));
 }
 

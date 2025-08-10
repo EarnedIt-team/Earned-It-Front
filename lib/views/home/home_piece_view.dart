@@ -2,7 +2,6 @@ import 'package:earned_it/config/design.dart';
 import 'package:earned_it/view_models/home_provider.dart';
 import 'package:earned_it/view_models/piece_provider.dart';
 import 'package:earned_it/view_models/user_provider.dart';
-import 'package:earned_it/views/checkedIn_Modal.dart';
 import 'package:earned_it/views/navigation_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -37,10 +36,10 @@ class _HomePieceViewState extends ConsumerState<HomePieceView> {
     // 👇 3. 구매 가능한 조각 수 계산
     int buyablePieces = 0;
     if (pieceState.recentlyPiece != null &&
-        pieceState.recentlyPiece!.price > 0) {
+        pieceState.recentlyPiece!.price! > 0) {
       // 현재 누적 금액을 조각 가격으로 나누어 구매 가능한 개수를 계산 (소수점 버림)
       buyablePieces =
-          (homeState.currentEarnedAmount / pieceState.recentlyPiece!.price)
+          (homeState.currentEarnedAmount / pieceState.recentlyPiece!.price!)
               .floor();
     }
 
@@ -66,7 +65,7 @@ class _HomePieceViewState extends ConsumerState<HomePieceView> {
                                   context.height(0.01),
                                 ),
                                 child: Image.network(
-                                  pieceState.recentlyPiece!.image,
+                                  pieceState.recentlyPiece!.image!,
                                   width: context.height(0.3),
                                   height: context.height(0.3),
                                   fit: BoxFit.cover,
@@ -161,11 +160,11 @@ class _HomePieceViewState extends ConsumerState<HomePieceView> {
                         ),
                         SizedBox(height: context.height(0.05)),
                         Text(
-                          pieceState.recentlyPiece!.vendor,
+                          pieceState.recentlyPiece!.vendor!,
                           style: TextStyle(fontSize: context.width(0.04)),
                         ),
                         Text(
-                          pieceState.recentlyPiece!.name,
+                          pieceState.recentlyPiece!.name!,
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: context.width(0.05),

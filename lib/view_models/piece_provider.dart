@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:earned_it/models/piece/piece_info_model.dart';
 import 'package:earned_it/models/piece/piece_state.dart';
+import 'package:earned_it/models/piece/theme_model.dart';
 import 'package:earned_it/services/piece_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -38,6 +39,36 @@ class PieceNotifier extends Notifier<PieceState> {
       state = state.copyWith(recentlyPiece: recentlyPiece);
 
       state = state.copyWith(isLoading: false);
+    } on DioException catch (e) {
+      if (context.mounted) _handleApiError(context, e);
+    } catch (e) {
+      if (context.mounted) _handleGeneralError(context, e);
+    } finally {
+      if (ref.exists(pieceServiceProvider)) {
+        state = state.copyWith(isLoading: false);
+      }
+    }
+  }
+
+  /// 퍼즐 리스트를 불러오기
+  Future<void> loadPuzzleList(BuildContext context) async {
+    try {
+      state = state.copyWith(isLoading: true);
+      final accessToken = await _storage.read(key: 'accessToken');
+      if (accessToken == null) throw Exception("로그인이 필요합니다.");
+
+      final response = await _pieceService.loadPuzzle(accessToken: accessToken);
+      final Map<String, dynamic> data = response.data;
+      final Map<String, dynamic> themesMap = data['themes'];
+      final List<ThemeModel> themeList =
+          themesMap.values
+              .map(
+                (themeJson) =>
+                    ThemeModel.fromJson(themeJson as Map<String, dynamic>),
+              )
+              .toList();
+
+      state = state.copyWith(isLoading: false, pieces: themeList);
     } on DioException catch (e) {
       if (context.mounted) _handleApiError(context, e);
     } catch (e) {

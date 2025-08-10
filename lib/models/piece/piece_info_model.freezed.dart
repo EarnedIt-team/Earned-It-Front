@@ -15,7 +15,15 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$PieceInfoModel {
 
- int get pieceId; String get rarity; String get collectedAt; String get image; String get vendor; String get name; int get price; String get description;
+/// 조각 Id
+ int? get pieceId;/// 등급
+ String? get rarity;/// 등록 날짜
+ String? get collectedAt;/// 이미지 URL
+ String? get image;/// 판매자, 회사명
+ String? get vendor;/// 조각 이름
+ String? get name;/// 가격
+ int? get price;/// 상세 설명
+ String? get description;
 /// Create a copy of PieceInfoModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -48,7 +56,7 @@ abstract mixin class $PieceInfoModelCopyWith<$Res>  {
   factory $PieceInfoModelCopyWith(PieceInfoModel value, $Res Function(PieceInfoModel) _then) = _$PieceInfoModelCopyWithImpl;
 @useResult
 $Res call({
- int pieceId, String rarity, String collectedAt, String image, String vendor, String name, int price, String description
+ int? pieceId, String? rarity, String? collectedAt, String? image, String? vendor, String? name, int? price, String? description
 });
 
 
@@ -65,17 +73,17 @@ class _$PieceInfoModelCopyWithImpl<$Res>
 
 /// Create a copy of PieceInfoModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? pieceId = null,Object? rarity = null,Object? collectedAt = null,Object? image = null,Object? vendor = null,Object? name = null,Object? price = null,Object? description = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? pieceId = freezed,Object? rarity = freezed,Object? collectedAt = freezed,Object? image = freezed,Object? vendor = freezed,Object? name = freezed,Object? price = freezed,Object? description = freezed,}) {
   return _then(_self.copyWith(
-pieceId: null == pieceId ? _self.pieceId : pieceId // ignore: cast_nullable_to_non_nullable
-as int,rarity: null == rarity ? _self.rarity : rarity // ignore: cast_nullable_to_non_nullable
-as String,collectedAt: null == collectedAt ? _self.collectedAt : collectedAt // ignore: cast_nullable_to_non_nullable
-as String,image: null == image ? _self.image : image // ignore: cast_nullable_to_non_nullable
-as String,vendor: null == vendor ? _self.vendor : vendor // ignore: cast_nullable_to_non_nullable
-as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
-as String,price: null == price ? _self.price : price // ignore: cast_nullable_to_non_nullable
-as int,description: null == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
-as String,
+pieceId: freezed == pieceId ? _self.pieceId : pieceId // ignore: cast_nullable_to_non_nullable
+as int?,rarity: freezed == rarity ? _self.rarity : rarity // ignore: cast_nullable_to_non_nullable
+as String?,collectedAt: freezed == collectedAt ? _self.collectedAt : collectedAt // ignore: cast_nullable_to_non_nullable
+as String?,image: freezed == image ? _self.image : image // ignore: cast_nullable_to_non_nullable
+as String?,vendor: freezed == vendor ? _self.vendor : vendor // ignore: cast_nullable_to_non_nullable
+as String?,name: freezed == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String?,price: freezed == price ? _self.price : price // ignore: cast_nullable_to_non_nullable
+as int?,description: freezed == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 
@@ -160,7 +168,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int pieceId,  String rarity,  String collectedAt,  String image,  String vendor,  String name,  int price,  String description)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int? pieceId,  String? rarity,  String? collectedAt,  String? image,  String? vendor,  String? name,  int? price,  String? description)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _PieceInfoModel() when $default != null:
 return $default(_that.pieceId,_that.rarity,_that.collectedAt,_that.image,_that.vendor,_that.name,_that.price,_that.description);case _:
@@ -181,7 +189,7 @@ return $default(_that.pieceId,_that.rarity,_that.collectedAt,_that.image,_that.v
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int pieceId,  String rarity,  String collectedAt,  String image,  String vendor,  String name,  int price,  String description)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int? pieceId,  String? rarity,  String? collectedAt,  String? image,  String? vendor,  String? name,  int? price,  String? description)  $default,) {final _that = this;
 switch (_that) {
 case _PieceInfoModel():
 return $default(_that.pieceId,_that.rarity,_that.collectedAt,_that.image,_that.vendor,_that.name,_that.price,_that.description);case _:
@@ -201,7 +209,7 @@ return $default(_that.pieceId,_that.rarity,_that.collectedAt,_that.image,_that.v
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int pieceId,  String rarity,  String collectedAt,  String image,  String vendor,  String name,  int price,  String description)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int? pieceId,  String? rarity,  String? collectedAt,  String? image,  String? vendor,  String? name,  int? price,  String? description)?  $default,) {final _that = this;
 switch (_that) {
 case _PieceInfoModel() when $default != null:
 return $default(_that.pieceId,_that.rarity,_that.collectedAt,_that.image,_that.vendor,_that.name,_that.price,_that.description);case _:
@@ -216,17 +224,25 @@ return $default(_that.pieceId,_that.rarity,_that.collectedAt,_that.image,_that.v
 @JsonSerializable()
 
 class _PieceInfoModel implements PieceInfoModel {
-  const _PieceInfoModel({required this.pieceId, required this.rarity, required this.collectedAt, required this.image, required this.vendor, required this.name, required this.price, required this.description});
+  const _PieceInfoModel({this.pieceId, this.rarity, this.collectedAt, this.image, this.vendor, this.name, this.price, this.description});
   factory _PieceInfoModel.fromJson(Map<String, dynamic> json) => _$PieceInfoModelFromJson(json);
 
-@override final  int pieceId;
-@override final  String rarity;
-@override final  String collectedAt;
-@override final  String image;
-@override final  String vendor;
-@override final  String name;
-@override final  int price;
-@override final  String description;
+/// 조각 Id
+@override final  int? pieceId;
+/// 등급
+@override final  String? rarity;
+/// 등록 날짜
+@override final  String? collectedAt;
+/// 이미지 URL
+@override final  String? image;
+/// 판매자, 회사명
+@override final  String? vendor;
+/// 조각 이름
+@override final  String? name;
+/// 가격
+@override final  int? price;
+/// 상세 설명
+@override final  String? description;
 
 /// Create a copy of PieceInfoModel
 /// with the given fields replaced by the non-null parameter values.
@@ -261,7 +277,7 @@ abstract mixin class _$PieceInfoModelCopyWith<$Res> implements $PieceInfoModelCo
   factory _$PieceInfoModelCopyWith(_PieceInfoModel value, $Res Function(_PieceInfoModel) _then) = __$PieceInfoModelCopyWithImpl;
 @override @useResult
 $Res call({
- int pieceId, String rarity, String collectedAt, String image, String vendor, String name, int price, String description
+ int? pieceId, String? rarity, String? collectedAt, String? image, String? vendor, String? name, int? price, String? description
 });
 
 
@@ -278,17 +294,17 @@ class __$PieceInfoModelCopyWithImpl<$Res>
 
 /// Create a copy of PieceInfoModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? pieceId = null,Object? rarity = null,Object? collectedAt = null,Object? image = null,Object? vendor = null,Object? name = null,Object? price = null,Object? description = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? pieceId = freezed,Object? rarity = freezed,Object? collectedAt = freezed,Object? image = freezed,Object? vendor = freezed,Object? name = freezed,Object? price = freezed,Object? description = freezed,}) {
   return _then(_PieceInfoModel(
-pieceId: null == pieceId ? _self.pieceId : pieceId // ignore: cast_nullable_to_non_nullable
-as int,rarity: null == rarity ? _self.rarity : rarity // ignore: cast_nullable_to_non_nullable
-as String,collectedAt: null == collectedAt ? _self.collectedAt : collectedAt // ignore: cast_nullable_to_non_nullable
-as String,image: null == image ? _self.image : image // ignore: cast_nullable_to_non_nullable
-as String,vendor: null == vendor ? _self.vendor : vendor // ignore: cast_nullable_to_non_nullable
-as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
-as String,price: null == price ? _self.price : price // ignore: cast_nullable_to_non_nullable
-as int,description: null == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
-as String,
+pieceId: freezed == pieceId ? _self.pieceId : pieceId // ignore: cast_nullable_to_non_nullable
+as int?,rarity: freezed == rarity ? _self.rarity : rarity // ignore: cast_nullable_to_non_nullable
+as String?,collectedAt: freezed == collectedAt ? _self.collectedAt : collectedAt // ignore: cast_nullable_to_non_nullable
+as String?,image: freezed == image ? _self.image : image // ignore: cast_nullable_to_non_nullable
+as String?,vendor: freezed == vendor ? _self.vendor : vendor // ignore: cast_nullable_to_non_nullable
+as String?,name: freezed == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String?,price: freezed == price ? _self.price : price // ignore: cast_nullable_to_non_nullable
+as int?,description: freezed == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 

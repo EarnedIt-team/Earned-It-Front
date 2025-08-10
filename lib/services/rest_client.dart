@@ -168,4 +168,10 @@ abstract class RestClient {
   Future<ApiResponse> loadRecentPiece(
     @Header("Authorization") String accessToken,
   );
+
+  /// 퍼즐 리스트 불러오기 API
+  @GET("/api/puzzle")
+  Future<ApiResponse> loadPieceList(
+    @Header("Authorization") String accessToken,
+  );
 }

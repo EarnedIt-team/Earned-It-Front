@@ -6,14 +6,29 @@ part 'piece_info_model.g.dart';
 @freezed
 abstract class PieceInfoModel with _$PieceInfoModel {
   const factory PieceInfoModel({
-    required int pieceId,
-    required String rarity,
-    required String collectedAt,
-    required String image,
-    required String vendor,
-    required String name,
-    required int price,
-    required String description,
+    /// 조각 Id
+    int? pieceId,
+
+    /// 등급
+    String? rarity,
+
+    /// 등록 날짜
+    String? collectedAt,
+
+    /// 이미지 URL
+    String? image,
+
+    /// 판매자, 회사명
+    String? vendor,
+
+    /// 조각 이름
+    String? name,
+
+    /// 가격
+    int? price,
+
+    /// 상세 설명
+    String? description,
   }) = _PieceInfoModel;
 
   factory PieceInfoModel.fromJson(Map<String, dynamic> json) =>

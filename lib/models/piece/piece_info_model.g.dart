@@ -8,14 +8,14 @@ part of 'piece_info_model.dart';
 
 _PieceInfoModel _$PieceInfoModelFromJson(Map<String, dynamic> json) =>
     _PieceInfoModel(
-      pieceId: (json['pieceId'] as num).toInt(),
-      rarity: json['rarity'] as String,
-      collectedAt: json['collectedAt'] as String,
-      image: json['image'] as String,
-      vendor: json['vendor'] as String,
-      name: json['name'] as String,
-      price: (json['price'] as num).toInt(),
-      description: json['description'] as String,
+      pieceId: (json['pieceId'] as num?)?.toInt(),
+      rarity: json['rarity'] as String?,
+      collectedAt: json['collectedAt'] as String?,
+      image: json['image'] as String?,
+      vendor: json['vendor'] as String?,
+      name: json['name'] as String?,
+      price: (json['price'] as num?)?.toInt(),
+      description: json['description'] as String?,
     );
 
 Map<String, dynamic> _$PieceInfoModelToJson(_PieceInfoModel instance) =>

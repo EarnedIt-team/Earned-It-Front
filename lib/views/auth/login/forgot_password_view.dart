@@ -18,7 +18,13 @@ class ForgotPasswordView extends ConsumerWidget {
       child: Stack(
         children: [
           Scaffold(
-            appBar: AppBar(title: const Text("비밀번호 찾기")),
+            appBar: AppBar(
+              title: const Text(
+                "비밀번호 찾기",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              centerTitle: false,
+            ),
             body: SingleChildScrollView(
               padding: EdgeInsets.all(context.middlePadding),
               child: Column(

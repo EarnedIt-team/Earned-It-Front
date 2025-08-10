@@ -173,6 +173,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
   Widget _buildTopSection(BuildContext context, WidgetRef ref) {
     final userState = ref.watch(userProvider);
     final homeState = ref.watch(homeViewModelProvider);
+    final decimalFormat = NumberFormat('#,##0.00', 'ko_KR');
 
     return Padding(
       padding: EdgeInsets.only(
@@ -198,7 +199,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
                     if (userState.isearningsPerSecond) ...<InlineSpan>[
                       TextSpan(
                         text:
-                            '  ( ${userState.earningsPerSecond.toStringAsFixed(2)}',
+                            '  ( ${decimalFormat.format(userState.earningsPerSecond)}',
                         style: TextStyle(
                           fontSize: context.height(0.018),
                           fontWeight: FontWeight.w100,

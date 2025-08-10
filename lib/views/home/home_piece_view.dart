@@ -89,6 +89,21 @@ class _HomePieceViewState extends ConsumerState<HomePieceView> {
                               Positioned(
                                 bottom: 0,
                                 right: 0,
+                                child: FloatingActionButton(
+                                  onPressed: () {},
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(30.0),
+                                  ),
+                                  // mini: true,
+                                  child: Icon(
+                                    Icons.cached,
+                                    size: context.width(0.08),
+                                  ),
+                                ),
+                              ),
+                              Positioned(
+                                top: 0,
+                                left: 0,
                                 child: Container(
                                   decoration: const BoxDecoration(
                                     color: primaryColor,
@@ -102,7 +117,7 @@ class _HomePieceViewState extends ConsumerState<HomePieceView> {
                                   ),
                                   // 👇 4. 계산된 조각 수를 Text 위젯에 반영
                                   child: Text(
-                                    "x $buyablePieces",
+                                    "x ${currencyFormat.format(buyablePieces)}",
                                     style: TextStyle(
                                       fontSize: context.width(0.035),
                                       color: Colors.black,

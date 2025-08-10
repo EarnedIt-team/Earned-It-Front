@@ -3,6 +3,7 @@ import 'package:earned_it/config/exception.dart';
 import 'package:earned_it/models/signup/self_signup_state.dart';
 import 'package:earned_it/services/auth/signup_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:toastification/toastification.dart';
@@ -237,9 +238,8 @@ class SignUpViewModel extends AutoDisposeNotifier<SelfSignupState> {
 
   // 사용자 약관 동의 web
   Future<void> launchTermsUrl() async {
-    final Uri url = Uri.parse(
-      'https://github.com/EarnedIt-team',
-    ); // 실제 약관 URL로 변경
+    String urls = dotenv.env['TERMS_URL']!;
+    final Uri url = Uri.parse(urls); // 실제 약관 URL로 변경
     if (!await launchUrl(url)) {
       throw Exception('Could not launch $url');
     }

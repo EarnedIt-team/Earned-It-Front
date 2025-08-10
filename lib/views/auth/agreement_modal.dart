@@ -2,6 +2,7 @@ import 'package:action_slider/action_slider.dart';
 import 'package:earned_it/config/design.dart';
 import 'package:earned_it/main.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -34,9 +35,8 @@ Future<bool?> agreementModal(BuildContext context, String token) {
               // 3. 전체 약관 보기 버튼 (실제 동작하도록 수정)
               TextButton(
                 onPressed: () async {
-                  final Uri url = Uri.parse(
-                    'https://github.com/EarnedIt-team',
-                  ); // 실제 약관 URL로 변경
+                  String urls = dotenv.env['TERMS_URL']!;
+                  final Uri url = Uri.parse(urls); // 실제 약관 URL로 변경
                   if (!await launchUrl(url)) {
                     throw Exception('Could not launch $url');
                   }

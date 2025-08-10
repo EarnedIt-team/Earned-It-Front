@@ -5,10 +5,12 @@ import 'package:earned_it/view_models/user_provider.dart';
 import 'package:earned_it/view_models/wish/wish_provider.dart';
 import 'package:earned_it/views/navigation_view.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SettingView extends ConsumerStatefulWidget {
   const SettingView({super.key});
@@ -310,8 +312,12 @@ class _SettingViewState extends ConsumerState<SettingView> {
               leading: const Icon(Icons.description_outlined),
               title: const Text('이용약관'),
               trailing: const Icon(Icons.chevron_right, color: primaryColor),
-              onTap: () {
-                // TODO: 이용약관 페이지로 이동
+              onTap: () async {
+                String urls = dotenv.env['TERMS_URL']!;
+                final Uri url = Uri.parse(urls); // 실제 약관 URL로 변경
+                if (!await launchUrl(url)) {
+                  throw Exception('Could not launch $url');
+                }
               },
             ),
             ListTile(

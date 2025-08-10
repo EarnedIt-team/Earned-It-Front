@@ -1,12 +1,14 @@
 import 'package:earned_it/config/design.dart';
 import 'package:earned_it/models/user/user_state.dart';
 import 'package:earned_it/view_models/checkedIn_provider.dart';
+import 'package:earned_it/view_models/piece_provider.dart';
 import 'package:earned_it/view_models/setting/set_profileimage_provider.dart';
 import 'package:earned_it/view_models/setting/state_auth_provider.dart';
 import 'package:earned_it/view_models/user_provider.dart';
 import 'package:earned_it/view_models/wish/wish_provider.dart';
 import 'package:earned_it/views/checkedIn_Modal.dart';
 import 'package:earned_it/views/loading_overlay_view.dart';
+import 'package:earned_it/views/puzzle/piece_detail_modal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -20,6 +22,8 @@ final isOpenCheckedIn = StateProvider<bool>((ref) => false);
 final hasCheckedIn = StateProvider<bool>(
   (ref) => false,
 ); // 사용자가 오늘은 더이상 출석체크를 원치 않을 때,
+// 조각을 선택해서 상세정보를 요청하는가?
+final isOpenPieceInfo = StateProvider<bool>((ref) => false);
 
 class NavigationView extends ConsumerWidget {
   final Widget child;
@@ -66,6 +70,7 @@ class NavigationView extends ConsumerWidget {
       stateAuthLoadingProvider,
     ); // 설정에서 계정 정보 처리 시,
 
+    /// 출석체크
     ref.listen<UserState>(userProvider, (previous, next) async {
       // 1. async 추가
       final String currentLocation = GoRouterState.of(context).uri.toString();
@@ -90,6 +95,7 @@ class NavigationView extends ConsumerWidget {
       }
     });
 
+    /// 출석체크
     ref.listen<bool>(isOpenCheckedIn, (previous, next) {
       if (next == true) {
         showModalBottomSheet(
@@ -99,6 +105,24 @@ class NavigationView extends ConsumerWidget {
           builder: (context) => const CheckedInModal(),
         ).whenComplete(() {
           ref.read(isOpenCheckedIn.notifier).state = false;
+        });
+        ;
+      }
+    });
+
+    /// 조각 상세정보
+    ref.listen<bool>(isOpenPieceInfo, (previous, next) {
+      if (next == true) {
+        showModalBottomSheet(
+          context: context,
+          isScrollControlled: true,
+          // 👇 builder에서 새로 만든 위젯을 반환합니다.
+          builder:
+              (context) => PieceDetailModal(
+                pieceInfo: ref.read(pieceProvider).selectedPiece!,
+              ),
+        ).whenComplete(() {
+          ref.read(isOpenPieceInfo.notifier).state = false;
         });
         ;
       }

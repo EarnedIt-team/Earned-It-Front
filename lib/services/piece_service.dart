@@ -48,4 +48,28 @@ class PieceService {
       throw Exception("서버에서 에러가 발생했습니다.");
     }
   }
+
+  /// 조각 상세정보를 서버에서 가져옵니다.
+  Future<ApiResponse> loadPieceInfo({
+    required String accessToken,
+    required int pieceId,
+  }) async {
+    try {
+      String token = "Bearer $accessToken";
+
+      final ApiResponse response = await _restClient.loadPieceInfo(
+        token,
+        pieceId,
+      );
+
+      if (response.code != "SUCCESS") {
+        throw Exception(response.message);
+      }
+      return response;
+    } on DioException catch (e) {
+      throw Exception(e.response?.data["message"] ?? "요청 처리 중 에러가 발생했습니다.");
+    } catch (e) {
+      throw Exception("서버에서 에러가 발생했습니다.");
+    }
+  }
 }

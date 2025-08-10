@@ -14,6 +14,9 @@ abstract class PieceState with _$PieceState {
     // 가장 최근에 획득한 조각
     PieceInfoModel? recentlyPiece,
 
+    // 선택한 조각
+    PieceInfoModel? selectedPiece,
+
     /// 현재까지 획득한 조각 리스트 (퍼즐 View)
     @Default([]) List<ThemeModel> pieces,
   }) = _PieceState;

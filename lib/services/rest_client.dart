@@ -174,4 +174,11 @@ abstract class RestClient {
   Future<ApiResponse> loadPieceList(
     @Header("Authorization") String accessToken,
   );
+
+  /// 조각 상세정보 불러오기 API
+  @GET("/api/piece/{pieceId}")
+  Future<ApiResponse> loadPieceInfo(
+    @Header("Authorization") String accesstoken,
+    @Path("pieceId") int pieceId,
+  );
 }

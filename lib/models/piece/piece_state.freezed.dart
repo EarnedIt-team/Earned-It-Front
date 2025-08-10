@@ -16,7 +16,8 @@ mixin _$PieceState {
 
 // 처리 여부
  bool get isLoading;// 가장 최근에 획득한 조각
- PieceInfoModel? get recentlyPiece;/// 현재까지 획득한 조각 리스트 (퍼즐 View)
+ PieceInfoModel? get recentlyPiece;// 선택한 조각
+ PieceInfoModel? get selectedPiece;/// 현재까지 획득한 조각 리스트 (퍼즐 View)
  List<ThemeModel> get pieces;
 /// Create a copy of PieceState
 /// with the given fields replaced by the non-null parameter values.
@@ -28,16 +29,16 @@ $PieceStateCopyWith<PieceState> get copyWith => _$PieceStateCopyWithImpl<PieceSt
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is PieceState&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.recentlyPiece, recentlyPiece) || other.recentlyPiece == recentlyPiece)&&const DeepCollectionEquality().equals(other.pieces, pieces));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is PieceState&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.recentlyPiece, recentlyPiece) || other.recentlyPiece == recentlyPiece)&&(identical(other.selectedPiece, selectedPiece) || other.selectedPiece == selectedPiece)&&const DeepCollectionEquality().equals(other.pieces, pieces));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,isLoading,recentlyPiece,const DeepCollectionEquality().hash(pieces));
+int get hashCode => Object.hash(runtimeType,isLoading,recentlyPiece,selectedPiece,const DeepCollectionEquality().hash(pieces));
 
 @override
 String toString() {
-  return 'PieceState(isLoading: $isLoading, recentlyPiece: $recentlyPiece, pieces: $pieces)';
+  return 'PieceState(isLoading: $isLoading, recentlyPiece: $recentlyPiece, selectedPiece: $selectedPiece, pieces: $pieces)';
 }
 
 
@@ -48,11 +49,11 @@ abstract mixin class $PieceStateCopyWith<$Res>  {
   factory $PieceStateCopyWith(PieceState value, $Res Function(PieceState) _then) = _$PieceStateCopyWithImpl;
 @useResult
 $Res call({
- bool isLoading, PieceInfoModel? recentlyPiece, List<ThemeModel> pieces
+ bool isLoading, PieceInfoModel? recentlyPiece, PieceInfoModel? selectedPiece, List<ThemeModel> pieces
 });
 
 
-$PieceInfoModelCopyWith<$Res>? get recentlyPiece;
+$PieceInfoModelCopyWith<$Res>? get recentlyPiece;$PieceInfoModelCopyWith<$Res>? get selectedPiece;
 
 }
 /// @nodoc
@@ -65,10 +66,11 @@ class _$PieceStateCopyWithImpl<$Res>
 
 /// Create a copy of PieceState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? isLoading = null,Object? recentlyPiece = freezed,Object? pieces = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? isLoading = null,Object? recentlyPiece = freezed,Object? selectedPiece = freezed,Object? pieces = null,}) {
   return _then(_self.copyWith(
 isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
 as bool,recentlyPiece: freezed == recentlyPiece ? _self.recentlyPiece : recentlyPiece // ignore: cast_nullable_to_non_nullable
+as PieceInfoModel?,selectedPiece: freezed == selectedPiece ? _self.selectedPiece : selectedPiece // ignore: cast_nullable_to_non_nullable
 as PieceInfoModel?,pieces: null == pieces ? _self.pieces : pieces // ignore: cast_nullable_to_non_nullable
 as List<ThemeModel>,
   ));
@@ -84,6 +86,18 @@ $PieceInfoModelCopyWith<$Res>? get recentlyPiece {
 
   return $PieceInfoModelCopyWith<$Res>(_self.recentlyPiece!, (value) {
     return _then(_self.copyWith(recentlyPiece: value));
+  });
+}/// Create a copy of PieceState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$PieceInfoModelCopyWith<$Res>? get selectedPiece {
+    if (_self.selectedPiece == null) {
+    return null;
+  }
+
+  return $PieceInfoModelCopyWith<$Res>(_self.selectedPiece!, (value) {
+    return _then(_self.copyWith(selectedPiece: value));
   });
 }
 }
@@ -167,10 +181,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool isLoading,  PieceInfoModel? recentlyPiece,  List<ThemeModel> pieces)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool isLoading,  PieceInfoModel? recentlyPiece,  PieceInfoModel? selectedPiece,  List<ThemeModel> pieces)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _PieceState() when $default != null:
-return $default(_that.isLoading,_that.recentlyPiece,_that.pieces);case _:
+return $default(_that.isLoading,_that.recentlyPiece,_that.selectedPiece,_that.pieces);case _:
   return orElse();
 
 }
@@ -188,10 +202,10 @@ return $default(_that.isLoading,_that.recentlyPiece,_that.pieces);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool isLoading,  PieceInfoModel? recentlyPiece,  List<ThemeModel> pieces)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool isLoading,  PieceInfoModel? recentlyPiece,  PieceInfoModel? selectedPiece,  List<ThemeModel> pieces)  $default,) {final _that = this;
 switch (_that) {
 case _PieceState():
-return $default(_that.isLoading,_that.recentlyPiece,_that.pieces);case _:
+return $default(_that.isLoading,_that.recentlyPiece,_that.selectedPiece,_that.pieces);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -208,10 +222,10 @@ return $default(_that.isLoading,_that.recentlyPiece,_that.pieces);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool isLoading,  PieceInfoModel? recentlyPiece,  List<ThemeModel> pieces)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool isLoading,  PieceInfoModel? recentlyPiece,  PieceInfoModel? selectedPiece,  List<ThemeModel> pieces)?  $default,) {final _that = this;
 switch (_that) {
 case _PieceState() when $default != null:
-return $default(_that.isLoading,_that.recentlyPiece,_that.pieces);case _:
+return $default(_that.isLoading,_that.recentlyPiece,_that.selectedPiece,_that.pieces);case _:
   return null;
 
 }
@@ -223,13 +237,15 @@ return $default(_that.isLoading,_that.recentlyPiece,_that.pieces);case _:
 
 
 class _PieceState implements PieceState {
-  const _PieceState({this.isLoading = false, this.recentlyPiece, final  List<ThemeModel> pieces = const []}): _pieces = pieces;
+  const _PieceState({this.isLoading = false, this.recentlyPiece, this.selectedPiece, final  List<ThemeModel> pieces = const []}): _pieces = pieces;
   
 
 // 처리 여부
 @override@JsonKey() final  bool isLoading;
 // 가장 최근에 획득한 조각
 @override final  PieceInfoModel? recentlyPiece;
+// 선택한 조각
+@override final  PieceInfoModel? selectedPiece;
 /// 현재까지 획득한 조각 리스트 (퍼즐 View)
  final  List<ThemeModel> _pieces;
 /// 현재까지 획득한 조각 리스트 (퍼즐 View)
@@ -250,16 +266,16 @@ _$PieceStateCopyWith<_PieceState> get copyWith => __$PieceStateCopyWithImpl<_Pie
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _PieceState&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.recentlyPiece, recentlyPiece) || other.recentlyPiece == recentlyPiece)&&const DeepCollectionEquality().equals(other._pieces, _pieces));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _PieceState&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.recentlyPiece, recentlyPiece) || other.recentlyPiece == recentlyPiece)&&(identical(other.selectedPiece, selectedPiece) || other.selectedPiece == selectedPiece)&&const DeepCollectionEquality().equals(other._pieces, _pieces));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,isLoading,recentlyPiece,const DeepCollectionEquality().hash(_pieces));
+int get hashCode => Object.hash(runtimeType,isLoading,recentlyPiece,selectedPiece,const DeepCollectionEquality().hash(_pieces));
 
 @override
 String toString() {
-  return 'PieceState(isLoading: $isLoading, recentlyPiece: $recentlyPiece, pieces: $pieces)';
+  return 'PieceState(isLoading: $isLoading, recentlyPiece: $recentlyPiece, selectedPiece: $selectedPiece, pieces: $pieces)';
 }
 
 
@@ -270,11 +286,11 @@ abstract mixin class _$PieceStateCopyWith<$Res> implements $PieceStateCopyWith<$
   factory _$PieceStateCopyWith(_PieceState value, $Res Function(_PieceState) _then) = __$PieceStateCopyWithImpl;
 @override @useResult
 $Res call({
- bool isLoading, PieceInfoModel? recentlyPiece, List<ThemeModel> pieces
+ bool isLoading, PieceInfoModel? recentlyPiece, PieceInfoModel? selectedPiece, List<ThemeModel> pieces
 });
 
 
-@override $PieceInfoModelCopyWith<$Res>? get recentlyPiece;
+@override $PieceInfoModelCopyWith<$Res>? get recentlyPiece;@override $PieceInfoModelCopyWith<$Res>? get selectedPiece;
 
 }
 /// @nodoc
@@ -287,10 +303,11 @@ class __$PieceStateCopyWithImpl<$Res>
 
 /// Create a copy of PieceState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? isLoading = null,Object? recentlyPiece = freezed,Object? pieces = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? isLoading = null,Object? recentlyPiece = freezed,Object? selectedPiece = freezed,Object? pieces = null,}) {
   return _then(_PieceState(
 isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
 as bool,recentlyPiece: freezed == recentlyPiece ? _self.recentlyPiece : recentlyPiece // ignore: cast_nullable_to_non_nullable
+as PieceInfoModel?,selectedPiece: freezed == selectedPiece ? _self.selectedPiece : selectedPiece // ignore: cast_nullable_to_non_nullable
 as PieceInfoModel?,pieces: null == pieces ? _self._pieces : pieces // ignore: cast_nullable_to_non_nullable
 as List<ThemeModel>,
   ));
@@ -307,6 +324,18 @@ $PieceInfoModelCopyWith<$Res>? get recentlyPiece {
 
   return $PieceInfoModelCopyWith<$Res>(_self.recentlyPiece!, (value) {
     return _then(_self.copyWith(recentlyPiece: value));
+  });
+}/// Create a copy of PieceState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$PieceInfoModelCopyWith<$Res>? get selectedPiece {
+    if (_self.selectedPiece == null) {
+    return null;
+  }
+
+  return $PieceInfoModelCopyWith<$Res>(_self.selectedPiece!, (value) {
+    return _then(_self.copyWith(selectedPiece: value));
   });
 }
 }

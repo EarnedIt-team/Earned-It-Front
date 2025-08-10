@@ -1,5 +1,6 @@
 import 'package:earned_it/config/design.dart';
 import 'package:earned_it/models/piece/theme_model.dart';
+import 'package:earned_it/services/piece_service.dart';
 import 'package:earned_it/view_models/piece_provider.dart';
 import 'package:earned_it/view_models/user_provider.dart';
 import 'package:earned_it/views/navigation_view.dart';
@@ -169,10 +170,12 @@ class _PuzzleViewState extends ConsumerState<PuzzleView> {
     return ElevatedButton(
       onPressed:
           slot.isCollected
-              ? null
-              : () {
-                // TODO: 획득하지 않은 조각 탭 시 동작 구현
-              },
+              ? () {
+                ref
+                    .read(pieceProvider.notifier)
+                    .loadPieceInfo(context, slot.itemId!);
+              }
+              : null,
       style: ElevatedButton.styleFrom(
         backgroundColor:
             Theme.of(context).brightness == Brightness.dark

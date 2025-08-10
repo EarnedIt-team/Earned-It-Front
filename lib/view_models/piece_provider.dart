@@ -3,6 +3,7 @@ import 'package:earned_it/models/piece/piece_info_model.dart';
 import 'package:earned_it/models/piece/piece_state.dart';
 import 'package:earned_it/models/piece/theme_model.dart';
 import 'package:earned_it/services/piece_service.dart';
+import 'package:earned_it/views/navigation_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -78,6 +79,39 @@ class PieceNotifier extends Notifier<PieceState> {
         state = state.copyWith(isLoading: false);
       }
     }
+  }
+
+  /// 특정 조각의 상세 정보를 불러와 상태를 업데이트합니다.
+  Future<void> loadPieceInfo(BuildContext context, int pieceId) async {
+    // 상세 정보 로딩은 전체 화면 로딩과 별개로 처리
+    try {
+      final accessToken = await _storage.read(key: 'accessToken');
+      if (accessToken == null) throw Exception("로그인이 필요합니다.");
+
+      final response = await _pieceService.loadPieceInfo(
+        accessToken: accessToken,
+        pieceId: 20, // 임시로 20번으로 배치
+      );
+
+      // 응답 데이터를 PieceInfoModel로 파싱
+      final pieceInfo = PieceInfoModel.fromJson(
+        response.data as Map<String, dynamic>,
+      );
+
+      // 파싱된 데이터를 selectedPieceInfo 상태에 저장
+      state = state.copyWith(selectedPiece: pieceInfo);
+
+      ref.read(isOpenPieceInfo.notifier).state = true;
+    } on DioException catch (e) {
+      if (context.mounted) _handleApiError(context, e);
+    } catch (e) {
+      if (context.mounted) _handleGeneralError(context, e);
+    }
+  }
+
+  /// 모달이 닫힐 때 선택된 조각 정보를 초기화하는 메서드
+  void clearSelectedPiece() {
+    state = state.copyWith(selectedPiece: null);
   }
 
   /// 서버 응답의 데이터를 받아 로컬에서 가장 최근에 획득한 조각을 업데이트 하는 메소드

@@ -3,6 +3,7 @@ import 'package:earned_it/config/exception.dart';
 import 'package:earned_it/services/auth/login_service.dart';
 import 'package:earned_it/services/auth/logout_service.dart';
 import 'package:earned_it/services/auth/resign_service.dart';
+import 'package:earned_it/view_models/piece_provider.dart';
 import 'package:earned_it/view_models/theme_provider.dart';
 import 'package:earned_it/view_models/user_provider.dart';
 import 'package:earned_it/view_models/wish/wish_provider.dart';
@@ -51,6 +52,7 @@ class StateAuthViewModel {
         // provider 강제 파괴
         _ref.invalidate(userProvider);
         _ref.invalidate(wishViewModelProvider);
+        _ref.invalidate(pieceProvider);
         _ref.invalidate(themeProvider);
         _ref.invalidate(carouselIndexProvider); // 홈 인덱스 초기화
         final prefs = await SharedPreferences.getInstance();
@@ -124,6 +126,7 @@ class StateAuthViewModel {
         // provider 강제 파괴
         _ref.invalidate(userProvider);
         _ref.invalidate(wishViewModelProvider);
+        _ref.invalidate(pieceProvider);
         _ref.invalidate(themeProvider);
         _ref.invalidate(carouselIndexProvider); // 홈 인덱스 초기화
         final prefs = await SharedPreferences.getInstance();

@@ -49,6 +49,7 @@ class CheckedInViewModel extends AutoDisposeNotifier<CheckedInState> {
               .toList();
 
       state = state.copyWith(
+        rewardToken: response.data["rewardToken"],
         candidatesCheckedInList: candidatesList,
         isLoading: false,
       );
@@ -78,9 +79,14 @@ class CheckedInViewModel extends AutoDisposeNotifier<CheckedInState> {
       final selectedItem = candidates[index];
       final rewardName = selectedItem.name ?? '알 수 없는 보상';
 
-      // TODO: 실제 서버에 보상 확정 API 호출
-      // final accessToken = await _storage.read(key: 'accessToken');
-      // await _checkinService.confirmReward(accessToken, selectedItem.itemId);
+      final accessToken = await _storage.read(key: 'accessToken');
+      if (accessToken == null) throw Exception("로그인이 필요합니다.");
+
+      final response = await _checkinService.selectDailyCheck(
+        accessToken: accessToken,
+        rewardToken: state.rewardToken!,
+        selectedItemId: selectedItem.itemId!,
+      );
 
       state = state.copyWith(reward: rewardName);
     } on DioException catch (e) {

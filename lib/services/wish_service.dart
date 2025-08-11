@@ -219,4 +219,36 @@ class WishService {
       throw Exception("서버에서 에러가 발생했습니다.");
     }
   }
+
+  /// 변동된 Star 위시리스트 순서를 서버에게 알립니다.
+  Future<ApiResponse> updateStarWishOrder({
+    required String accessToken,
+    required List<int> orderedWishIds, // 1. 순서가 변경된 ID 리스트를 파라미터로 받습니다.
+  }) async {
+    try {
+      final String token = "Bearer $accessToken";
+
+      // 2. 서버가 요구하는 형식에 맞게 Request Body를 생성합니다.
+      final Map<String, dynamic> requestBody = {
+        "orderedWishIds": orderedWishIds,
+      };
+
+      // 3. RestClient 메서드에 토큰과 Body를 함께 전달하여 API를 호출합니다.
+      final ApiResponse response = await _restClient.updateStarWishOrder(
+        token,
+        requestBody,
+      );
+
+      if (response.code != "SUCCESS") {
+        throw Exception(response.message ?? "순서 변경에 실패했습니다.");
+      }
+      return response;
+    } on DioException catch (e) {
+      // Dio 에러 발생 시, 서버가 보낸 메시지를 우선적으로 사용합니다.
+      throw Exception(e.response?.data["message"] ?? "요청 처리 중 에러가 발생했습니다.");
+    } catch (e) {
+      // 그 외 네트워크 오류 등
+      throw Exception("서버와 통신 중 에러가 발생했습니다.");
+    }
+  }
 }

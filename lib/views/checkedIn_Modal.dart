@@ -94,27 +94,26 @@ class _CheckedInModalState extends ConsumerState<CheckedInModal> {
             ),
 
             SizedBox(height: context.height(0.03)),
-            if (!state.isLoading && state.selectedIndex == null)
-              TextButton(
-                onPressed:
-                    !state.isLoading
-                        ? () async {
-                          if (state.reward == null) {
-                            await notifier.hideForToday();
-                          }
-                          if (context.mounted) Navigator.of(context).pop();
+            TextButton(
+              onPressed:
+                  !state.isLoading
+                      ? () async {
+                        if (state.reward == null) {
+                          await notifier.hideForToday();
                         }
-                        : null,
-                child: const Text(
-                  textAlign: TextAlign.center,
-                  "오늘은 이제 그만보기",
-                  style: TextStyle(
-                    color: Colors.grey,
-                    decoration: TextDecoration.underline,
-                    decorationColor: Colors.grey,
-                  ),
+                        if (context.mounted) context.pop();
+                      }
+                      : null,
+              child: const Text(
+                textAlign: TextAlign.center,
+                "오늘은 이제 그만보기",
+                style: TextStyle(
+                  color: Colors.grey,
+                  decoration: TextDecoration.underline,
+                  decorationColor: Colors.grey,
                 ),
               ),
+            ),
           ],
         ),
       ),

@@ -156,21 +156,29 @@ class _WishEditViewState extends ConsumerState<WishEditView> {
                     ),
                     const SizedBox(height: 24),
                     const Text(
-                      "이름",
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    TextField(
-                      textAlign: TextAlign.end,
-                      controller: wishEditNotifier.nameController,
-                    ),
-                    const SizedBox(height: 24),
-                    const Text(
                       "회사",
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                     TextField(
                       textAlign: TextAlign.end,
                       controller: wishEditNotifier.vendorController,
+                      decoration: const InputDecoration(
+                        hintText: '브랜드나 제조사를 입력하세요.',
+                        hintStyle: TextStyle(color: Colors.grey),
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    const Text(
+                      "이름",
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    TextField(
+                      textAlign: TextAlign.end,
+                      controller: wishEditNotifier.nameController,
+                      decoration: const InputDecoration(
+                        hintText: '제품명을 입력하세요.',
+                        hintStyle: TextStyle(color: Colors.grey),
+                      ),
                     ),
                     const SizedBox(height: 24),
                     const Text(
@@ -185,6 +193,20 @@ class _WishEditViewState extends ConsumerState<WishEditView> {
                         FilteringTextInputFormatter.digitsOnly,
                         NumberInputFormatter(),
                       ],
+                      decoration: InputDecoration(
+                        hintText: '제품 금액을 입력하세요.',
+                        hintStyle: const TextStyle(color: Colors.grey),
+                        suffixText:
+                            wishEditNotifier.priceController.text.isNotEmpty
+                                ? '원'
+                                : null,
+                        suffixStyle: TextStyle(
+                          color:
+                              Theme.of(context).brightness == Brightness.dark
+                                  ? Colors.white
+                                  : Colors.black,
+                        ),
+                      ),
                     ),
                     const SizedBox(height: 24),
                     const Text(
@@ -195,8 +217,21 @@ class _WishEditViewState extends ConsumerState<WishEditView> {
                       textAlign: TextAlign.end,
                       controller: wishEditNotifier.urlController,
                       keyboardType: TextInputType.url,
+                      decoration: const InputDecoration(
+                        hintText: 'ex. https://naver.com',
+                        hintStyle: TextStyle(color: Colors.grey),
+                      ),
                     ),
-                    const SizedBox(height: 24),
+                    SizedBox(height: context.height(0.03)),
+                    Text(
+                      '*구매 링크를 입력하지 않으면 추후 "구매하기"를 진행했을 때, 해당 위시아이템 이름을 기반으로 다나와 사이트에 연결됩니다.',
+                      style: TextStyle(
+                        fontSize: context.width(0.035),
+                        color: Colors.grey,
+                      ),
+                      textAlign: TextAlign.start,
+                    ),
+                    SizedBox(height: context.height(0.01)),
                     wishState.starWishes.length <= 5 && wishEditState.isTop5
                         ? CheckboxListTile(
                           title: const Text(
@@ -210,18 +245,16 @@ class _WishEditViewState extends ConsumerState<WishEditView> {
                           controlAffinity: ListTileControlAffinity.leading,
                           contentPadding: EdgeInsets.zero,
                         )
-                        : SizedBox(
-                          width: double.infinity,
-                          child: Text(
-                            "* Star 위시리스트는 최대 5개만 가능합니다.",
-                            style: TextStyle(
-                              fontSize: context.width(0.035),
-                              fontWeight: FontWeight.bold,
-                              color: Colors.deepOrange,
-                            ),
-                            textAlign: TextAlign.center,
+                        : Text(
+                          "*Star 위시리스트는 최대 5개만 가능합니다.",
+                          style: TextStyle(
+                            fontSize: context.width(0.035),
+                            fontWeight: FontWeight.bold,
+                            color: Colors.deepOrange,
                           ),
+                          textAlign: TextAlign.center,
                         ),
+                    SizedBox(height: context.height(0.03)),
                   ],
                 ),
               ),

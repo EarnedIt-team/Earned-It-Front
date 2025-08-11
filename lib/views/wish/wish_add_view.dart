@@ -44,6 +44,7 @@ class WishAddView extends ConsumerWidget {
           Scaffold(
             resizeToAvoidBottomInset: true,
             appBar: AppBar(
+              scrolledUnderElevation: 0,
               title: const Text(
                 "위시아이템 추가",
                 style: TextStyle(fontWeight: FontWeight.bold),
@@ -113,21 +114,6 @@ class WishAddView extends ConsumerWidget {
                     ),
                     const SizedBox(height: 24),
                     Text(
-                      "이름",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: context.width(0.04),
-                      ),
-                    ),
-                    TextField(
-                      textAlign: TextAlign.end,
-                      controller: wishAddNotifier.nameController,
-                      decoration: const InputDecoration(
-                        hintText: '제품명을 입력하세요.',
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                    Text(
                       "회사",
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
@@ -139,6 +125,23 @@ class WishAddView extends ConsumerWidget {
                       controller: wishAddNotifier.vendorController,
                       decoration: const InputDecoration(
                         hintText: '브랜드나 제조사를 입력하세요.',
+                        hintStyle: TextStyle(color: Colors.grey),
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    Text(
+                      "이름",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: context.width(0.04),
+                      ),
+                    ),
+                    TextField(
+                      textAlign: TextAlign.end,
+                      controller: wishAddNotifier.nameController,
+                      decoration: const InputDecoration(
+                        hintText: '제품명을 입력하세요.',
+                        hintStyle: TextStyle(color: Colors.grey),
                       ),
                     ),
                     const SizedBox(height: 24),
@@ -159,10 +162,17 @@ class WishAddView extends ConsumerWidget {
                       ],
                       decoration: InputDecoration(
                         hintText: '제품 금액을 입력하세요.',
+                        hintStyle: const TextStyle(color: Colors.grey),
                         suffixText:
                             wishAddNotifier.priceController.text.isNotEmpty
                                 ? '원'
                                 : null,
+                        suffixStyle: TextStyle(
+                          color:
+                              Theme.of(context).brightness == Brightness.dark
+                                  ? Colors.white
+                                  : Colors.black,
+                        ),
                       ),
                     ),
                     const SizedBox(height: 24),
@@ -178,10 +188,20 @@ class WishAddView extends ConsumerWidget {
                       controller: wishAddNotifier.urlController,
                       keyboardType: TextInputType.url,
                       decoration: const InputDecoration(
-                        hintText: '제품 구매 링크를 입력하세요.',
+                        hintText: 'ex. https://naver.com',
+                        hintStyle: TextStyle(color: Colors.grey),
                       ),
                     ),
-                    const SizedBox(height: 24),
+                    SizedBox(height: context.height(0.03)),
+                    Text(
+                      '*구매 링크를 입력하지 않으면 추후 "구매하기"를 진행했을 때, 해당 위시아이템 이름을 기반으로 다나와 사이트에 연결됩니다.',
+                      style: TextStyle(
+                        fontSize: context.width(0.035),
+                        color: Colors.grey,
+                      ),
+                      textAlign: TextAlign.start,
+                    ),
+                    SizedBox(height: context.height(0.01)),
                     wishState.starWishes.length < 5
                         ? CheckboxListTile(
                           title: const Text(
@@ -195,18 +215,16 @@ class WishAddView extends ConsumerWidget {
                           controlAffinity: ListTileControlAffinity.leading,
                           contentPadding: EdgeInsets.zero,
                         )
-                        : SizedBox(
-                          width: double.infinity,
-                          child: Text(
-                            "* Star 위시리스트는 최대 5개만 가능합니다.",
-                            style: TextStyle(
-                              fontSize: context.width(0.035),
-                              fontWeight: FontWeight.bold,
-                              color: Colors.deepOrange,
-                            ),
-                            textAlign: TextAlign.center,
+                        : Text(
+                          "*Star 위시리스트는 최대 5개만 가능합니다.",
+                          style: TextStyle(
+                            fontSize: context.width(0.035),
+                            fontWeight: FontWeight.bold,
+                            color: Colors.deepOrange,
                           ),
+                          textAlign: TextAlign.center,
                         ),
+                    SizedBox(height: context.height(0.03)),
                   ],
                 ),
               ),

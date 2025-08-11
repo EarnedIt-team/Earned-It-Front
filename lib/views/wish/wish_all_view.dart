@@ -120,48 +120,67 @@ class AllWishlistItem extends ConsumerWidget {
         child: Slidable(
           key: ValueKey(item.wishId),
           startActionPane: ActionPane(
-            motion: const StretchMotion(),
+            motion: const DrawerMotion(),
             extentRatio: 0.5,
             children: <Widget>[
-              SlidableAction(
+              CustomSlidableAction(
                 onPressed: (context) {
                   ref
                       .read(wishViewModelProvider.notifier)
                       .editBoughtWishItem(context, item.wishId);
                 },
-                backgroundColor: Colors.lightBlue,
-                foregroundColor: Colors.white,
-                icon: Icons.check,
-                label: '구매',
+                backgroundColor: primaryGradientStart,
+                // 👇 2. child 속성을 사용하여 위젯을 직접 구성합니다.
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      item.bought ? Icons.check : Icons.shopping_cart_outlined,
+                      size: context.width(0.08),
+                      color: Colors.white,
+                    ),
+                  ],
+                ),
               ),
-              (wishState.starWishes.length < 5 && !item.starred) ||
-                      (wishState.starWishes.length <= 5 && item.starred)
-                  ? SlidableAction(
-                    onPressed: (context) {
-                      ref
-                          .read(wishViewModelProvider.notifier)
-                          .editStarWishItem(context, item.wishId);
-                    },
-                    backgroundColor: Colors.orangeAccent,
-                    foregroundColor: Colors.white,
-                    icon: Icons.star,
-                    label: "Star",
-                  )
-                  : const SizedBox.shrink(),
+              if ((wishState.starWishes.length < 5 && !item.starred) ||
+                  (wishState.starWishes.length <= 5 && item.starred))
+                CustomSlidableAction(
+                  onPressed: (context) {
+                    ref
+                        .read(wishViewModelProvider.notifier)
+                        .editStarWishItem(context, item.wishId);
+                  },
+                  backgroundColor: const Color.fromARGB(255, 231, 127, 111),
+                  // 👇 2. child 속성을 사용하여 위젯을 직접 구성합니다.
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        item.starred ? Icons.star : Icons.star_outline,
+                        size: context.width(0.08),
+                        color: Colors.white,
+                      ),
+                    ],
+                  ),
+                ),
             ],
           ),
           endActionPane: ActionPane(
-            motion: const StretchMotion(),
+            motion: const DrawerMotion(),
             extentRatio: 0.5,
             children: <Widget>[
-              SlidableAction(
+              CustomSlidableAction(
                 onPressed: (context) => context.push('/editWish', extra: item),
                 backgroundColor: Colors.grey.shade600,
                 foregroundColor: Colors.white,
-                icon: Icons.edit,
-                label: '수정',
+                // 👇 2. child 속성을 사용하여 위젯을 직접 구성합니다.
+                child: Text(
+                  "수정",
+                  style: TextStyle(fontSize: context.width(0.04)),
+                ),
               ),
-              SlidableAction(
+
+              CustomSlidableAction(
                 onPressed: (context) {
                   showDialog(
                     context: context,
@@ -192,8 +211,11 @@ class AllWishlistItem extends ConsumerWidget {
                 },
                 backgroundColor: const Color(0xFFFE4A49),
                 foregroundColor: Colors.white,
-                icon: Icons.delete,
-                label: '삭제',
+                // 👇 2. child 속성을 사용하여 위젯을 직접 구성합니다.
+                child: Text(
+                  "삭제",
+                  style: TextStyle(fontSize: context.width(0.04)),
+                ),
               ),
             ],
           ),
@@ -239,15 +261,32 @@ class AllWishlistItem extends ConsumerWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(
-                          item.vendor,
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: context.width(0.04),
-                            height: 1,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+                        Row(
+                          children: [
+                            Text(
+                              item.vendor,
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: context.width(0.04),
+                                height: 1,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            const SizedBox(width: 5),
+                            if (item.bought)
+                              Icon(
+                                Icons.check,
+                                size: context.width(0.04),
+                                color: Colors.lightBlue,
+                              ),
+                            if (item.starred)
+                              Icon(
+                                Icons.star_rounded,
+                                size: context.width(0.04),
+                                color: Colors.amber,
+                              ),
+                          ],
                         ),
 
                         Text(
@@ -271,27 +310,6 @@ class AllWishlistItem extends ConsumerWidget {
                         ),
                       ],
                     ),
-                  ),
-                  item.bought || item.starred
-                      ? const SizedBox(width: 10)
-                      : const SizedBox.shrink(),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      item.bought
-                          ? const Icon(
-                            Icons.check_circle,
-                            color: Colors.lightBlue,
-                          )
-                          : const SizedBox.shrink(),
-                      item.bought && item.starred
-                          ? const SizedBox(height: 5)
-                          : const SizedBox.shrink(),
-                      item.starred
-                          ? const Icon(Icons.stars, color: primaryColor)
-                          : const SizedBox.shrink(),
-                    ],
                   ),
                 ],
               ),

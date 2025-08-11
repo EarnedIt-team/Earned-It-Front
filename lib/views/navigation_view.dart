@@ -67,6 +67,7 @@ class NavigationView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final wishState = ref.watch(wishViewModelProvider);
+    final puzzleState = ref.watch(pieceProvider);
     final userState = ref.watch(userProvider);
     final isImageLoading = ref.watch(
       profileImageLoadingProvider,
@@ -351,7 +352,10 @@ class NavigationView extends ConsumerWidget {
             onTap: (index) => _onItemTapped(index, context),
           ),
         ),
-        if (wishState.isLoading || isImageLoading || isAuthLoading)
+        if (wishState.isLoading ||
+            isImageLoading ||
+            isAuthLoading ||
+            puzzleState.isLoading)
           overlayView(),
       ],
     );

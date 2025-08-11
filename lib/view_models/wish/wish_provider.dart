@@ -41,6 +41,8 @@ class WishViewModel extends Notifier<WishState> {
   /// 사용자의 Star 위시리스트를 불러옵니다.
   Future<void> loadStarWish() async {
     try {
+      state = state.copyWith(isLoading: true);
+
       final String? accessToken = await _storage.read(key: 'accessToken');
 
       final wishService = ref.read(wishServiceProvider);
@@ -53,16 +55,19 @@ class WishViewModel extends Notifier<WishState> {
               .map((json) => WishModel.fromJson(json as Map<String, dynamic>))
               .toList();
 
-      state = state.copyWith(starWishes: StarWishList);
+      state = state.copyWith(isLoading: false, starWishes: StarWishList);
       print("저장 완료");
     } catch (e) {
       print("유저 정보 불러오기 에러 $e");
+    } finally {
+      state = state.copyWith(isLoading: false);
     }
   }
 
   /// 사용자의 하이라이트(3개) 위시리스트를 불러옵니다.
   Future<void> loadHighLightWish() async {
     try {
+      state = state.copyWith(isLoading: true);
       final String? accessToken = await _storage.read(key: 'accessToken');
 
       final wishService = ref.read(wishServiceProvider);
@@ -77,12 +82,15 @@ class WishViewModel extends Notifier<WishState> {
               .toList();
 
       state = state.copyWith(
+        isLoading: false,
         Wishes3: highLightWishList,
         currentWishCount: currentWishCount,
       );
       print("저장 완료");
     } catch (e) {
       print("유저 정보 불러오기 에러 $e");
+    } finally {
+      state = state.copyWith(isLoading: false);
     }
   }
 

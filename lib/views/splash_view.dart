@@ -53,20 +53,33 @@ class _SplashViewState extends ConsumerState<SplashView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            SizedBox(height: context.height(0.005)),
-            Image.asset(
-              Theme.of(context).brightness == Brightness.dark
-                  ? "assets/images/logo_dark.png"
-                  : "assets/images/logo_light.png",
-              width: context.width(0.6),
-            ),
-          ],
+    // 1. Scaffold를 Container로 감싸줍니다.
+    return Container(
+      // 2. Container의 decoration에 정의해둔 primaryGradient를 적용합니다.
+      decoration:
+          Theme.of(context).brightness != Brightness.dark
+              ? primaryGradient
+              : null,
+      child: Scaffold(
+        // 3. Scaffold의 배경은 투명하게 만들어 Container의 그라데이션이 보이도록 합니다.
+        backgroundColor:
+            Theme.of(context).brightness == Brightness.dark
+                ? Colors.black
+                : Colors.transparent,
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              SizedBox(height: context.height(0.005)),
+              Image.asset(
+                Theme.of(context).brightness == Brightness.dark
+                    ? "assets/images/logo_dark.png"
+                    : "assets/images/logo_light.png",
+                width: context.width(0.6),
+              ),
+            ],
+          ),
         ),
       ),
     );

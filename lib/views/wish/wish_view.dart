@@ -45,7 +45,7 @@ class _WishViewState extends ConsumerState<WishView> {
   Widget build(BuildContext context) {
     final wishState = ref.watch(wishViewModelProvider);
     final starWishList = wishState.starWishes;
-    final allWishList = wishState.Wishes3;
+    final HighLightWishList = wishState.Wishes3;
     final currencyFormat = NumberFormat.decimalPattern('ko_KR');
 
     return GestureDetector(
@@ -64,7 +64,7 @@ class _WishViewState extends ConsumerState<WishView> {
               ),
               centerTitle: false,
               actions:
-                  starWishList.isNotEmpty && allWishList.isNotEmpty
+                  starWishList.isNotEmpty || HighLightWishList.isNotEmpty
                       ? <Widget>[
                         IconButton(
                           onPressed: () {
@@ -88,7 +88,7 @@ class _WishViewState extends ConsumerState<WishView> {
             ),
             body:
                 // --- 리스트가 모두 비어있을 때 ---
-                starWishList.isEmpty && allWishList.isEmpty
+                starWishList.isEmpty && HighLightWishList.isEmpty
                     ? Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -130,7 +130,7 @@ class _WishViewState extends ConsumerState<WishView> {
                               right: context.middlePadding,
                               bottom:
                                   (starWishList.isNotEmpty ||
-                                          allWishList.isNotEmpty)
+                                          HighLightWishList.isNotEmpty)
                                       ? context.middlePadding
                                       : 0,
                             ),
@@ -306,7 +306,7 @@ class _WishViewState extends ConsumerState<WishView> {
                             ),
 
                           // --- All 위시리스트 섹션 ---
-                          if (allWishList.isNotEmpty)
+                          if (HighLightWishList.isNotEmpty)
                             Padding(
                               padding: EdgeInsets.only(
                                 top: context.middlePadding / 2,
@@ -365,13 +365,13 @@ class _WishViewState extends ConsumerState<WishView> {
                             ),
 
                           // --- All 위시리스트 목록 ---
-                          if (allWishList.isNotEmpty)
+                          if (HighLightWishList.isNotEmpty)
                             ListView.builder(
                               shrinkWrap: true,
                               physics: const NeverScrollableScrollPhysics(),
-                              itemCount: allWishList.length,
+                              itemCount: HighLightWishList.length,
                               itemBuilder: (context, index) {
-                                final item = allWishList[index];
+                                final item = HighLightWishList[index];
                                 return _WishlistItem(
                                   item: item,
                                   itemIndex: index,

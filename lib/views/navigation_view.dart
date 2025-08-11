@@ -333,7 +333,9 @@ class NavigationView extends ConsumerWidget {
             backgroundColor:
                 Theme.of(context).brightness == Brightness.dark
                     ? Colors.black
-                    : Colors.white,
+                    : lightColor,
+            fixedColor: primaryGradientStart,
+            unselectedItemColor: Colors.grey,
             elevation: 0,
             items: const <BottomNavigationBarItem>[
               BottomNavigationBarItem(icon: Icon(Icons.dashboard), label: ''),

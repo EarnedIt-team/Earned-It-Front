@@ -95,6 +95,8 @@ class NavigationView extends ConsumerWidget {
         showModalBottomSheet(
           context: context,
           isScrollControlled: true,
+          enableDrag: false,
+          isDismissible: false,
           builder: (context) => const CheckedInModal(),
         );
       }
@@ -106,6 +108,8 @@ class NavigationView extends ConsumerWidget {
         showModalBottomSheet(
           context: context,
           isScrollControlled: true,
+          enableDrag: false,
+          isDismissible: false,
           // 👇 builder에서 새로 만든 위젯을 반환합니다.
           builder: (context) => const CheckedInModal(),
         ).whenComplete(() {

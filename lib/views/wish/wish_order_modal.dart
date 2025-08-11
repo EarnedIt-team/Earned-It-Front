@@ -1,5 +1,6 @@
 import 'package:earned_it/config/design.dart';
 import 'package:earned_it/view_models/wish/wish_order_provider.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -46,8 +47,24 @@ class WishOrderModal extends ConsumerWidget {
                 itemBuilder: (context, index) {
                   final item = state.currentList[index];
                   return Card(
-                    key: ValueKey(item.wishId),
+                    color:
+                        Theme.of(context).brightness == Brightness.dark
+                            ? const Color.fromARGB(125, 87, 80, 68)
+                            : const Color.fromARGB(255, 255, 234, 197),
+                    elevation: 0,
+                    key: ValueKey(
+                      item.wishId,
+                    ), // Key를 item.id로 수정하는 것이 더 안전합니다.
                     child: ListTile(
+                      // 1. shape 속성은 테두리와 둥근 모서리를 정의합니다.
+                      shape: RoundedRectangleBorder(
+                        side: const BorderSide(
+                          color: primaryColor, // 테두리 색상
+                          width: 1, // 테두리 두께
+                        ),
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      splashColor: primaryColor,
                       leading: const Icon(Icons.drag_handle),
                       title: Text(
                         item.name,

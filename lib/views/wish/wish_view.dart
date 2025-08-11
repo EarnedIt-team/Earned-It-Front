@@ -1,10 +1,13 @@
 import 'package:earned_it/view_models/home_provider.dart';
 import 'package:earned_it/view_models/user_provider.dart';
+import 'package:earned_it/view_models/wish/wish_order_provider.dart';
 import 'package:earned_it/view_models/wish/wish_provider.dart';
 import 'dart:math';
 import 'package:animated_digit/animated_digit.dart';
 import 'package:earned_it/config/design.dart';
 import 'package:earned_it/models/wish/wish_model.dart';
+import 'package:earned_it/views/navigation_view.dart';
+import 'package:earned_it/views/wish/wish_order_modal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -63,6 +66,16 @@ class _WishViewState extends ConsumerState<WishView> {
               actions:
                   starWishList.isNotEmpty && allWishList.isNotEmpty
                       ? <Widget>[
+                        IconButton(
+                          onPressed: () {
+                            ref
+                                .read(wishOrderViewModelProvider.notifier)
+                                .initialize(wishState.starWishes);
+                            // 4. 모달 띄우기
+                            ref.read(isOpenSwapList.notifier).state = true;
+                          },
+                          icon: const Icon(Icons.reorder),
+                        ),
                         IconButton(
                           onPressed: () => context.push('/addWish'),
                           icon: const Icon(Icons.add),

@@ -91,6 +91,13 @@ abstract class RestClient {
   @GET("/api/star")
   Future<ApiResponse> loadStarInfo(@Header("Authorization") String accessToken);
 
+  /// Star 위시리스트 순서 변경 API
+  @PATCH("/api/star/order")
+  Future<ApiResponse> updateStarWishOrder(
+    @Header("Authorization") String accessToken,
+    @Body() Map<String, dynamic> body,
+  );
+
   /// 월 수익 설정 API
   @POST("/api/profile/salary")
   Future<ApiResponse> setSalary(

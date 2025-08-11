@@ -104,7 +104,7 @@ class _HomePieceViewState extends ConsumerState<HomePieceView> {
                                 right: 0,
                                 child: FloatingActionButton(
                                   onPressed: () {
-                                    if (!userState.isCheckedIn) {
+                                    if (userState.isCheckedIn) {
                                       ref.read(isOpenCheckedIn.notifier).state =
                                           true;
                                     } else {

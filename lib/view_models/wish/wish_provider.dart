@@ -194,6 +194,11 @@ class WishViewModel extends Notifier<WishState> {
     );
   }
 
+  /// 로컬에서 Star 위시리스트의 순서를 즉시 업데이트합니다.
+  void updateStarWishesLocally(List<WishModel> newStarWishes) {
+    state = state.copyWith(starWishes: newStarWishes);
+  }
+
   /// 위시아이템 구매 수정 로직
   Future<void> editBoughtWishItem(BuildContext context, int wishId) async {
     state = state.copyWith(isLoading: true);

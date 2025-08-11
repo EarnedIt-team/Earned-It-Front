@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'package:earned_it/config/design.dart';
+import 'package:earned_it/services/wish_service.dart';
 import 'package:earned_it/view_models/wish/wish_add_provider.dart';
+import 'package:earned_it/view_models/wish/wish_provider.dart';
 import 'package:earned_it/views/loading_overlay_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -31,6 +33,7 @@ class WishAddView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final wishState = ref.watch(wishViewModelProvider);
     final wishAddState = ref.watch(wishAddViewModelProvider);
     final wishAddNotifier = ref.read(wishAddViewModelProvider.notifier);
 
@@ -179,18 +182,31 @@ class WishAddView extends ConsumerWidget {
                       ),
                     ),
                     const SizedBox(height: 24),
-                    CheckboxListTile(
-                      title: const Text(
-                        "TOP5에 등록하기",
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      subtitle: const Text("나의 대표 위시 아이템으로 등록합니다."),
-                      value: wishAddState.isTop5,
-                      onChanged: wishAddNotifier.toggleIsTop5,
-                      activeColor: primaryColor,
-                      controlAffinity: ListTileControlAffinity.leading,
-                      contentPadding: EdgeInsets.zero,
-                    ),
+                    wishState.starWishes.length < 5
+                        ? CheckboxListTile(
+                          title: const Text(
+                            "TOP5에 등록하기",
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          subtitle: const Text("나의 대표 위시 아이템으로 등록합니다."),
+                          value: wishAddState.isTop5,
+                          onChanged: wishAddNotifier.toggleIsTop5,
+                          activeColor: primaryColor,
+                          controlAffinity: ListTileControlAffinity.leading,
+                          contentPadding: EdgeInsets.zero,
+                        )
+                        : SizedBox(
+                          width: double.infinity,
+                          child: Text(
+                            "* Star 위시리스트는 최대 5개만 가능합니다.",
+                            style: TextStyle(
+                              fontSize: context.width(0.035),
+                              fontWeight: FontWeight.bold,
+                              color: Colors.deepOrange,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
                   ],
                 ),
               ),

@@ -5,10 +5,12 @@ import 'package:earned_it/view_models/piece_provider.dart';
 import 'package:earned_it/view_models/setting/set_profileimage_provider.dart';
 import 'package:earned_it/view_models/setting/state_auth_provider.dart';
 import 'package:earned_it/view_models/user_provider.dart';
+import 'package:earned_it/view_models/wish/wish_order_provider.dart';
 import 'package:earned_it/view_models/wish/wish_provider.dart';
 import 'package:earned_it/views/checkedIn_Modal.dart';
 import 'package:earned_it/views/loading_overlay_view.dart';
 import 'package:earned_it/views/puzzle/piece_detail_modal.dart';
+import 'package:earned_it/views/wish/wish_order_modal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -24,6 +26,9 @@ final hasCheckedIn = StateProvider<bool>(
 ); // 사용자가 오늘은 더이상 출석체크를 원치 않을 때,
 // 조각을 선택해서 상세정보를 요청하는가?
 final isOpenPieceInfo = StateProvider<bool>((ref) => false);
+final isOpenSwapList = StateProvider<bool>(
+  (ref) => false,
+); // Star 위시리스트 순서 변경 modal 여부
 
 class NavigationView extends ConsumerWidget {
   final Widget child;
@@ -105,6 +110,22 @@ class NavigationView extends ConsumerWidget {
           builder: (context) => const CheckedInModal(),
         ).whenComplete(() {
           ref.read(isOpenCheckedIn.notifier).state = false;
+        });
+        ;
+      }
+    });
+
+    /// Star 위시리스트 순서 변경 Modal
+    ref.listen<bool>(isOpenSwapList, (previous, next) {
+      if (next == true) {
+        showModalBottomSheet(
+          context: context,
+          isScrollControlled: true,
+          // 👇 builder에서 새로 만든 위젯을 반환합니다.
+          builder: (context) => const WishOrderModal(),
+        ).whenComplete(() {
+          ref.read(isOpenSwapList.notifier).state = false;
+          ref.read(wishOrderViewModelProvider.notifier).reset();
         });
         ;
       }

@@ -1,8 +1,6 @@
 import 'dart:io';
-
 import 'package:earned_it/config/design.dart';
-import 'package:earned_it/view_models/auth/login_provider.dart'; // import 경로 확인
-import 'package:earned_it/views/auth/agreement_modal.dart';
+import 'package:earned_it/view_models/auth/login_provider.dart';
 import 'package:earned_it/views/loading_overlay_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -23,13 +21,18 @@ class LoginView extends ConsumerWidget {
         body: Stack(
           children: <Widget>[
             SafeArea(
+              // 👇 1. (핵심 수정) SingleChildScrollView로 전체를 감쌉니다.
               child: SingleChildScrollView(
+                // 👇 2. ConstrainedBox를 사용하여 자식의 최소 높이를 화면 높이로 강제합니다.
                 child: ConstrainedBox(
                   constraints: BoxConstraints(
+                    // 키보드가 올라올 때 줄어드는 화면 높이를 반영합니다.
                     minHeight:
                         MediaQuery.of(context).size.height -
-                        MediaQuery.of(context).padding.top,
+                        MediaQuery.of(context).padding.top -
+                        kToolbarHeight, // AppBar가 있다면 높이를 빼줍니다.
                   ),
+                  // 👇 3. IntrinsicHeight와 Center를 사용하여 콘텐츠를 세로 중앙에 배치합니다.
                   child: IntrinsicHeight(
                     child: Center(
                       child: Padding(
@@ -79,7 +82,6 @@ class LoginView extends ConsumerWidget {
                                     ),
                                   ),
                                 ),
-                                // 에러 메시지
                                 if (loginState.errorMessage != null)
                                   Padding(
                                     padding: const EdgeInsets.only(top: 8.0),
@@ -91,11 +93,8 @@ class LoginView extends ConsumerWidget {
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.end,
                                   children: <Widget>[
-                                    // 회원가입으로 이동
                                     TextButton(
-                                      onPressed: () {
-                                        context.push("/sign");
-                                      },
+                                      onPressed: () => context.push("/sign"),
                                       child: const Text(
                                         "회원가입",
                                         style: TextStyle(
@@ -103,11 +102,10 @@ class LoginView extends ConsumerWidget {
                                         ),
                                       ),
                                     ),
-                                    // 비밀번호 찾기
                                     TextButton(
-                                      onPressed: () {
-                                        context.push("/forgot_password");
-                                      },
+                                      onPressed:
+                                          () =>
+                                              context.push("/forgot_password"),
                                       child: const Text(
                                         "비밀번호 찾기",
                                         style: TextStyle(
@@ -120,7 +118,7 @@ class LoginView extends ConsumerWidget {
                               ],
                             ),
                             SizedBox(height: context.height(0.02)),
-                            // 로그인
+                            // 로그인 버튼
                             SizedBox(
                               width: double.infinity,
                               child: ElevatedButton(
@@ -174,13 +172,9 @@ class LoginView extends ConsumerWidget {
                                   ],
                                 ),
                                 SizedBox(height: context.height(0.025)),
-                                // apple, kakao button
                                 Row(
-                                  spacing: context.height(0.025),
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: <Widget>[
-                                    // apple button
-                                    // 25.07.21 애플 로그인은 IOS 한정
                                     if (Platform.isIOS)
                                       ElevatedButton(
                                         onPressed:
@@ -208,7 +202,8 @@ class LoginView extends ConsumerWidget {
                                           ),
                                         ),
                                       ),
-                                    // kakao button
+                                    if (Platform.isIOS)
+                                      SizedBox(width: context.height(0.025)),
                                     ElevatedButton(
                                       onPressed:
                                           () => loginNotifier.signInWithKakao(
@@ -244,10 +239,7 @@ class LoginView extends ConsumerWidget {
                 ),
               ),
             ),
-
-            // 로딩 오버레이 (로그인 시도)
-            if (loginState.isLoading) // isLoading이 true일 때만 표시
-              overlayView(),
+            if (loginState.isLoading) overlayView(),
           ],
         ),
       ),

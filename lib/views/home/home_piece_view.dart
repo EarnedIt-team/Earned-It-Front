@@ -99,37 +99,37 @@ class _HomePieceViewState extends ConsumerState<HomePieceView> {
                                           ),
                                 ),
                               ),
-                              Positioned(
-                                bottom: 0,
-                                right: 0,
-                                child: FloatingActionButton(
-                                  onPressed: () {
-                                    if (!userState.isCheckedIn) {
-                                      ref.read(isOpenCheckedIn.notifier).state =
-                                          true;
-                                    } else {
-                                      toastification.show(
-                                        context: context,
-                                        type: ToastificationType.error,
-                                        style: ToastificationStyle.flat,
-                                        title: const Text(
-                                          '출석 체크는 하루에 한번 가능합니다.',
-                                        ),
-                                        autoCloseDuration: const Duration(
-                                          seconds: 3,
-                                        ),
-                                      );
-                                    }
-                                  },
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(30.0),
-                                  ),
-                                  child: Icon(
-                                    Icons.cached,
-                                    size: context.width(0.08),
-                                  ),
-                                ),
-                              ),
+                              // Positioned(
+                              //   bottom: 0,
+                              //   right: 0,
+                              //   child: FloatingActionButton(
+                              //     onPressed: () {
+                              //       if (!userState.isCheckedIn) {
+                              //         ref.read(isOpenCheckedIn.notifier).state =
+                              //             true;
+                              //       } else {
+                              //         toastification.show(
+                              //           context: context,
+                              //           type: ToastificationType.error,
+                              //           style: ToastificationStyle.flat,
+                              //           title: const Text(
+                              //             '출석 체크는 하루에 한번 가능합니다.',
+                              //           ),
+                              //           autoCloseDuration: const Duration(
+                              //             seconds: 3,
+                              //           ),
+                              //         );
+                              //       }
+                              //     },
+                              //     shape: RoundedRectangleBorder(
+                              //       borderRadius: BorderRadius.circular(30.0),
+                              //     ),
+                              //     child: Icon(
+                              //       Icons.cached,
+                              //       size: context.width(0.08),
+                              //     ),
+                              //   ),
+                              // ),
                               Positioned(
                                 top: 0,
                                 left: 0,
@@ -173,13 +173,35 @@ class _HomePieceViewState extends ConsumerState<HomePieceView> {
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                         ),
-                        SizedBox(height: context.height(0.05)),
+                        SizedBox(height: context.height(0.02)),
                         Text(
                           "25.06 기준 ${currencyFormat.format(pieceState.recentlyPiece!.price)}원",
                           style: TextStyle(
                             fontSize: context.width(0.04),
                             color: Colors.grey,
                           ),
+                        ),
+                        SizedBox(height: context.height(0.02)),
+                        ElevatedButton(
+                          onPressed: () {
+                            if (!userState.isCheckedIn) {
+                              ref.read(isOpenCheckedIn.notifier).state = true;
+                            } else {
+                              toastification.show(
+                                context: context,
+                                type: ToastificationType.error,
+                                style: ToastificationStyle.flat,
+                                title: const Text('출석 체크는 하루에 한번 가능합니다.'),
+                                autoCloseDuration: const Duration(seconds: 3),
+                              );
+                            }
+                          },
+                          child: const Text("출석체크하고 보상받기"),
+                        ),
+                        SizedBox(height: context.height(0.005)),
+                        const Text(
+                          "*매 일 1번만 획득 가능",
+                          style: TextStyle(color: Colors.grey),
                         ),
                       ],
                     )

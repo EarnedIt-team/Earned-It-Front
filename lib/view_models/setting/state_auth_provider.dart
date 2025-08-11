@@ -3,11 +3,10 @@ import 'package:earned_it/config/exception.dart';
 import 'package:earned_it/services/auth/login_service.dart';
 import 'package:earned_it/services/auth/logout_service.dart';
 import 'package:earned_it/services/auth/resign_service.dart';
+import 'package:earned_it/view_models/home_provider.dart';
 import 'package:earned_it/view_models/piece_provider.dart';
-import 'package:earned_it/view_models/theme_provider.dart';
 import 'package:earned_it/view_models/user_provider.dart';
 import 'package:earned_it/view_models/wish/wish_provider.dart';
-import 'package:earned_it/views/home/home_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -31,149 +30,110 @@ class StateAuthViewModel {
 
   /// 로그아웃을 시도합니다.
   Future<void> signout(BuildContext context) async {
+    await _executeAuthAction(
+      context: context,
+      authApiCall:
+          (accessToken) =>
+              _ref.read(logoutServiceProvider).signout(accessToken),
+      successMessage: '로그아웃이 정상적으로 처리되었습니다.',
+      errorMessage: '로그아웃 중 에러 발생',
+    );
+  }
+
+  /// 회원탈퇴를 시도합니다.
+  Future<void> resign(BuildContext context) async {
+    await _executeAuthAction(
+      context: context,
+      authApiCall:
+          (accessToken) => _ref.read(reSignServiceProvider).reSign(accessToken),
+      successMessage: '회원탈퇴가 정상적으로 처리되었습니다.',
+      errorMessage: '회원탈퇴 중 에러 발생',
+    );
+  }
+
+  // --- 비공개 헬퍼 메서드들 ---
+
+  /// 로그아웃/회원탈퇴의 공통 로직을 처리하는 헬퍼 메서드
+  Future<void> _executeAuthAction({
+    required BuildContext context,
+    required Future<void> Function(String accessToken) authApiCall,
+    required String successMessage,
+    required String errorMessage,
+  }) async {
     _ref.read(stateAuthLoadingProvider.notifier).state = true;
     try {
-      // 1. AccessToken 가져오기
       final accessToken = await _storage.read(key: 'accessToken');
-      if (accessToken == null) {
-        throw Exception("로그인이 필요합니다.");
-      }
+      if (accessToken == null) throw Exception("로그인이 필요합니다.");
 
-      await _ref.read(logoutServiceProvider).signout(accessToken);
-      await const FlutterSecureStorage().deleteAll();
+      // 1. 전달받은 API 호출 실행
+      await authApiCall(accessToken);
+
+      // 2. 모든 로컬 데이터 및 상태 초기화
+      await _clearAllUserData();
 
       if (context.mounted) {
         toastification.show(
           context: context,
           type: ToastificationType.success,
-          title: const Text('로그아웃이 정상적으로 처리되었습니다.'),
+          title: Text(successMessage),
         );
+        // 3. 모든 정리가 끝난 후 페이지 이동
         context.go('/login');
-        // provider 강제 파괴
-        _ref.invalidate(userProvider);
-        _ref.invalidate(wishViewModelProvider);
-        _ref.invalidate(pieceProvider);
-        _ref.invalidate(themeProvider);
-        _ref.invalidate(carouselIndexProvider); // 홈 인덱스 초기화
-        final prefs = await SharedPreferences.getInstance();
-        final lastHiddenDate = prefs.remove(
-          'hideCheckedInModalDate',
-        ); // 출석체크 비활성화 여부 초기화
       }
     } on DioException catch (e) {
-      _ref.read(stateAuthLoadingProvider.notifier).state = false;
-
-      if (e.response?.data['code'] == "AUTH_REQUIRED") {
-        print("토큰이 만료되어 재발급합니다.");
-        final String? refreshToken = await _storage.read(key: 'refreshToken');
-        try {
-          await _ref.read(loginServiceProvider).checkToken(refreshToken!);
-          toastification.show(
-            alignment: Alignment.topCenter,
-            style: ToastificationStyle.simple,
-            context: context,
-            title: const Text("잠시 후, 다시 시도해주세요."),
-            autoCloseDuration: const Duration(seconds: 3),
-          );
-        } catch (e) {
-          context.go('/login');
-          toastification.show(
-            alignment: Alignment.topCenter,
-            style: ToastificationStyle.simple,
-            context: context,
-            title: const Text("다시 로그인해주세요."),
-            autoCloseDuration: const Duration(seconds: 3),
-          );
-        }
-      }
+      if (context.mounted) _handleApiError(context, e);
     } catch (e) {
-      print('로그아웃 중 에러 발생: $e');
-      _ref.read(stateAuthLoadingProvider.notifier).state = false;
-      toastification.show(
-        alignment: Alignment.topCenter,
-        style: ToastificationStyle.simple,
-        context: context,
-        title: Text(e.toDisplayString()),
-        autoCloseDuration: const Duration(seconds: 3),
-      );
+      print('$errorMessage: $e');
+      if (context.mounted) {
+        toastification.show(
+          context: context,
+          title: Text("$errorMessage: ${e.toDisplayString()}"),
+        );
+      }
     } finally {
-      if (_ref.exists(stateAuthLoadingProvider)) {
+      if (context.mounted) {
         _ref.read(stateAuthLoadingProvider.notifier).state = false;
       }
     }
   }
 
-  /// 회원탈퇴를 시도합니다.
-  Future<void> resign(BuildContext context) async {
-    _ref.read(stateAuthLoadingProvider.notifier).state = true;
-    try {
-      // 1. AccessToken 가져오기
-      final accessToken = await _storage.read(key: 'accessToken');
-      if (accessToken == null) {
-        throw Exception("로그인이 필요합니다.");
-      }
+  /// 모든 로컬 데이터와 Riverpod 상태를 초기화합니다.
+  Future<void> _clearAllUserData() async {
+    // 1. 로컬 저장소 데이터 삭제
+    await _storage.deleteAll();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('hideCheckedInModalDate');
 
-      await _ref.read(reSignServiceProvider).reSign(accessToken);
-      await const FlutterSecureStorage().deleteAll();
+    // 2. Riverpod Provider 상태 초기화 (invalidate)
+    _ref.invalidate(userProvider);
+    _ref.invalidate(wishViewModelProvider);
+    _ref.invalidate(pieceProvider);
+    _ref.invalidate(homeViewModelProvider);
+    // ... 다른 non-autoDispose Provider들도 여기에 추가 ...
+  }
 
-      if (context.mounted) {
+  /// API 에러 처리 헬퍼 메서드
+  Future<void> _handleApiError(BuildContext context, DioException e) async {
+    if (e.response?.data['code'] == "AUTH_REQUIRED") {
+      print("토큰이 만료되어 재발급합니다.");
+      final String? refreshToken = await _storage.read(key: 'refreshToken');
+      try {
+        await _ref.read(loginServiceProvider).checkToken(refreshToken!);
         toastification.show(
           context: context,
-          type: ToastificationType.success,
-          title: const Text('회원탈퇴가 정상적으로 처리되었습니다.'),
+          title: const Text("잠시 후, 다시 시도해주세요."),
         );
+      } catch (e) {
         context.go('/login');
-        // provider 강제 파괴
-        _ref.invalidate(userProvider);
-        _ref.invalidate(wishViewModelProvider);
-        _ref.invalidate(pieceProvider);
-        _ref.invalidate(themeProvider);
-        _ref.invalidate(carouselIndexProvider); // 홈 인덱스 초기화
-        final prefs = await SharedPreferences.getInstance();
-        final lastHiddenDate = prefs.remove(
-          'hideCheckedInModalDate',
-        ); // 출석체크 비활성화 여부 초기화
+        toastification.show(context: context, title: const Text("다시 로그인해주세요."));
       }
-    } on DioException catch (e) {
-      _ref.read(stateAuthLoadingProvider.notifier).state = false;
-
-      if (e.response?.data['code'] == "AUTH_REQUIRED") {
-        print("토큰이 만료되어 재발급합니다.");
-        final String? refreshToken = await _storage.read(key: 'refreshToken');
-        try {
-          await _ref.read(loginServiceProvider).checkToken(refreshToken!);
-          toastification.show(
-            alignment: Alignment.topCenter,
-            style: ToastificationStyle.simple,
-            context: context,
-            title: const Text("잠시 후, 다시 시도해주세요."),
-            autoCloseDuration: const Duration(seconds: 3),
-          );
-        } catch (e) {
-          context.go('/login');
-          toastification.show(
-            alignment: Alignment.topCenter,
-            style: ToastificationStyle.simple,
-            context: context,
-            title: const Text("다시 로그인해주세요."),
-            autoCloseDuration: const Duration(seconds: 3),
-          );
-        }
-      }
-    } catch (e) {
-      print('회원탈퇴 중 에러 발생: $e');
-      _ref.read(stateAuthLoadingProvider.notifier).state = false;
-      toastification.show(
-        alignment: Alignment.topCenter,
-        style: ToastificationStyle.simple,
-        context: context,
-        title: Text(e.toDisplayString()),
-        autoCloseDuration: const Duration(seconds: 3),
-      );
-    } finally {
-      if (_ref.exists(stateAuthLoadingProvider)) {
-        _ref.read(stateAuthLoadingProvider.notifier).state = false;
-      }
+    } else {
+      _handleGeneralError(context, e);
     }
+  }
+
+  /// 일반 에러 처리 헬퍼 메서드
+  void _handleGeneralError(BuildContext context, Object e) {
+    toastification.show(context: context, title: Text(e.toDisplayString()));
   }
 }

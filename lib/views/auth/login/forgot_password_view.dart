@@ -35,7 +35,14 @@ class ForgotPasswordView extends ConsumerWidget {
                     context,
                     "이메일",
                     controller: notifier.emailController,
-                    hintText: "가입하신 이메일을 입력해주세요.",
+                    errorText:
+                        notifier.emailController.text.isNotEmpty &&
+                                !state.isEmailValid &&
+                                state.currentStep ==
+                                    ForgotPasswordStep.enterEmail
+                            ? '유효하지 않은 이메일 형식입니다.'
+                            : null,
+                    hintText: "ex) email@example.com",
                     readOnly:
                         state.currentStep != ForgotPasswordStep.enterEmail,
                   ),

@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 mixin _$ForgotPasswordState {
 
  ForgotPasswordStep get currentStep; bool get isEmailValid; bool get isCodeVerified; bool get isPasswordValid; bool get isPasswordConfirmed; bool get isObscurePassword; bool get isObscurePasswordConfirm; int get timerSeconds;// 15분 = 900초
- String? get errorMessage; bool get isLoading;
+ DateTime? get timerEndTime; String? get errorMessage; bool get isLoading;
 /// Create a copy of ForgotPasswordState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -26,16 +26,16 @@ $ForgotPasswordStateCopyWith<ForgotPasswordState> get copyWith => _$ForgotPasswo
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ForgotPasswordState&&(identical(other.currentStep, currentStep) || other.currentStep == currentStep)&&(identical(other.isEmailValid, isEmailValid) || other.isEmailValid == isEmailValid)&&(identical(other.isCodeVerified, isCodeVerified) || other.isCodeVerified == isCodeVerified)&&(identical(other.isPasswordValid, isPasswordValid) || other.isPasswordValid == isPasswordValid)&&(identical(other.isPasswordConfirmed, isPasswordConfirmed) || other.isPasswordConfirmed == isPasswordConfirmed)&&(identical(other.isObscurePassword, isObscurePassword) || other.isObscurePassword == isObscurePassword)&&(identical(other.isObscurePasswordConfirm, isObscurePasswordConfirm) || other.isObscurePasswordConfirm == isObscurePasswordConfirm)&&(identical(other.timerSeconds, timerSeconds) || other.timerSeconds == timerSeconds)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ForgotPasswordState&&(identical(other.currentStep, currentStep) || other.currentStep == currentStep)&&(identical(other.isEmailValid, isEmailValid) || other.isEmailValid == isEmailValid)&&(identical(other.isCodeVerified, isCodeVerified) || other.isCodeVerified == isCodeVerified)&&(identical(other.isPasswordValid, isPasswordValid) || other.isPasswordValid == isPasswordValid)&&(identical(other.isPasswordConfirmed, isPasswordConfirmed) || other.isPasswordConfirmed == isPasswordConfirmed)&&(identical(other.isObscurePassword, isObscurePassword) || other.isObscurePassword == isObscurePassword)&&(identical(other.isObscurePasswordConfirm, isObscurePasswordConfirm) || other.isObscurePasswordConfirm == isObscurePasswordConfirm)&&(identical(other.timerSeconds, timerSeconds) || other.timerSeconds == timerSeconds)&&(identical(other.timerEndTime, timerEndTime) || other.timerEndTime == timerEndTime)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,currentStep,isEmailValid,isCodeVerified,isPasswordValid,isPasswordConfirmed,isObscurePassword,isObscurePasswordConfirm,timerSeconds,errorMessage,isLoading);
+int get hashCode => Object.hash(runtimeType,currentStep,isEmailValid,isCodeVerified,isPasswordValid,isPasswordConfirmed,isObscurePassword,isObscurePasswordConfirm,timerSeconds,timerEndTime,errorMessage,isLoading);
 
 @override
 String toString() {
-  return 'ForgotPasswordState(currentStep: $currentStep, isEmailValid: $isEmailValid, isCodeVerified: $isCodeVerified, isPasswordValid: $isPasswordValid, isPasswordConfirmed: $isPasswordConfirmed, isObscurePassword: $isObscurePassword, isObscurePasswordConfirm: $isObscurePasswordConfirm, timerSeconds: $timerSeconds, errorMessage: $errorMessage, isLoading: $isLoading)';
+  return 'ForgotPasswordState(currentStep: $currentStep, isEmailValid: $isEmailValid, isCodeVerified: $isCodeVerified, isPasswordValid: $isPasswordValid, isPasswordConfirmed: $isPasswordConfirmed, isObscurePassword: $isObscurePassword, isObscurePasswordConfirm: $isObscurePasswordConfirm, timerSeconds: $timerSeconds, timerEndTime: $timerEndTime, errorMessage: $errorMessage, isLoading: $isLoading)';
 }
 
 
@@ -46,7 +46,7 @@ abstract mixin class $ForgotPasswordStateCopyWith<$Res>  {
   factory $ForgotPasswordStateCopyWith(ForgotPasswordState value, $Res Function(ForgotPasswordState) _then) = _$ForgotPasswordStateCopyWithImpl;
 @useResult
 $Res call({
- ForgotPasswordStep currentStep, bool isEmailValid, bool isCodeVerified, bool isPasswordValid, bool isPasswordConfirmed, bool isObscurePassword, bool isObscurePasswordConfirm, int timerSeconds, String? errorMessage, bool isLoading
+ ForgotPasswordStep currentStep, bool isEmailValid, bool isCodeVerified, bool isPasswordValid, bool isPasswordConfirmed, bool isObscurePassword, bool isObscurePasswordConfirm, int timerSeconds, DateTime? timerEndTime, String? errorMessage, bool isLoading
 });
 
 
@@ -63,7 +63,7 @@ class _$ForgotPasswordStateCopyWithImpl<$Res>
 
 /// Create a copy of ForgotPasswordState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? currentStep = null,Object? isEmailValid = null,Object? isCodeVerified = null,Object? isPasswordValid = null,Object? isPasswordConfirmed = null,Object? isObscurePassword = null,Object? isObscurePasswordConfirm = null,Object? timerSeconds = null,Object? errorMessage = freezed,Object? isLoading = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? currentStep = null,Object? isEmailValid = null,Object? isCodeVerified = null,Object? isPasswordValid = null,Object? isPasswordConfirmed = null,Object? isObscurePassword = null,Object? isObscurePasswordConfirm = null,Object? timerSeconds = null,Object? timerEndTime = freezed,Object? errorMessage = freezed,Object? isLoading = null,}) {
   return _then(_self.copyWith(
 currentStep: null == currentStep ? _self.currentStep : currentStep // ignore: cast_nullable_to_non_nullable
 as ForgotPasswordStep,isEmailValid: null == isEmailValid ? _self.isEmailValid : isEmailValid // ignore: cast_nullable_to_non_nullable
@@ -73,7 +73,8 @@ as bool,isPasswordConfirmed: null == isPasswordConfirmed ? _self.isPasswordConfi
 as bool,isObscurePassword: null == isObscurePassword ? _self.isObscurePassword : isObscurePassword // ignore: cast_nullable_to_non_nullable
 as bool,isObscurePasswordConfirm: null == isObscurePasswordConfirm ? _self.isObscurePasswordConfirm : isObscurePasswordConfirm // ignore: cast_nullable_to_non_nullable
 as bool,timerSeconds: null == timerSeconds ? _self.timerSeconds : timerSeconds // ignore: cast_nullable_to_non_nullable
-as int,errorMessage: freezed == errorMessage ? _self.errorMessage : errorMessage // ignore: cast_nullable_to_non_nullable
+as int,timerEndTime: freezed == timerEndTime ? _self.timerEndTime : timerEndTime // ignore: cast_nullable_to_non_nullable
+as DateTime?,errorMessage: freezed == errorMessage ? _self.errorMessage : errorMessage // ignore: cast_nullable_to_non_nullable
 as String?,isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
 as bool,
   ));
@@ -160,10 +161,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( ForgotPasswordStep currentStep,  bool isEmailValid,  bool isCodeVerified,  bool isPasswordValid,  bool isPasswordConfirmed,  bool isObscurePassword,  bool isObscurePasswordConfirm,  int timerSeconds,  String? errorMessage,  bool isLoading)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( ForgotPasswordStep currentStep,  bool isEmailValid,  bool isCodeVerified,  bool isPasswordValid,  bool isPasswordConfirmed,  bool isObscurePassword,  bool isObscurePasswordConfirm,  int timerSeconds,  DateTime? timerEndTime,  String? errorMessage,  bool isLoading)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ForgotPasswordState() when $default != null:
-return $default(_that.currentStep,_that.isEmailValid,_that.isCodeVerified,_that.isPasswordValid,_that.isPasswordConfirmed,_that.isObscurePassword,_that.isObscurePasswordConfirm,_that.timerSeconds,_that.errorMessage,_that.isLoading);case _:
+return $default(_that.currentStep,_that.isEmailValid,_that.isCodeVerified,_that.isPasswordValid,_that.isPasswordConfirmed,_that.isObscurePassword,_that.isObscurePasswordConfirm,_that.timerSeconds,_that.timerEndTime,_that.errorMessage,_that.isLoading);case _:
   return orElse();
 
 }
@@ -181,10 +182,10 @@ return $default(_that.currentStep,_that.isEmailValid,_that.isCodeVerified,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( ForgotPasswordStep currentStep,  bool isEmailValid,  bool isCodeVerified,  bool isPasswordValid,  bool isPasswordConfirmed,  bool isObscurePassword,  bool isObscurePasswordConfirm,  int timerSeconds,  String? errorMessage,  bool isLoading)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( ForgotPasswordStep currentStep,  bool isEmailValid,  bool isCodeVerified,  bool isPasswordValid,  bool isPasswordConfirmed,  bool isObscurePassword,  bool isObscurePasswordConfirm,  int timerSeconds,  DateTime? timerEndTime,  String? errorMessage,  bool isLoading)  $default,) {final _that = this;
 switch (_that) {
 case _ForgotPasswordState():
-return $default(_that.currentStep,_that.isEmailValid,_that.isCodeVerified,_that.isPasswordValid,_that.isPasswordConfirmed,_that.isObscurePassword,_that.isObscurePasswordConfirm,_that.timerSeconds,_that.errorMessage,_that.isLoading);case _:
+return $default(_that.currentStep,_that.isEmailValid,_that.isCodeVerified,_that.isPasswordValid,_that.isPasswordConfirmed,_that.isObscurePassword,_that.isObscurePasswordConfirm,_that.timerSeconds,_that.timerEndTime,_that.errorMessage,_that.isLoading);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -201,10 +202,10 @@ return $default(_that.currentStep,_that.isEmailValid,_that.isCodeVerified,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( ForgotPasswordStep currentStep,  bool isEmailValid,  bool isCodeVerified,  bool isPasswordValid,  bool isPasswordConfirmed,  bool isObscurePassword,  bool isObscurePasswordConfirm,  int timerSeconds,  String? errorMessage,  bool isLoading)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( ForgotPasswordStep currentStep,  bool isEmailValid,  bool isCodeVerified,  bool isPasswordValid,  bool isPasswordConfirmed,  bool isObscurePassword,  bool isObscurePasswordConfirm,  int timerSeconds,  DateTime? timerEndTime,  String? errorMessage,  bool isLoading)?  $default,) {final _that = this;
 switch (_that) {
 case _ForgotPasswordState() when $default != null:
-return $default(_that.currentStep,_that.isEmailValid,_that.isCodeVerified,_that.isPasswordValid,_that.isPasswordConfirmed,_that.isObscurePassword,_that.isObscurePasswordConfirm,_that.timerSeconds,_that.errorMessage,_that.isLoading);case _:
+return $default(_that.currentStep,_that.isEmailValid,_that.isCodeVerified,_that.isPasswordValid,_that.isPasswordConfirmed,_that.isObscurePassword,_that.isObscurePasswordConfirm,_that.timerSeconds,_that.timerEndTime,_that.errorMessage,_that.isLoading);case _:
   return null;
 
 }
@@ -216,7 +217,7 @@ return $default(_that.currentStep,_that.isEmailValid,_that.isCodeVerified,_that.
 
 
 class _ForgotPasswordState implements ForgotPasswordState {
-  const _ForgotPasswordState({this.currentStep = ForgotPasswordStep.enterEmail, this.isEmailValid = false, this.isCodeVerified = false, this.isPasswordValid = false, this.isPasswordConfirmed = false, this.isObscurePassword = true, this.isObscurePasswordConfirm = true, this.timerSeconds = 900, this.errorMessage, this.isLoading = false});
+  const _ForgotPasswordState({this.currentStep = ForgotPasswordStep.enterEmail, this.isEmailValid = false, this.isCodeVerified = false, this.isPasswordValid = false, this.isPasswordConfirmed = false, this.isObscurePassword = true, this.isObscurePasswordConfirm = true, this.timerSeconds = 900, this.timerEndTime, this.errorMessage, this.isLoading = false});
   
 
 @override@JsonKey() final  ForgotPasswordStep currentStep;
@@ -228,6 +229,7 @@ class _ForgotPasswordState implements ForgotPasswordState {
 @override@JsonKey() final  bool isObscurePasswordConfirm;
 @override@JsonKey() final  int timerSeconds;
 // 15분 = 900초
+@override final  DateTime? timerEndTime;
 @override final  String? errorMessage;
 @override@JsonKey() final  bool isLoading;
 
@@ -241,16 +243,16 @@ _$ForgotPasswordStateCopyWith<_ForgotPasswordState> get copyWith => __$ForgotPas
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ForgotPasswordState&&(identical(other.currentStep, currentStep) || other.currentStep == currentStep)&&(identical(other.isEmailValid, isEmailValid) || other.isEmailValid == isEmailValid)&&(identical(other.isCodeVerified, isCodeVerified) || other.isCodeVerified == isCodeVerified)&&(identical(other.isPasswordValid, isPasswordValid) || other.isPasswordValid == isPasswordValid)&&(identical(other.isPasswordConfirmed, isPasswordConfirmed) || other.isPasswordConfirmed == isPasswordConfirmed)&&(identical(other.isObscurePassword, isObscurePassword) || other.isObscurePassword == isObscurePassword)&&(identical(other.isObscurePasswordConfirm, isObscurePasswordConfirm) || other.isObscurePasswordConfirm == isObscurePasswordConfirm)&&(identical(other.timerSeconds, timerSeconds) || other.timerSeconds == timerSeconds)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ForgotPasswordState&&(identical(other.currentStep, currentStep) || other.currentStep == currentStep)&&(identical(other.isEmailValid, isEmailValid) || other.isEmailValid == isEmailValid)&&(identical(other.isCodeVerified, isCodeVerified) || other.isCodeVerified == isCodeVerified)&&(identical(other.isPasswordValid, isPasswordValid) || other.isPasswordValid == isPasswordValid)&&(identical(other.isPasswordConfirmed, isPasswordConfirmed) || other.isPasswordConfirmed == isPasswordConfirmed)&&(identical(other.isObscurePassword, isObscurePassword) || other.isObscurePassword == isObscurePassword)&&(identical(other.isObscurePasswordConfirm, isObscurePasswordConfirm) || other.isObscurePasswordConfirm == isObscurePasswordConfirm)&&(identical(other.timerSeconds, timerSeconds) || other.timerSeconds == timerSeconds)&&(identical(other.timerEndTime, timerEndTime) || other.timerEndTime == timerEndTime)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,currentStep,isEmailValid,isCodeVerified,isPasswordValid,isPasswordConfirmed,isObscurePassword,isObscurePasswordConfirm,timerSeconds,errorMessage,isLoading);
+int get hashCode => Object.hash(runtimeType,currentStep,isEmailValid,isCodeVerified,isPasswordValid,isPasswordConfirmed,isObscurePassword,isObscurePasswordConfirm,timerSeconds,timerEndTime,errorMessage,isLoading);
 
 @override
 String toString() {
-  return 'ForgotPasswordState(currentStep: $currentStep, isEmailValid: $isEmailValid, isCodeVerified: $isCodeVerified, isPasswordValid: $isPasswordValid, isPasswordConfirmed: $isPasswordConfirmed, isObscurePassword: $isObscurePassword, isObscurePasswordConfirm: $isObscurePasswordConfirm, timerSeconds: $timerSeconds, errorMessage: $errorMessage, isLoading: $isLoading)';
+  return 'ForgotPasswordState(currentStep: $currentStep, isEmailValid: $isEmailValid, isCodeVerified: $isCodeVerified, isPasswordValid: $isPasswordValid, isPasswordConfirmed: $isPasswordConfirmed, isObscurePassword: $isObscurePassword, isObscurePasswordConfirm: $isObscurePasswordConfirm, timerSeconds: $timerSeconds, timerEndTime: $timerEndTime, errorMessage: $errorMessage, isLoading: $isLoading)';
 }
 
 
@@ -261,7 +263,7 @@ abstract mixin class _$ForgotPasswordStateCopyWith<$Res> implements $ForgotPassw
   factory _$ForgotPasswordStateCopyWith(_ForgotPasswordState value, $Res Function(_ForgotPasswordState) _then) = __$ForgotPasswordStateCopyWithImpl;
 @override @useResult
 $Res call({
- ForgotPasswordStep currentStep, bool isEmailValid, bool isCodeVerified, bool isPasswordValid, bool isPasswordConfirmed, bool isObscurePassword, bool isObscurePasswordConfirm, int timerSeconds, String? errorMessage, bool isLoading
+ ForgotPasswordStep currentStep, bool isEmailValid, bool isCodeVerified, bool isPasswordValid, bool isPasswordConfirmed, bool isObscurePassword, bool isObscurePasswordConfirm, int timerSeconds, DateTime? timerEndTime, String? errorMessage, bool isLoading
 });
 
 
@@ -278,7 +280,7 @@ class __$ForgotPasswordStateCopyWithImpl<$Res>
 
 /// Create a copy of ForgotPasswordState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? currentStep = null,Object? isEmailValid = null,Object? isCodeVerified = null,Object? isPasswordValid = null,Object? isPasswordConfirmed = null,Object? isObscurePassword = null,Object? isObscurePasswordConfirm = null,Object? timerSeconds = null,Object? errorMessage = freezed,Object? isLoading = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? currentStep = null,Object? isEmailValid = null,Object? isCodeVerified = null,Object? isPasswordValid = null,Object? isPasswordConfirmed = null,Object? isObscurePassword = null,Object? isObscurePasswordConfirm = null,Object? timerSeconds = null,Object? timerEndTime = freezed,Object? errorMessage = freezed,Object? isLoading = null,}) {
   return _then(_ForgotPasswordState(
 currentStep: null == currentStep ? _self.currentStep : currentStep // ignore: cast_nullable_to_non_nullable
 as ForgotPasswordStep,isEmailValid: null == isEmailValid ? _self.isEmailValid : isEmailValid // ignore: cast_nullable_to_non_nullable
@@ -288,7 +290,8 @@ as bool,isPasswordConfirmed: null == isPasswordConfirmed ? _self.isPasswordConfi
 as bool,isObscurePassword: null == isObscurePassword ? _self.isObscurePassword : isObscurePassword // ignore: cast_nullable_to_non_nullable
 as bool,isObscurePasswordConfirm: null == isObscurePasswordConfirm ? _self.isObscurePasswordConfirm : isObscurePasswordConfirm // ignore: cast_nullable_to_non_nullable
 as bool,timerSeconds: null == timerSeconds ? _self.timerSeconds : timerSeconds // ignore: cast_nullable_to_non_nullable
-as int,errorMessage: freezed == errorMessage ? _self.errorMessage : errorMessage // ignore: cast_nullable_to_non_nullable
+as int,timerEndTime: freezed == timerEndTime ? _self.timerEndTime : timerEndTime // ignore: cast_nullable_to_non_nullable
+as DateTime?,errorMessage: freezed == errorMessage ? _self.errorMessage : errorMessage // ignore: cast_nullable_to_non_nullable
 as String?,isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
 as bool,
   ));

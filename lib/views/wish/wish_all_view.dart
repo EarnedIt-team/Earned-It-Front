@@ -107,6 +107,7 @@ class AllWishlistItem extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final currencyFormat = NumberFormat.decimalPattern('ko_KR');
+    final wishState = ref.watch(wishViewModelProvider);
 
     return Card(
       color:
@@ -133,17 +134,20 @@ class AllWishlistItem extends ConsumerWidget {
                 icon: Icons.check,
                 label: '구매',
               ),
-              SlidableAction(
-                onPressed: (context) {
-                  ref
-                      .read(wishViewModelProvider.notifier)
-                      .editStarWishItem(context, item.wishId);
-                },
-                backgroundColor: Colors.orangeAccent,
-                foregroundColor: Colors.white,
-                icon: Icons.star,
-                label: "Star",
-              ),
+              (wishState.starWishes.length < 5 && !item.starred) ||
+                      (wishState.starWishes.length <= 5 && item.starred)
+                  ? SlidableAction(
+                    onPressed: (context) {
+                      ref
+                          .read(wishViewModelProvider.notifier)
+                          .editStarWishItem(context, item.wishId);
+                    },
+                    backgroundColor: Colors.orangeAccent,
+                    foregroundColor: Colors.white,
+                    icon: Icons.star,
+                    label: "Star",
+                  )
+                  : const SizedBox.shrink(),
             ],
           ),
           endActionPane: ActionPane(

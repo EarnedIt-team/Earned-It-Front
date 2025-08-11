@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:earned_it/config/design.dart';
 import 'package:earned_it/models/wish/wish_model.dart';
 import 'package:earned_it/view_models/wish/wish_edit_provider.dart';
+import 'package:earned_it/view_models/wish/wish_provider.dart';
 import 'package:earned_it/views/loading_overlay_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -64,6 +65,7 @@ class _WishEditViewState extends ConsumerState<WishEditView> {
 
   @override
   Widget build(BuildContext context) {
+    final wishState = ref.watch(wishViewModelProvider);
     final wishEditState = ref.watch(wishEditViewModelProvider);
     final wishEditNotifier = ref.read(wishEditViewModelProvider.notifier);
 
@@ -195,18 +197,31 @@ class _WishEditViewState extends ConsumerState<WishEditView> {
                       keyboardType: TextInputType.url,
                     ),
                     const SizedBox(height: 24),
-                    CheckboxListTile(
-                      title: const Text(
-                        "TOP5에 등록하기",
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      subtitle: const Text("나의 대표 위시 아이템으로 등록합니다."),
-                      value: wishEditState.isTop5,
-                      onChanged: wishEditNotifier.toggleIsTop5,
-                      activeColor: primaryColor,
-                      controlAffinity: ListTileControlAffinity.leading,
-                      contentPadding: EdgeInsets.zero,
-                    ),
+                    wishState.starWishes.length <= 5 && wishEditState.isTop5
+                        ? CheckboxListTile(
+                          title: const Text(
+                            "TOP5에 등록하기",
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          subtitle: const Text("나의 대표 위시 아이템으로 등록합니다."),
+                          value: wishEditState.isTop5,
+                          onChanged: wishEditNotifier.toggleIsTop5,
+                          activeColor: primaryColor,
+                          controlAffinity: ListTileControlAffinity.leading,
+                          contentPadding: EdgeInsets.zero,
+                        )
+                        : SizedBox(
+                          width: double.infinity,
+                          child: Text(
+                            "* Star 위시리스트는 최대 5개만 가능합니다.",
+                            style: TextStyle(
+                              fontSize: context.width(0.035),
+                              fontWeight: FontWeight.bold,
+                              color: Colors.deepOrange,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
                   ],
                 ),
               ),

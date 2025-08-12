@@ -214,8 +214,7 @@ class _WishSearchViewState extends ConsumerState<WishSearchView> {
         label: Text(label),
         selected: isSelected,
         onSelected: (_) => onPressed(),
-        selectedColor: Theme.of(context).colorScheme.primary.withOpacity(0.2),
-        checkmarkColor: Theme.of(context).colorScheme.primary,
+        selectedColor: primaryGradientStart,
       ),
     );
   }
@@ -250,109 +249,9 @@ class _AllWishlistItem extends ConsumerWidget {
       child: ClipRRect(
         child: Slidable(
           key: ValueKey(item.wishId),
-          // startActionPane: ActionPane(
-          //   motion: const DrawerMotion(),
-          //   extentRatio: 0.5,
-          //   children: <Widget>[
-          //     CustomSlidableAction(
-          //       onPressed: (context) {
-          //         ref
-          //             .read(wishViewModelProvider.notifier)
-          //             .editBoughtWishItem(context, item.wishId);
-          //       },
-          //       backgroundColor: primaryGradientStart,
-          //       // 👇 2. child 속성을 사용하여 위젯을 직접 구성합니다.
-          //       child: Column(
-          //         mainAxisAlignment: MainAxisAlignment.center,
-          //         children: [
-          //           Icon(
-          //             item.bought ? Icons.check : Icons.shopping_cart_outlined,
-          //             size: context.width(0.08),
-          //             color: Colors.white,
-          //           ),
-          //         ],
-          //       ),
-          //     ),
-          //     if ((wishState.starWishes.length < 5 && !item.starred) ||
-          //         (wishState.starWishes.length <= 5 && item.starred))
-          //       CustomSlidableAction(
-          //         onPressed: (context) {
-          //           ref
-          //               .read(wishViewModelProvider.notifier)
-          //               .editStarWishItem(context, item.wishId);
-          //         },
-          //         backgroundColor: const Color.fromARGB(255, 231, 127, 111),
-          //         // 👇 2. child 속성을 사용하여 위젯을 직접 구성합니다.
-          //         child: Column(
-          //           mainAxisAlignment: MainAxisAlignment.center,
-          //           children: [
-          //             Icon(
-          //               item.starred ? Icons.star : Icons.star_outline,
-          //               size: context.width(0.08),
-          //               color: Colors.white,
-          //             ),
-          //           ],
-          //         ),
-          //       ),
-          //   ],
-          // ),
-          // endActionPane: ActionPane(
-          //   motion: const DrawerMotion(),
-          //   extentRatio: 0.5,
-          //   children: <Widget>[
-          //     CustomSlidableAction(
-          //       onPressed: (context) => context.push('/editWish', extra: item),
-          //       backgroundColor: Colors.grey.shade600,
-          //       foregroundColor: Colors.white,
-          //       // 👇 2. child 속성을 사용하여 위젯을 직접 구성합니다.
-          //       child: Text(
-          //         "수정",
-          //         style: TextStyle(fontSize: context.width(0.04)),
-          //       ),
-          //     ),
-
-          //     CustomSlidableAction(
-          //       onPressed: (context) {
-          //         showDialog(
-          //           context: context,
-          //           builder:
-          //               (ctx) => AlertDialog(
-          //                 title: const Text('삭제 확인'),
-          //                 content: Text("'${item.name}' 항목을 정말로 삭제하시겠습니까?"),
-          //                 actions: [
-          //                   TextButton(
-          //                     child: const Text('취소'),
-          //                     onPressed: () => Navigator.of(ctx).pop(),
-          //                   ),
-          //                   TextButton(
-          //                     child: const Text(
-          //                       '삭제',
-          //                       style: TextStyle(color: Colors.red),
-          //                     ),
-          //                     onPressed: () {
-          //                       ref
-          //                           .read(wishViewModelProvider.notifier)
-          //                           .deleteWishItem(context, item.wishId);
-          //                       Navigator.of(ctx).pop();
-          //                     },
-          //                   ),
-          //                 ],
-          //               ),
-          //         );
-          //       },
-          //       backgroundColor: const Color(0xFFFE4A49),
-          //       foregroundColor: Colors.white,
-          //       // 👇 2. child 속성을 사용하여 위젯을 직접 구성합니다.
-          //       child: Text(
-          //         "삭제",
-          //         style: TextStyle(fontSize: context.width(0.04)),
-          //       ),
-          //     ),
-          //   ],
-          // ),
           child: InkWell(
             onTap: () {
-              /* 상세 페이지 이동 등 */
+              context.push('/wishDetail', extra: item);
             },
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: context.middlePadding),
@@ -388,59 +287,65 @@ class _AllWishlistItem extends ConsumerWidget {
                   ),
                   const SizedBox(width: 16),
                   Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Row(
-                          children: [
-                            Text(
-                              item.vendor,
-                              style: TextStyle(
-                                color: Colors.grey,
-                                fontSize: context.width(0.032),
-                                height: 1,
+                    child: Padding(
+                      padding: EdgeInsets.only(right: context.width(0.05)),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Row(
+                            children: [
+                              Text(
+                                item.vendor,
+                                style: TextStyle(
+                                  color: Colors.grey,
+                                  fontSize: context.width(0.032),
+                                  height: 1,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                               ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            const SizedBox(width: 5),
-                            if (item.bought)
-                              Icon(
-                                Icons.check,
-                                size: context.width(0.04),
-                                color: Colors.lightBlue,
-                              ),
-                            if (item.starred)
-                              Icon(
-                                Icons.star_rounded,
-                                size: context.width(0.04),
-                                color: Colors.amber,
-                              ),
-                          ],
-                        ),
+                              const SizedBox(width: 5),
+                              if (item.bought)
+                                Icon(
+                                  Icons.check,
+                                  size: context.width(0.04),
+                                  color: Colors.lightBlue,
+                                ),
+                              if (item.starred)
+                                Icon(
+                                  Icons.star_rounded,
+                                  size: context.width(0.04),
+                                  color: Colors.amber,
+                                ),
+                            ],
+                          ),
 
-                        Text(
-                          item.name,
-                          style: TextStyle(
-                            color:
-                                Theme.of(context).brightness == Brightness.dark
-                                    ? Colors.white
-                                    : const Color.fromARGB(255, 44, 44, 44),
-                            fontWeight: FontWeight.w600,
-                            fontSize: context.width(0.04),
-                            height: 1.5,
+                          Text(
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            item.name,
+                            style: TextStyle(
+                              color:
+                                  Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? Colors.white
+                                      : const Color.fromARGB(255, 44, 44, 44),
+                              fontWeight: FontWeight.w600,
+                              fontSize: context.width(0.04),
+                              height: 1.5,
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 5),
-                        Text(
-                          '${currencyFormat.format(item.price)} 원',
-                          style: TextStyle(
-                            fontSize: context.width(0.04),
-                            color: Colors.grey,
+                          const SizedBox(height: 5),
+                          Text(
+                            '${currencyFormat.format(item.price)} 원',
+                            style: TextStyle(
+                              fontSize: context.width(0.04),
+                              color: Colors.grey,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ],

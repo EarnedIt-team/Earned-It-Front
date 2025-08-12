@@ -560,7 +560,7 @@ class _WishlistItem extends ConsumerWidget {
                   : null,
           child: InkWell(
             onTap: () {
-              /* 상세 페이지 이동 등 */
+              context.push('/wishDetail', extra: item);
             },
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: context.middlePadding),
@@ -596,84 +596,90 @@ class _WishlistItem extends ConsumerWidget {
                   ),
                   const SizedBox(width: 16),
                   Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Row(
-                          children: [
-                            Text(
-                              item.vendor,
-                              style: TextStyle(
-                                color: Colors.grey,
-                                fontSize: context.width(0.032),
-                                height: 1,
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            const SizedBox(width: 5),
-                            if (item.bought)
-                              Icon(
-                                Icons.check,
-                                size: context.width(0.04),
-                                color: Colors.lightBlue,
-                              ),
-                            if (item.starred)
-                              Icon(
-                                Icons.star_rounded,
-                                size: context.width(0.04),
-                                color: Colors.amber,
-                              ),
-                          ],
-                        ),
-
-                        Text(
-                          item.name,
-                          style: TextStyle(
-                            color:
-                                Theme.of(context).brightness == Brightness.dark
-                                    ? Colors.white
-                                    : const Color.fromARGB(255, 44, 44, 44),
-                            fontWeight: FontWeight.w600,
-                            fontSize: context.width(0.04),
-                            height: 1.5,
-                          ),
-                        ),
-                        const SizedBox(height: 5),
-                        if (isStar)
+                    child: Padding(
+                      padding: EdgeInsets.only(right: context.width(0.05)),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
                           Row(
-                            crossAxisAlignment: CrossAxisAlignment.baseline,
-                            textBaseline: TextBaseline.alphabetic,
                             children: [
                               Text(
-                                '${currencyFormat.format(itemDisplayAmount.toInt())} 원',
+                                item.vendor,
                                 style: TextStyle(
-                                  color: progressColor,
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: context.width(0.04),
-                                  height: 1.5,
-                                ),
-                              ),
-                              Text(
-                                ' / ${currencyFormat.format(item.price)} 원',
-                                style: TextStyle(
-                                  fontSize: context.width(0.03),
                                   color: Colors.grey,
-                                  height: 1.5,
+                                  fontSize: context.width(0.032),
+                                  height: 1,
                                 ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                               ),
+                              const SizedBox(width: 5),
+                              if (item.bought)
+                                Icon(
+                                  Icons.check,
+                                  size: context.width(0.04),
+                                  color: Colors.lightBlue,
+                                ),
+                              if (item.starred)
+                                Icon(
+                                  Icons.star_rounded,
+                                  size: context.width(0.04),
+                                  color: Colors.amber,
+                                ),
                             ],
-                          )
-                        else
+                          ),
+
                           Text(
-                            '${currencyFormat.format(item.price)} 원',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            item.name,
                             style: TextStyle(
+                              color:
+                                  Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? Colors.white
+                                      : const Color.fromARGB(255, 44, 44, 44),
+                              fontWeight: FontWeight.w600,
                               fontSize: context.width(0.04),
-                              color: Colors.grey,
+                              height: 1.5,
                             ),
                           ),
-                      ],
+                          const SizedBox(height: 5),
+                          if (isStar)
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.baseline,
+                              textBaseline: TextBaseline.alphabetic,
+                              children: [
+                                Text(
+                                  '${currencyFormat.format(itemDisplayAmount.toInt())} 원',
+                                  style: TextStyle(
+                                    color: progressColor,
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: context.width(0.04),
+                                    height: 1.5,
+                                  ),
+                                ),
+                                Text(
+                                  ' / ${currencyFormat.format(item.price)} 원',
+                                  style: TextStyle(
+                                    fontSize: context.width(0.03),
+                                    color: Colors.grey,
+                                    height: 1.5,
+                                  ),
+                                ),
+                              ],
+                            )
+                          else
+                            Text(
+                              '${currencyFormat.format(item.price)} 원',
+                              style: TextStyle(
+                                fontSize: context.width(0.04),
+                                color: Colors.grey,
+                              ),
+                            ),
+                        ],
+                      ),
                     ),
                   ),
                   if (isStar)

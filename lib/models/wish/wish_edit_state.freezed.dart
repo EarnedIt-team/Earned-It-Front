@@ -16,7 +16,7 @@ mixin _$WishEditState {
 
  WishModel? get initialWish;// 수정 전 원본 데이터
  XFile? get imageForUpload;// 새로 선택했거나, 기존 이미지를 다운로드한 파일
- bool get isTop5; bool get canSubmit; bool get isLoading;
+ bool get isTop5; bool get canSubmit; String get priceError; bool get isLoading;
 /// Create a copy of WishEditState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -27,16 +27,16 @@ $WishEditStateCopyWith<WishEditState> get copyWith => _$WishEditStateCopyWithImp
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is WishEditState&&(identical(other.initialWish, initialWish) || other.initialWish == initialWish)&&(identical(other.imageForUpload, imageForUpload) || other.imageForUpload == imageForUpload)&&(identical(other.isTop5, isTop5) || other.isTop5 == isTop5)&&(identical(other.canSubmit, canSubmit) || other.canSubmit == canSubmit)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is WishEditState&&(identical(other.initialWish, initialWish) || other.initialWish == initialWish)&&(identical(other.imageForUpload, imageForUpload) || other.imageForUpload == imageForUpload)&&(identical(other.isTop5, isTop5) || other.isTop5 == isTop5)&&(identical(other.canSubmit, canSubmit) || other.canSubmit == canSubmit)&&(identical(other.priceError, priceError) || other.priceError == priceError)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,initialWish,imageForUpload,isTop5,canSubmit,isLoading);
+int get hashCode => Object.hash(runtimeType,initialWish,imageForUpload,isTop5,canSubmit,priceError,isLoading);
 
 @override
 String toString() {
-  return 'WishEditState(initialWish: $initialWish, imageForUpload: $imageForUpload, isTop5: $isTop5, canSubmit: $canSubmit, isLoading: $isLoading)';
+  return 'WishEditState(initialWish: $initialWish, imageForUpload: $imageForUpload, isTop5: $isTop5, canSubmit: $canSubmit, priceError: $priceError, isLoading: $isLoading)';
 }
 
 
@@ -47,7 +47,7 @@ abstract mixin class $WishEditStateCopyWith<$Res>  {
   factory $WishEditStateCopyWith(WishEditState value, $Res Function(WishEditState) _then) = _$WishEditStateCopyWithImpl;
 @useResult
 $Res call({
- WishModel? initialWish, XFile? imageForUpload, bool isTop5, bool canSubmit, bool isLoading
+ WishModel? initialWish, XFile? imageForUpload, bool isTop5, bool canSubmit, String priceError, bool isLoading
 });
 
 
@@ -64,13 +64,14 @@ class _$WishEditStateCopyWithImpl<$Res>
 
 /// Create a copy of WishEditState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? initialWish = freezed,Object? imageForUpload = freezed,Object? isTop5 = null,Object? canSubmit = null,Object? isLoading = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? initialWish = freezed,Object? imageForUpload = freezed,Object? isTop5 = null,Object? canSubmit = null,Object? priceError = null,Object? isLoading = null,}) {
   return _then(_self.copyWith(
 initialWish: freezed == initialWish ? _self.initialWish : initialWish // ignore: cast_nullable_to_non_nullable
 as WishModel?,imageForUpload: freezed == imageForUpload ? _self.imageForUpload : imageForUpload // ignore: cast_nullable_to_non_nullable
 as XFile?,isTop5: null == isTop5 ? _self.isTop5 : isTop5 // ignore: cast_nullable_to_non_nullable
 as bool,canSubmit: null == canSubmit ? _self.canSubmit : canSubmit // ignore: cast_nullable_to_non_nullable
-as bool,isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
+as bool,priceError: null == priceError ? _self.priceError : priceError // ignore: cast_nullable_to_non_nullable
+as String,isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
 as bool,
   ));
 }
@@ -168,10 +169,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( WishModel? initialWish,  XFile? imageForUpload,  bool isTop5,  bool canSubmit,  bool isLoading)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( WishModel? initialWish,  XFile? imageForUpload,  bool isTop5,  bool canSubmit,  String priceError,  bool isLoading)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _WishEditState() when $default != null:
-return $default(_that.initialWish,_that.imageForUpload,_that.isTop5,_that.canSubmit,_that.isLoading);case _:
+return $default(_that.initialWish,_that.imageForUpload,_that.isTop5,_that.canSubmit,_that.priceError,_that.isLoading);case _:
   return orElse();
 
 }
@@ -189,10 +190,10 @@ return $default(_that.initialWish,_that.imageForUpload,_that.isTop5,_that.canSub
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( WishModel? initialWish,  XFile? imageForUpload,  bool isTop5,  bool canSubmit,  bool isLoading)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( WishModel? initialWish,  XFile? imageForUpload,  bool isTop5,  bool canSubmit,  String priceError,  bool isLoading)  $default,) {final _that = this;
 switch (_that) {
 case _WishEditState():
-return $default(_that.initialWish,_that.imageForUpload,_that.isTop5,_that.canSubmit,_that.isLoading);case _:
+return $default(_that.initialWish,_that.imageForUpload,_that.isTop5,_that.canSubmit,_that.priceError,_that.isLoading);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -209,10 +210,10 @@ return $default(_that.initialWish,_that.imageForUpload,_that.isTop5,_that.canSub
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( WishModel? initialWish,  XFile? imageForUpload,  bool isTop5,  bool canSubmit,  bool isLoading)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( WishModel? initialWish,  XFile? imageForUpload,  bool isTop5,  bool canSubmit,  String priceError,  bool isLoading)?  $default,) {final _that = this;
 switch (_that) {
 case _WishEditState() when $default != null:
-return $default(_that.initialWish,_that.imageForUpload,_that.isTop5,_that.canSubmit,_that.isLoading);case _:
+return $default(_that.initialWish,_that.imageForUpload,_that.isTop5,_that.canSubmit,_that.priceError,_that.isLoading);case _:
   return null;
 
 }
@@ -224,7 +225,7 @@ return $default(_that.initialWish,_that.imageForUpload,_that.isTop5,_that.canSub
 
 
 class _WishEditState implements WishEditState {
-  const _WishEditState({this.initialWish, this.imageForUpload, this.isTop5 = false, this.canSubmit = false, this.isLoading = false});
+  const _WishEditState({this.initialWish, this.imageForUpload, this.isTop5 = false, this.canSubmit = false, this.priceError = "", this.isLoading = false});
   
 
 @override final  WishModel? initialWish;
@@ -233,6 +234,7 @@ class _WishEditState implements WishEditState {
 // 새로 선택했거나, 기존 이미지를 다운로드한 파일
 @override@JsonKey() final  bool isTop5;
 @override@JsonKey() final  bool canSubmit;
+@override@JsonKey() final  String priceError;
 @override@JsonKey() final  bool isLoading;
 
 /// Create a copy of WishEditState
@@ -245,16 +247,16 @@ _$WishEditStateCopyWith<_WishEditState> get copyWith => __$WishEditStateCopyWith
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _WishEditState&&(identical(other.initialWish, initialWish) || other.initialWish == initialWish)&&(identical(other.imageForUpload, imageForUpload) || other.imageForUpload == imageForUpload)&&(identical(other.isTop5, isTop5) || other.isTop5 == isTop5)&&(identical(other.canSubmit, canSubmit) || other.canSubmit == canSubmit)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _WishEditState&&(identical(other.initialWish, initialWish) || other.initialWish == initialWish)&&(identical(other.imageForUpload, imageForUpload) || other.imageForUpload == imageForUpload)&&(identical(other.isTop5, isTop5) || other.isTop5 == isTop5)&&(identical(other.canSubmit, canSubmit) || other.canSubmit == canSubmit)&&(identical(other.priceError, priceError) || other.priceError == priceError)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,initialWish,imageForUpload,isTop5,canSubmit,isLoading);
+int get hashCode => Object.hash(runtimeType,initialWish,imageForUpload,isTop5,canSubmit,priceError,isLoading);
 
 @override
 String toString() {
-  return 'WishEditState(initialWish: $initialWish, imageForUpload: $imageForUpload, isTop5: $isTop5, canSubmit: $canSubmit, isLoading: $isLoading)';
+  return 'WishEditState(initialWish: $initialWish, imageForUpload: $imageForUpload, isTop5: $isTop5, canSubmit: $canSubmit, priceError: $priceError, isLoading: $isLoading)';
 }
 
 
@@ -265,7 +267,7 @@ abstract mixin class _$WishEditStateCopyWith<$Res> implements $WishEditStateCopy
   factory _$WishEditStateCopyWith(_WishEditState value, $Res Function(_WishEditState) _then) = __$WishEditStateCopyWithImpl;
 @override @useResult
 $Res call({
- WishModel? initialWish, XFile? imageForUpload, bool isTop5, bool canSubmit, bool isLoading
+ WishModel? initialWish, XFile? imageForUpload, bool isTop5, bool canSubmit, String priceError, bool isLoading
 });
 
 
@@ -282,13 +284,14 @@ class __$WishEditStateCopyWithImpl<$Res>
 
 /// Create a copy of WishEditState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? initialWish = freezed,Object? imageForUpload = freezed,Object? isTop5 = null,Object? canSubmit = null,Object? isLoading = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? initialWish = freezed,Object? imageForUpload = freezed,Object? isTop5 = null,Object? canSubmit = null,Object? priceError = null,Object? isLoading = null,}) {
   return _then(_WishEditState(
 initialWish: freezed == initialWish ? _self.initialWish : initialWish // ignore: cast_nullable_to_non_nullable
 as WishModel?,imageForUpload: freezed == imageForUpload ? _self.imageForUpload : imageForUpload // ignore: cast_nullable_to_non_nullable
 as XFile?,isTop5: null == isTop5 ? _self.isTop5 : isTop5 // ignore: cast_nullable_to_non_nullable
 as bool,canSubmit: null == canSubmit ? _self.canSubmit : canSubmit // ignore: cast_nullable_to_non_nullable
-as bool,isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
+as bool,priceError: null == priceError ? _self.priceError : priceError // ignore: cast_nullable_to_non_nullable
+as String,isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
 as bool,
   ));
 }

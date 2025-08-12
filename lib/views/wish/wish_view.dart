@@ -443,7 +443,7 @@ class _WishlistItem extends ConsumerWidget {
       color:
           Theme.of(context).brightness == Brightness.dark
               ? Colors.transparent
-              : Colors.white,
+              : lightColor,
       margin: EdgeInsets.symmetric(vertical: context.height(0.005)),
       elevation: 0,
       child: ClipRRect(

@@ -1,10 +1,12 @@
 import 'package:dio/dio.dart';
 import 'package:earned_it/config/exception.dart';
+import 'package:earned_it/models/wish/wish_filter_state.dart';
 import 'package:earned_it/models/wish/wish_model.dart';
 import 'package:earned_it/models/wish/wish_state.dart';
 import 'package:earned_it/services/auth/login_service.dart';
 import 'package:earned_it/services/wish_service.dart';
 import 'package:earned_it/view_models/user_provider.dart';
+import 'package:earned_it/view_models/wish/wish_filter_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -94,31 +96,54 @@ class WishViewModel extends Notifier<WishState> {
     }
   }
 
-  /// 사용자의 전체 위시리스트를 불러옵니다.
-  Future<void> loadAllWish() async {
-    try {
-      final String? accessToken = await _storage.read(key: 'accessToken');
+  /// 사용자의 전체 위시리스트를 페이지네이션으로 불러옵니다.
+  Future<void> fetchMoreWishes(BuildContext context) async {
+    if (state.isLoading || !state.hasMore) return;
 
-      final wishService = ref.read(wishServiceProvider);
-      final response = await wishService.getWishList(
-        accessToken: accessToken!,
-        page: 0,
-        size: 20,
-        sort: "name,asc",
+    // 현재 필터 상태를 읽어옴
+    final filterState = ref.read(wishFilterViewModelProvider);
+    state = state.copyWith(isLoading: true);
+
+    try {
+      final accessToken = await _storage.read(key: 'accessToken');
+      if (accessToken == null) throw Exception("로그인이 필요합니다.");
+
+      final response = await _wishService.getWishList(
+        accessToken: accessToken,
+        page: state.page,
+        size: 10, // 한 번에 불러올 개수
+        sort: filterState.sortParameter, // 필터 상태에서 정렬 파라미터 사용
       );
 
-      final List<dynamic> rawAllWishes = response.data["content"];
+      final responseData = response.data;
+      final List<dynamic> rawAllWishes = responseData["content"] ?? [];
+      final bool isLastPage = responseData["last"] as bool? ?? true;
 
-      final List<WishModel> allWishList =
+      final List<WishModel> newWishes =
           rawAllWishes
               .map((json) => WishModel.fromJson(json as Map<String, dynamic>))
               .toList();
 
-      state = state.copyWith(totalWishes: allWishList);
-      print("저장 완료");
+      state = state.copyWith(
+        totalWishes: [...state.totalWishes, ...newWishes],
+        page: state.page + 1,
+        hasMore: !isLastPage,
+      );
+    } on DioException catch (e) {
+      if (context.mounted) _handleApiError(context, e);
     } catch (e) {
-      print("유저 정보 불러오기 에러 $e");
+      if (context.mounted) _handleGeneralError(context, e);
+    } finally {
+      state = state.copyWith(isLoading: false);
     }
+  }
+
+  /// (핵심 수정) 페이지를 새로고침하거나 처음 로드할 때 관련 상태만 초기화합니다.
+  void resetAndFetchWishes(BuildContext context) {
+    // totalWishes, page, hasMore만 초기값으로 리셋합니다.
+    state = state.copyWith(totalWishes: <WishModel>[], page: 0, hasMore: true);
+    // 초기화 후 첫 페이지 데이터를 불러옵니다.
+    fetchMoreWishes(context);
   }
 
   /// 위시리스트 아이템 삭제 로직

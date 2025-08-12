@@ -116,7 +116,7 @@ class _WishEditViewState extends ConsumerState<WishEditView> {
                                 wishEditState.imageForUpload != null
                                     ? Image.file(
                                       File(wishEditState.imageForUpload!.path),
-                                      fit: BoxFit.cover,
+                                      fit: BoxFit.contain,
                                     )
                                     : (wishEditState
                                             .initialWish
@@ -155,24 +155,15 @@ class _WishEditViewState extends ConsumerState<WishEditView> {
                       ),
                     ),
                     const SizedBox(height: 24),
-                    const Text(
-                      "회사",
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    TextField(
-                      textAlign: TextAlign.end,
-                      controller: wishEditNotifier.vendorController,
-                      decoration: const InputDecoration(
-                        hintText: '브랜드나 제조사를 입력하세요.',
-                        hintStyle: TextStyle(color: Colors.grey),
+                    Text(
+                      "이름",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: context.width(0.04),
                       ),
                     ),
-                    const SizedBox(height: 24),
-                    const Text(
-                      "이름",
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
                     TextField(
+                      maxLength: 20,
                       textAlign: TextAlign.end,
                       controller: wishEditNotifier.nameController,
                       decoration: const InputDecoration(
@@ -181,11 +172,15 @@ class _WishEditViewState extends ConsumerState<WishEditView> {
                       ),
                     ),
                     const SizedBox(height: 24),
-                    const Text(
+                    Text(
                       "금액",
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: context.width(0.04),
+                      ),
                     ),
                     TextField(
+                      maxLength: 12,
                       textAlign: TextAlign.end,
                       controller: wishEditNotifier.priceController,
                       keyboardType: TextInputType.number,
@@ -206,12 +201,37 @@ class _WishEditViewState extends ConsumerState<WishEditView> {
                                   ? Colors.white
                                   : Colors.black,
                         ),
+                        errorText:
+                            wishEditNotifier.priceController.text.isNotEmpty &&
+                                    !wishEditState.canSubmit
+                                ? wishEditState.priceError
+                                : null,
                       ),
                     ),
                     const SizedBox(height: 24),
-                    const Text(
+                    Text(
+                      "회사",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: context.width(0.04),
+                      ),
+                    ),
+                    TextField(
+                      maxLength: 12,
+                      textAlign: TextAlign.end,
+                      controller: wishEditNotifier.vendorController,
+                      decoration: const InputDecoration(
+                        hintText: '브랜드나 제조사를 입력하세요.',
+                        hintStyle: TextStyle(color: Colors.grey),
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    Text(
                       "구매 링크 (선택)",
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: context.width(0.04),
+                      ),
                     ),
                     TextField(
                       textAlign: TextAlign.end,
@@ -232,7 +252,8 @@ class _WishEditViewState extends ConsumerState<WishEditView> {
                       textAlign: TextAlign.start,
                     ),
                     SizedBox(height: context.height(0.01)),
-                    wishState.starWishes.length <= 5 && wishEditState.isTop5
+                    (wishState.starWishes.length < 5) ||
+                            (widget.wishItem.starred)
                         ? CheckboxListTile(
                           title: const Text(
                             "TOP5에 등록하기",
@@ -241,7 +262,7 @@ class _WishEditViewState extends ConsumerState<WishEditView> {
                           subtitle: const Text("나의 대표 위시 아이템으로 등록합니다."),
                           value: wishEditState.isTop5,
                           onChanged: wishEditNotifier.toggleIsTop5,
-                          activeColor: primaryColor,
+                          activeColor: primaryGradientStart,
                           controlAffinity: ListTileControlAffinity.leading,
                           contentPadding: EdgeInsets.zero,
                         )
@@ -271,7 +292,7 @@ class _WishEditViewState extends ConsumerState<WishEditView> {
                   height: context.height(0.06),
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: primaryColor,
+                      backgroundColor: primaryGradientEnd,
                     ),
                     onPressed:
                         wishEditState.canSubmit

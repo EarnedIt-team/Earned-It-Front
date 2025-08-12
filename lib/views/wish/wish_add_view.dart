@@ -37,6 +37,9 @@ class WishAddView extends ConsumerWidget {
     final wishAddState = ref.watch(wishAddViewModelProvider);
     final wishAddNotifier = ref.read(wishAddViewModelProvider.notifier);
 
+    final priceText = wishAddNotifier.priceController.text;
+    final priceValue = int.tryParse(priceText.replaceAll(',', '')) ?? 0;
+
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Stack(
@@ -88,7 +91,7 @@ class WishAddView extends ConsumerWidget {
                                     borderRadius: BorderRadius.circular(12),
                                     child: Image.file(
                                       File(wishAddState.itemImage!.path),
-                                      fit: BoxFit.cover,
+                                      fit: BoxFit.contain,
                                     ),
                                   )
                                   : const Center(
@@ -114,22 +117,6 @@ class WishAddView extends ConsumerWidget {
                     ),
                     const SizedBox(height: 24),
                     Text(
-                      "회사",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: context.width(0.04),
-                      ),
-                    ),
-                    TextField(
-                      textAlign: TextAlign.end,
-                      controller: wishAddNotifier.vendorController,
-                      decoration: const InputDecoration(
-                        hintText: '브랜드나 제조사를 입력하세요.',
-                        hintStyle: TextStyle(color: Colors.grey),
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                    Text(
                       "이름",
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
@@ -137,6 +124,7 @@ class WishAddView extends ConsumerWidget {
                       ),
                     ),
                     TextField(
+                      maxLength: 20,
                       textAlign: TextAlign.end,
                       controller: wishAddNotifier.nameController,
                       decoration: const InputDecoration(
@@ -153,6 +141,7 @@ class WishAddView extends ConsumerWidget {
                       ),
                     ),
                     TextField(
+                      maxLength: 12,
                       textAlign: TextAlign.end,
                       controller: wishAddNotifier.priceController,
                       keyboardType: TextInputType.number,
@@ -173,6 +162,28 @@ class WishAddView extends ConsumerWidget {
                                   ? Colors.white
                                   : Colors.black,
                         ),
+                        errorText:
+                            wishAddNotifier.priceController.text.isNotEmpty &&
+                                    !wishAddState.canSubmit
+                                ? wishAddState.priceError
+                                : null,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    Text(
+                      "회사",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: context.width(0.04),
+                      ),
+                    ),
+                    TextField(
+                      maxLength: 12,
+                      textAlign: TextAlign.end,
+                      controller: wishAddNotifier.vendorController,
+                      decoration: const InputDecoration(
+                        hintText: '브랜드나 제조사를 입력하세요.',
+                        hintStyle: TextStyle(color: Colors.grey),
                       ),
                     ),
                     const SizedBox(height: 24),
@@ -211,7 +222,7 @@ class WishAddView extends ConsumerWidget {
                           subtitle: const Text("나의 대표 위시 아이템으로 등록합니다."),
                           value: wishAddState.isTop5,
                           onChanged: wishAddNotifier.toggleIsTop5,
-                          activeColor: primaryColor,
+                          activeColor: primaryGradientStart,
                           controlAffinity: ListTileControlAffinity.leading,
                           contentPadding: EdgeInsets.zero,
                         )
@@ -241,7 +252,7 @@ class WishAddView extends ConsumerWidget {
                   height: context.height(0.06),
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: primaryColor,
+                      backgroundColor: primaryGradientEnd,
                     ),
                     // 👇 ViewModel의 canSubmit 상태에 따라 버튼 활성화/비활성화
                     onPressed:

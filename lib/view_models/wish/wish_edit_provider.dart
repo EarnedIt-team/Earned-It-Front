@@ -88,24 +88,41 @@ class WishEditViewModel extends AutoDisposeNotifier<WishEditState> {
     return null;
   }
 
-  // 버튼 활성화 여부를 업데이트하는 핵심 로직
   void _updateCanSubmit() {
     final initial = state.initialWish;
     if (initial == null) return;
 
+    // 1. 금액 유효성 검사
+    final priceText = priceController.text;
+    final priceValue = int.tryParse(priceText.replaceAll(',', '')) ?? 0;
+    String currentPriceError = "";
+    if (priceText.isNotEmpty && priceValue == 0) {
+      currentPriceError = '금액은 1원 이상 입력해주세요.';
+    }
+
+    // 2. 폼 전체 유효성 검사 (필수 필드 + 이미지 + 금액 에러)
     final isFormValid =
         nameController.text.isNotEmpty &&
         vendorController.text.isNotEmpty &&
-        priceController.text.isNotEmpty;
+        priceController.text.isNotEmpty &&
+        state.imageForUpload != null &&
+        currentPriceError.isEmpty;
 
+    // 3. 변경 사항 감지 (이미지 변경 포함)
     final hasChanges =
         nameController.text != initial.name ||
         vendorController.text != initial.vendor ||
         priceController.text.replaceAll(',', '') != initial.price.toString() ||
         urlController.text != initial.url ||
-        state.isTop5 != initial.starred;
+        state.isTop5 != initial.starred ||
+        (state.imageForUpload?.path !=
+            state.initialWish?.itemImage); // 이미지 변경 여부 확인
 
-    state = state.copyWith(canSubmit: isFormValid && hasChanges);
+    // 4. 최종 상태 업데이트
+    state = state.copyWith(
+      canSubmit: isFormValid && hasChanges,
+      priceError: currentPriceError,
+    );
   }
 
   // 이미지 선택 로직

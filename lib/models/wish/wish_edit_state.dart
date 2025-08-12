@@ -12,6 +12,7 @@ abstract class WishEditState with _$WishEditState {
     XFile? imageForUpload, // 새로 선택했거나, 기존 이미지를 다운로드한 파일
     @Default(false) bool isTop5,
     @Default(false) bool canSubmit,
+    @Default("") String priceError,
     @Default(false) bool isLoading,
   }) = _WishEditState;
 }

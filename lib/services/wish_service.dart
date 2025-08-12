@@ -220,6 +220,39 @@ class WishService {
     }
   }
 
+  /// 특정 조건의 위시리스트를 서버에서 검색합니다.
+  Future<ApiResponse> searchWishList({
+    required String accessToken,
+    required int page,
+    required int size,
+    String? sort,
+    String? keyword,
+    bool? isBought,
+    bool? isStarred,
+  }) async {
+    try {
+      String token = "Bearer $accessToken";
+      final ApiResponse response = await _restClient.searchWishList(
+        token,
+        page: page,
+        size: size,
+        sort: sort,
+        keyword: keyword,
+        isBought: isBought,
+        isStarred: isStarred,
+      );
+
+      if (response.code != "SUCCESS") {
+        throw Exception(response.message);
+      }
+      return response;
+    } on DioException catch (e) {
+      throw Exception(e.response?.data["message"] ?? "요청 처리 중 에러가 발생했습니다.");
+    } catch (e) {
+      throw Exception("서버에서 에러가 발생했습니다.");
+    }
+  }
+
   /// 변동된 Star 위시리스트 순서를 서버에게 알립니다.
   Future<ApiResponse> updateStarWishOrder({
     required String accessToken,

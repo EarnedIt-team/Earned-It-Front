@@ -58,14 +58,27 @@ class WishAddViewModel extends AutoDisposeNotifier<WishAddState> {
     return const WishAddState();
   }
 
-  // 👇 2. 버튼 활성화 조건에 '회사' 필드 추가
   void _updateCanSubmit() {
+    final priceText = priceController.text;
+    final priceValue = int.tryParse(priceText.replaceAll(',', '')) ?? 0;
+    // 👇 1. (핵심 수정) 타입을 String? -> String으로 변경하고, 기본값을 ""로 설정
+    String currentPriceError = "";
+    if (priceText.isNotEmpty && priceValue == 0) {
+      currentPriceError = '금액은 1원 이상 입력해주세요.';
+    }
+    // else는 필요 없습니다. 에러가 없으면 ""가 유지됩니다.
+
     final canSubmit =
         nameController.text.isNotEmpty &&
-        vendorController.text.isNotEmpty && // '회사' 입력 여부 확인
+        vendorController.text.isNotEmpty &&
         priceController.text.isNotEmpty &&
-        state.itemImage != null;
-    state = state.copyWith(canSubmit: canSubmit);
+        state.itemImage != null &&
+        currentPriceError.isEmpty; // 👈 에러 메시지가 비어있는지 확인
+
+    state = state.copyWith(
+      canSubmit: canSubmit,
+      priceError: currentPriceError, // 👈 이제 항상 String 타입이 전달됩니다.
+    );
   }
 
   Future<void> pickImage(BuildContext context) async {
@@ -126,6 +139,8 @@ class WishAddViewModel extends AutoDisposeNotifier<WishAddState> {
     try {
       final String? accessToken = await _storage.read(key: 'accessToken');
 
+      final String currentTime = DateTime.now().toIso8601String();
+
       // 1. UI 데이터로 WishModel 객체 생성
       final newWishItem = WishModel(
         name: nameController.text,
@@ -133,6 +148,7 @@ class WishAddViewModel extends AutoDisposeNotifier<WishAddState> {
         price: int.tryParse(priceController.text.replaceAll(',', '')) ?? 0,
         url: urlController.text,
         starred: state.isTop5,
+        createdAt: currentTime,
         // itemImage 필드는 서버에서 URL을 받아 채워지므로 여기서는 비워둡니다.
       );
 

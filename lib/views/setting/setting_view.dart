@@ -208,9 +208,9 @@ class _SettingViewState extends ConsumerState<SettingView> {
                                 Image.asset(
                                   Theme.of(context).brightness ==
                                           Brightness.dark
-                                      ? "assets/images/logo_dark.png"
-                                      : "assets/images/logo_light.png",
-                                  width: context.width(0.2),
+                                      ? "assets/images/logo_no_color.png"
+                                      : "assets/images/logo_color.png",
+                                  width: context.width(0.17),
                                 ),
                               ],
                             ),

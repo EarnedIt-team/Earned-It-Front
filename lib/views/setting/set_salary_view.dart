@@ -224,7 +224,7 @@ class SetSalaryView extends ConsumerWidget {
                   height: context.height(0.06),
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: primaryColor,
+                      backgroundColor: primaryGradientEnd,
                     ),
                     onPressed:
                         salaryState.isButtonEnabled

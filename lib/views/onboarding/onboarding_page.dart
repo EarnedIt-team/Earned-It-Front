@@ -17,15 +17,15 @@ class OnboardingPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return imagePath.isNotEmpty
         ? Column(
-          mainAxisAlignment: MainAxisAlignment.end, // 페이지 내용을 하단에 정렬
+          mainAxisAlignment: MainAxisAlignment.start, // 페이지 내용을 하단에 정렬
           children: [
-            // 👇 텍스트 블록과 이미지 사이에 간격을 추가하여 제목 위 공간을 확보합니다.
-            SizedBox(
-              height: context.height(0.05),
-            ), // 이 값(0.05)을 조절하여 원하는 만큼 간격을 만들 수 있습니다.
+            SizedBox(height: context.height(0.15)),
 
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: context.middlePadding),
+              padding: EdgeInsets.only(
+                left: context.middlePadding,
+                right: context.middlePadding,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -55,9 +55,11 @@ class OnboardingPage extends StatelessWidget {
               ),
             ),
 
+            Spacer(),
+
             SizedBox(
               width: double.infinity,
-              height: context.height(0.65),
+              height: context.height(0.5),
               child: Image.asset(
                 width: double.infinity,
                 imagePath,

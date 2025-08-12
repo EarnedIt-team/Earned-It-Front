@@ -52,27 +52,27 @@ class _OnboardingViewState extends State<OnboardingView> {
                 children: const <Widget>[
                   OnboardingPage(
                     imagePath: "assets/images/onboarding/page1.png",
-                    title: "시간은\n금이다",
+                    title: "시간은,\n금이다",
                     description:
-                        "워렌 버핏이 말했죠.\n큰 돈이 떨어져 있어도, 그 시간에 더 큰 가치를 벌 수 있다면 줍지 않는다고. 지금 이 순간에도, 당신의 시간은 돈으로 변하고 있습니다.",
+                        "Time is gold !\n\n큰 돈이 떨어져 있어도, 그 시간에 더 큰 가치를 벌 수 있다면 줍지 않는다는 워렌 버핏의 명언을 아시나요?\n\n지금 이 순간에도, 당신의 시간은 돈으로 변하고 있습니다.",
                   ),
                   OnboardingPage(
                     imagePath: "assets/images/onboarding/page2.png",
                     title: "연봉, 월급, 일급 ...\n그리고 초 수익?",
                     description:
-                        "매 분, 매 초, 당신의 수입이 실시간으로 표시됩니다. 세상에 없던 개념, Earned it에서만 경험하세요.",
+                        "언드잇에서는 매 분, 심지어 매 초\n\n당신의 누적 수익이 실시간으로 증가합니다.\n\n세상에 없던 개념, 초 수익. 언드잇 에서만 경험하세요.\n분명 시간의 귀중함을, 그리고 따라오는 돈의 관계를 느낄 수 있을 거에요.",
                   ),
                   OnboardingPage(
                     imagePath: "assets/images/onboarding/page3.png",
                     title: "당신의 목표,\n지금 어디까지 왔나요?",
                     description:
-                        "위시리스트를 설정하면, 이번 월급에서 목표 달성까지 얼마나 벌었는지 보여드립니다. 목표를 채우면 바로 구매 완료 표시까지!",
+                        "숨 쉬는 매 순간 목표에 가까워지고 있습니다.\n\n꼭 판매하는 물품이 아니어도 괜찮아요.\n\n여러분의 소중한 위시리스트를 설정하면, 이번 월 수익에서 위시아이템 금액 달성까지 얼마나 벌었는지 보여드립니다. 덤으로 구매 체크를 통해 리스트를 관리해보세요.",
                   ),
                   OnboardingPage(
                     imagePath: "assets/images/onboarding/page4.png",
                     title: "자주 볼 수록\n의지는 더 강해지니까",
                     description:
-                        "출석체크로 조각을 랜덤으로 획득하세요. 각 조각에는 실제 수익과 구매 가능한 개수가 표기되는 등 재밌는 통계로 동기부여를 제공합니다.",
+                        '"내 수익, 국밥 몇 그릇 정도 벌었을까?"\n\n퍼즐 조각에는 다양한 실제 아이템이 배치되어있어요.\n출석체크 등을 통해 조각을 랜덤으로 획득해보세요.\n획득한 조각을 내 누적 수익으로 환산해서 볼 수 있어요. 당신의 열정을 보여주세요.',
                   ),
                   OnboardingPage(
                     imagePath: "",
@@ -122,33 +122,34 @@ class _OnboardingViewState extends State<OnboardingView> {
                     height: context.height(0.065),
                     child: ElevatedButton(
                       onPressed: () {
-                        context.push("/sign");
+                        context.go("/login");
                       },
                       child: Text(
-                        "회원가입 후 시작하기",
+                        "Earned it 시작하기",
                         style: TextStyle(fontSize: context.width(0.045)),
                       ),
                     ),
                   ),
                 ),
               ),
-            Positioned(
-              right: 30,
-              top: 80,
-              child: IconButton(
-                onPressed: () {
-                  context.go("/login");
-                },
-                icon: Icon(
-                  Icons.close,
-                  size: context.width(0.1),
-                  color:
-                      Theme.of(context).brightness == Brightness.dark
-                          ? Colors.grey
-                          : const Color.fromARGB(255, 228, 166, 174),
+            if (_currentPage < 4)
+              Positioned(
+                right: 30,
+                top: 80,
+                child: IconButton(
+                  onPressed: () {
+                    context.go("/login");
+                  },
+                  icon: Icon(
+                    Icons.close,
+                    size: context.width(0.1),
+                    color:
+                        Theme.of(context).brightness == Brightness.dark
+                            ? Colors.grey
+                            : const Color.fromARGB(255, 228, 166, 174),
+                  ),
                 ),
               ),
-            ),
           ],
         ),
       ),

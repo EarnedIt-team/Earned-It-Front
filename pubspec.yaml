@@ -64,6 +64,8 @@ flutter:
     - assets/images/default_profile.png
     - assets/images/logo_light.png
     - assets/images/logo_dark.png
+    - assets/images/logo_color.png
+    - assets/images/logo_no_color.png
     - assets/images/time.png
     - assets/images/login/kakao_login.png
     - assets/images/login/apple_login_light.png

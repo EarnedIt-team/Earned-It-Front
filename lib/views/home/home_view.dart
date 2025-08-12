@@ -13,7 +13,7 @@ import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-final carouselIndexProvider = StateProvider<int>((ref) => 0);
+final carouselIndexProvider = StateProvider.autoDispose<int>((ref) => 0);
 
 // 데이터 준비 상태를 알려주는 Provider (autoDispose 유지)
 final isHomeReadyProvider = Provider.autoDispose<bool>((ref) {
@@ -300,7 +300,40 @@ class _HomeViewState extends ConsumerState<HomeView> {
     final progressColor = _getProgressColor(displayInfo.progress);
 
     return Column(
+      mainAxisAlignment: MainAxisAlignment.end,
       children: <Widget>[
+        SizedBox(height: context.height(0.03)),
+        if (item.bought)
+          SizedBox(
+            width: context.width(0.3),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.transparent,
+                border: Border.all(width: 2, color: primaryGradientEnd),
+                borderRadius: BorderRadius.circular(12.0),
+              ),
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.check,
+                    color: primaryGradientStart,
+                    size: context.width(0.04),
+                  ),
+                  const SizedBox(width: 5),
+                  Text(
+                    "구매 완료",
+                    style: TextStyle(
+                      color: primaryGradientStart,
+                      fontSize: context.width(0.035),
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
         Expanded(
           child: CarouselSlider.builder(
             carouselController: homeProvider.carouselController,
@@ -355,9 +388,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
           ),
         ),
         ConstrainedBox(
-          constraints: BoxConstraints(
-            maxWidth: MediaQuery.of(context).size.width * 0.8,
-          ),
+          constraints: BoxConstraints(maxWidth: context.width(0.8)),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -434,20 +465,24 @@ class _HomeViewState extends ConsumerState<HomeView> {
               backgroundColor: Colors.white,
             ),
             onPressed:
-                displayInfo.progress >= 1.0 ? () => _launchURL(item.url) : null,
+                displayInfo.progress >= 1.0
+                    ? () => _launchURL(item.url, item.name)
+                    : null,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Icon(
                   displayInfo.progress >= 1.0
-                      ? Icons.shopping_cart
+                      ? Icons.shopping_cart_outlined
                       : Icons.timer_outlined,
                   color:
                       displayInfo.progress >= 1.0 ? Colors.black : Colors.grey,
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  displayInfo.timeText,
+                  item.url.isEmpty && displayInfo.progress >= 1.0
+                      ? '${displayInfo.timeText} ( 다나와 )'
+                      : displayInfo.timeText,
                   style: TextStyle(
                     color:
                         displayInfo.progress >= 1.0
@@ -523,11 +558,23 @@ class _HomeViewState extends ConsumerState<HomeView> {
     return (progress: progress, timeText: timeText);
   }
 
-  Future<void> _launchURL(String url) async {
-    if (url.isEmpty) return;
-    final uri = Uri.parse(url);
+  Future<void> _launchURL(String url, String name) async {
+    // 1. 최종적으로 사용할 URL을 담을 변수 선언
+    String targetUrl;
+
+    if (url.isEmpty) {
+      // 2. url이 비어있으면, 검색어를 인코딩하여 구글 검색 URL을 만듭니다.
+      final encodedName = Uri.encodeComponent(name);
+      targetUrl = "https://search.danawa.com/dsearch.php?k1=$encodedName";
+    } else {
+      // 3. url이 있으면 그대로 사용합니다.
+      targetUrl = url;
+    }
+
+    // 4. 최종적으로 만들어진 targetUrl을 파싱하여 실행합니다.
+    final uri = Uri.parse(targetUrl);
     if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
-      throw Exception('Could not launch $url');
+      throw Exception('Could not launch $targetUrl');
     }
   }
 

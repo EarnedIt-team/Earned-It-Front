@@ -2,7 +2,7 @@ name: earned_it
 description: "A new Flutter project."
 publish_to: 'none'
 
-version: 1.0.8+1
+version: 1.0.9+4
 
 environment:
   sdk: ^3.7.0
@@ -60,7 +60,7 @@ flutter:
 
   assets:
     - assets/.env
-    
+
     - assets/images/default_profile.png
     - assets/images/logo_light.png
     - assets/images/logo_dark.png
@@ -77,6 +77,11 @@ flutter:
     - assets/images/money/money_largeSmall.png
     - assets/images/money/money_largeMiddle.png
     - assets/images/piece/unknow_piece.png
+
+    - assets/images/onboarding/page1.png
+    - assets/images/onboarding/page2.png
+    - assets/images/onboarding/page3.png
+    - assets/images/onboarding/page4.png
 
     - assets/lottie/empty_wish.json
     - assets/lottie/check_wish.json

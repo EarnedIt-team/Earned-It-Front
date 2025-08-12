@@ -1,5 +1,4 @@
 import 'package:earned_it/view_models/home_provider.dart';
-import 'package:earned_it/view_models/user_provider.dart';
 import 'package:earned_it/view_models/wish/wish_order_provider.dart';
 import 'package:earned_it/view_models/wish/wish_provider.dart';
 import 'dart:math';
@@ -7,7 +6,6 @@ import 'package:animated_digit/animated_digit.dart';
 import 'package:earned_it/config/design.dart';
 import 'package:earned_it/models/wish/wish_model.dart';
 import 'package:earned_it/views/navigation_view.dart';
-import 'package:earned_it/views/wish/wish_order_modal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -45,7 +43,7 @@ class _WishViewState extends ConsumerState<WishView> {
   Widget build(BuildContext context) {
     final wishState = ref.watch(wishViewModelProvider);
     final starWishList = wishState.starWishes;
-    final allWishList = wishState.Wishes3;
+    final HighLightWishList = wishState.Wishes3;
     final currencyFormat = NumberFormat.decimalPattern('ko_KR');
 
     return GestureDetector(
@@ -64,7 +62,7 @@ class _WishViewState extends ConsumerState<WishView> {
               ),
               centerTitle: false,
               actions:
-                  starWishList.isNotEmpty && allWishList.isNotEmpty
+                  starWishList.isNotEmpty || HighLightWishList.isNotEmpty
                       ? <Widget>[
                         IconButton(
                           onPressed: () {
@@ -88,7 +86,7 @@ class _WishViewState extends ConsumerState<WishView> {
             ),
             body:
                 // --- 리스트가 모두 비어있을 때 ---
-                starWishList.isEmpty && allWishList.isEmpty
+                starWishList.isEmpty && HighLightWishList.isEmpty
                     ? Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -130,7 +128,7 @@ class _WishViewState extends ConsumerState<WishView> {
                               right: context.middlePadding,
                               bottom:
                                   (starWishList.isNotEmpty ||
-                                          allWishList.isNotEmpty)
+                                          HighLightWishList.isNotEmpty)
                                       ? context.middlePadding
                                       : 0,
                             ),
@@ -306,7 +304,7 @@ class _WishViewState extends ConsumerState<WishView> {
                             ),
 
                           // --- All 위시리스트 섹션 ---
-                          if (allWishList.isNotEmpty)
+                          if (HighLightWishList.isNotEmpty)
                             Padding(
                               padding: EdgeInsets.only(
                                 top: context.middlePadding / 2,
@@ -365,13 +363,13 @@ class _WishViewState extends ConsumerState<WishView> {
                             ),
 
                           // --- All 위시리스트 목록 ---
-                          if (allWishList.isNotEmpty)
+                          if (HighLightWishList.isNotEmpty)
                             ListView.builder(
                               shrinkWrap: true,
                               physics: const NeverScrollableScrollPhysics(),
-                              itemCount: allWishList.length,
+                              itemCount: HighLightWishList.length,
                               itemBuilder: (context, index) {
-                                final item = allWishList[index];
+                                final item = HighLightWishList[index];
                                 return _WishlistItem(
                                   item: item,
                                   itemIndex: index,
@@ -454,30 +452,43 @@ class _WishlistItem extends ConsumerWidget {
           startActionPane:
               isStar
                   ? ActionPane(
-                    motion: const StretchMotion(),
+                    motion: const DrawerMotion(),
                     extentRatio: 0.5,
                     children: <Widget>[
-                      SlidableAction(
+                      CustomSlidableAction(
                         onPressed: (context) {
                           ref
                               .read(wishViewModelProvider.notifier)
                               .editBoughtWishItem(context, item.wishId);
                         },
-                        backgroundColor: Colors.lightBlue,
-                        foregroundColor: Colors.white,
-                        icon: Icons.check,
-                        label: '구매',
+                        backgroundColor: primaryGradientStart,
+                        // 👇 2. child 속성을 사용하여 위젯을 직접 구성합니다.
+                        child: Icon(
+                          item.bought
+                              ? Icons.check
+                              : Icons.shopping_cart_outlined,
+                          size: context.width(0.08),
+                          color: Colors.white,
+                        ),
                       ),
-                      SlidableAction(
+                      CustomSlidableAction(
                         onPressed: (context) {
                           ref
                               .read(wishViewModelProvider.notifier)
                               .editStarWishItem(context, item.wishId);
                         },
-                        backgroundColor: Colors.orangeAccent,
-                        foregroundColor: Colors.white,
-                        icon: Icons.star,
-                        label: "Star",
+                        backgroundColor: const Color.fromARGB(
+                          255,
+                          231,
+                          127,
+                          111,
+                        ),
+                        // 👇 2. child 속성을 사용하여 위젯을 직접 구성합니다.
+                        child: Icon(
+                          item.starred ? Icons.star : Icons.star_outline,
+                          size: context.width(0.08),
+                          color: Colors.white,
+                        ),
                       ),
                     ],
                   )
@@ -485,18 +496,22 @@ class _WishlistItem extends ConsumerWidget {
           endActionPane:
               isStar
                   ? ActionPane(
-                    motion: const StretchMotion(),
+                    motion: const DrawerMotion(),
                     extentRatio: 0.5,
                     children: <Widget>[
-                      SlidableAction(
+                      CustomSlidableAction(
                         onPressed:
                             (context) => context.push('/editWish', extra: item),
                         backgroundColor: Colors.grey.shade600,
                         foregroundColor: Colors.white,
-                        icon: Icons.edit,
-                        label: '수정',
+                        // 👇 2. child 속성을 사용하여 위젯을 직접 구성합니다.
+                        child: Text(
+                          "수정",
+                          style: TextStyle(fontSize: context.width(0.04)),
+                        ),
                       ),
-                      SlidableAction(
+
+                      CustomSlidableAction(
                         onPressed: (context) {
                           showDialog(
                             context: context,
@@ -534,8 +549,11 @@ class _WishlistItem extends ConsumerWidget {
                         },
                         backgroundColor: const Color(0xFFFE4A49),
                         foregroundColor: Colors.white,
-                        icon: Icons.delete,
-                        label: '삭제',
+                        // 👇 2. child 속성을 사용하여 위젯을 직접 구성합니다.
+                        child: Text(
+                          "삭제",
+                          style: TextStyle(fontSize: context.width(0.04)),
+                        ),
                       ),
                     ],
                   )
@@ -582,15 +600,32 @@ class _WishlistItem extends ConsumerWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(
-                          item.vendor,
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: context.width(0.04),
-                            height: 1,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+                        Row(
+                          children: [
+                            Text(
+                              item.vendor,
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: context.width(0.04),
+                                height: 1,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            const SizedBox(width: 5),
+                            if (item.bought)
+                              Icon(
+                                Icons.check,
+                                size: context.width(0.04),
+                                color: Colors.lightBlue,
+                              ),
+                            if (item.starred)
+                              Icon(
+                                Icons.star_rounded,
+                                size: context.width(0.04),
+                                color: Colors.amber,
+                              ),
+                          ],
                         ),
 
                         Text(
@@ -669,27 +704,6 @@ class _WishlistItem extends ConsumerWidget {
                         ],
                       ),
                     ),
-                  item.bought || item.starred
-                      ? const SizedBox(width: 10)
-                      : const SizedBox.shrink(),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      item.bought
-                          ? const Icon(
-                            Icons.check_circle,
-                            color: Colors.lightBlue,
-                          )
-                          : const SizedBox.shrink(),
-                      item.bought && item.starred
-                          ? const SizedBox(height: 5)
-                          : const SizedBox.shrink(),
-                      item.starred
-                          ? const Icon(Icons.stars, color: primaryColor)
-                          : const SizedBox.shrink(),
-                    ],
-                  ),
                 ],
               ),
             ),

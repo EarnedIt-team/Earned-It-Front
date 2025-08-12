@@ -56,8 +56,43 @@ extension ContextExtension on BuildContext {
   // double get textScaleFactor => MediaQuery.of(this).textScaleFactor;
 }
 
-// 사용할 메인 컬러
+// 사용할 메인 컬러 (이전)
 const Color primaryColor = Color(0xFFFFB73D);
+
+// 1. 사용할 그라데이션 색상 정의
+const Color primaryGradientStart = Color.fromRGBO(
+  233,
+  106,
+  86,
+  1,
+); // rgba(233, 106, 86, 1)
+const Color primaryGradientEnd = Color.fromRGBO(
+  235,
+  94,
+  112,
+  1,
+); // rgba(235, 94, 112, 1)
+
+const Color lightColor = Color.fromRGBO(252, 253, 255, 1);
+
+// 2. 앱 전체에서 재사용할 그라데이션 BoxDecoration 정의
+const BoxDecoration primaryGradient = BoxDecoration(
+  gradient: LinearGradient(
+    colors: [primaryGradientStart, primaryGradientEnd],
+    stops: [0, 100],
+    begin: Alignment.topCenter,
+    end: Alignment.bottomCenter,
+  ),
+);
+
+// 2. 앱 전체에서 재사용할 그라데이션 BoxDecoration 정의
+const BoxDecoration primaryDarkGradient = BoxDecoration(
+  gradient: LinearGradient(
+    colors: [Colors.black],
+    begin: Alignment.topCenter,
+    end: Alignment.bottomCenter,
+  ),
+);
 
 // ==================================
 // 라이트 모드 테마
@@ -65,23 +100,23 @@ const Color primaryColor = Color(0xFFFFB73D);
 final ThemeData lightTheme = ThemeData(
   brightness: Brightness.light,
   fontFamily: 'Mainfonts',
+
+  // 3. 그라데이션의 시작 색상을 기준 색상으로 지정
   colorScheme: ColorScheme.fromSeed(
-    seedColor: primaryColor,
+    seedColor: primaryGradientEnd, // 👈 수정된 부분
     brightness: Brightness.light,
   ),
-  scaffoldBackgroundColor: Colors.white,
+
+  scaffoldBackgroundColor: lightColor,
   appBarTheme: const AppBarTheme(
     systemOverlayStyle: SystemUiOverlayStyle(
-      // 1. 상태 바 아이콘을 '어둡게' 설정 (정상 표시)
       statusBarIconBrightness: Brightness.dark,
       statusBarColor: Colors.transparent,
-
-      // 2. 하단 내비게이션 바 배경 및 아이콘 설정
-      systemNavigationBarColor: Colors.white,
+      systemNavigationBarColor: lightColor,
       systemNavigationBarIconBrightness: Brightness.dark,
     ),
     elevation: 0,
-    backgroundColor: Colors.white,
+    backgroundColor: lightColor,
     foregroundColor: Colors.black,
   ),
 );
@@ -93,7 +128,7 @@ final ThemeData darkTheme = ThemeData(
   brightness: Brightness.dark,
   fontFamily: 'Mainfonts',
   colorScheme: ColorScheme.fromSeed(
-    seedColor: primaryColor,
+    seedColor: primaryGradientEnd, // 👈 수정된 부분
     brightness: Brightness.dark,
   ),
   scaffoldBackgroundColor: Colors.black,

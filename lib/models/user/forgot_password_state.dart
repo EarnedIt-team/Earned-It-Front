@@ -15,6 +15,7 @@ abstract class ForgotPasswordState with _$ForgotPasswordState {
     @Default(true) bool isObscurePassword,
     @Default(true) bool isObscurePasswordConfirm,
     @Default(900) int timerSeconds, // 15분 = 900초
+    DateTime? timerEndTime,
     String? errorMessage,
     @Default(false) bool isLoading,
   }) = _ForgotPasswordState;

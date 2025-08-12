@@ -173,7 +173,7 @@ class _PuzzleViewState extends ConsumerState<PuzzleView> {
               ? () {
                 ref
                     .read(pieceProvider.notifier)
-                    .loadPieceInfo(context, slot.itemId!);
+                    .loadPieceInfo(context, slot.pieceId!);
               }
               : null,
       style: ElevatedButton.styleFrom(

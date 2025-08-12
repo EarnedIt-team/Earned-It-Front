@@ -143,6 +143,7 @@ final ThemeData darkTheme = ThemeData(
       systemNavigationBarIconBrightness: Brightness.light,
     ),
     elevation: 0,
+
     backgroundColor: Colors.black,
     foregroundColor: Colors.white,
   ),

@@ -58,7 +58,7 @@ class _SettingViewState extends ConsumerState<SettingView> {
               width: double.infinity,
               height: context.height(0.2),
               decoration: BoxDecoration(
-                border: Border.all(width: 1, color: primaryColor),
+                border: Border.all(width: 1, color: primaryGradientStart),
                 borderRadius: BorderRadius.circular(context.width(0.03)),
               ),
 
@@ -139,6 +139,11 @@ class _SettingViewState extends ConsumerState<SettingView> {
                                     Text(
                                       "신분증",
                                       style: TextStyle(
+                                        color:
+                                            Theme.of(context).brightness ==
+                                                    Brightness.dark
+                                                ? Colors.white
+                                                : Colors.black,
                                         fontSize: context.width(0.04),
                                         fontWeight: FontWeight.bold,
                                       ),
@@ -154,6 +159,11 @@ class _SettingViewState extends ConsumerState<SettingView> {
                                     Text(
                                       "이름",
                                       style: TextStyle(
+                                        color:
+                                            Theme.of(context).brightness ==
+                                                    Brightness.dark
+                                                ? Colors.white
+                                                : Colors.black,
                                         fontSize: context.width(0.045),
                                         fontWeight: FontWeight.bold,
                                       ),
@@ -167,6 +177,11 @@ class _SettingViewState extends ConsumerState<SettingView> {
                                     Text(
                                       userState.name,
                                       style: TextStyle(
+                                        color:
+                                            Theme.of(context).brightness ==
+                                                    Brightness.dark
+                                                ? Colors.white
+                                                : Colors.black,
                                         fontSize: context.width(0.04),
                                       ),
                                     ),
@@ -179,6 +194,11 @@ class _SettingViewState extends ConsumerState<SettingView> {
                                     Text(
                                       "월급",
                                       style: TextStyle(
+                                        color:
+                                            Theme.of(context).brightness ==
+                                                    Brightness.dark
+                                                ? Colors.white
+                                                : Colors.black,
                                         fontSize: context.width(0.045),
                                         fontWeight: FontWeight.bold,
                                       ),
@@ -192,6 +212,11 @@ class _SettingViewState extends ConsumerState<SettingView> {
                                     Text(
                                       "${numberFormat.format(userState.monthlySalary)} 원",
                                       style: TextStyle(
+                                        color:
+                                            Theme.of(context).brightness ==
+                                                    Brightness.dark
+                                                ? Colors.white
+                                                : Colors.black,
                                         fontSize: context.width(0.04),
                                       ),
                                     ),
@@ -230,9 +255,26 @@ class _SettingViewState extends ConsumerState<SettingView> {
               contentPadding: EdgeInsets.symmetric(
                 horizontal: context.middlePadding / 2,
               ),
-              leading: const Icon(Icons.edit_outlined),
-              title: const Text('닉네임 수정'),
-              trailing: const Icon(Icons.chevron_right, color: primaryColor),
+              leading: Icon(
+                Icons.edit_outlined,
+                color:
+                    Theme.of(context).brightness == Brightness.dark
+                        ? Colors.white
+                        : Colors.black,
+              ),
+              title: Text(
+                '닉네임 수정',
+                style: TextStyle(
+                  color:
+                      Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white
+                          : Colors.black,
+                ),
+              ),
+              trailing: const Icon(
+                Icons.chevron_right,
+                color: primaryGradientEnd,
+              ),
               onTap: () {
                 context.push('/editName');
               },
@@ -241,9 +283,26 @@ class _SettingViewState extends ConsumerState<SettingView> {
               contentPadding: EdgeInsets.symmetric(
                 horizontal: context.middlePadding / 2,
               ),
-              leading: const Icon(Icons.photo_camera_outlined),
-              title: const Text('프로필 사진 변경'),
-              trailing: const Icon(Icons.chevron_right, color: primaryColor),
+              leading: Icon(
+                Icons.photo_camera_outlined,
+                color:
+                    Theme.of(context).brightness == Brightness.dark
+                        ? Colors.white
+                        : Colors.black,
+              ),
+              title: Text(
+                '프로필 사진 변경',
+                style: TextStyle(
+                  color:
+                      Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white
+                          : Colors.black,
+                ),
+              ),
+              trailing: const Icon(
+                Icons.chevron_right,
+                color: primaryGradientEnd,
+              ),
               onTap: () {
                 ref.read(isOpenEditProfileImage.notifier).state = true;
               },
@@ -252,9 +311,26 @@ class _SettingViewState extends ConsumerState<SettingView> {
               contentPadding: EdgeInsets.symmetric(
                 horizontal: context.middlePadding / 2,
               ),
-              leading: const Icon(Icons.attach_money_outlined),
-              title: const Text("월 수익 설정"),
-              trailing: const Icon(Icons.chevron_right, color: primaryColor),
+              leading: Icon(
+                Icons.attach_money_outlined,
+                color:
+                    Theme.of(context).brightness == Brightness.dark
+                        ? Colors.white
+                        : Colors.black,
+              ),
+              title: Text(
+                "월 수익 설정",
+                style: TextStyle(
+                  color:
+                      Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white
+                          : Colors.black,
+                ),
+              ),
+              trailing: const Icon(
+                Icons.chevron_right,
+                color: primaryGradientEnd,
+              ),
               onTap: () {
                 context.push('/setSalary');
               },
@@ -265,13 +341,27 @@ class _SettingViewState extends ConsumerState<SettingView> {
               contentPadding: EdgeInsets.symmetric(
                 horizontal: context.middlePadding / 2,
               ),
-              leading: const Icon(Icons.brightness_6_outlined),
-              title: const Text('테마 설정'),
+              leading: Icon(
+                Icons.brightness_6_outlined,
+                color:
+                    Theme.of(context).brightness == Brightness.dark
+                        ? Colors.white
+                        : Colors.black,
+              ),
+              title: Text(
+                '테마 설정',
+                style: TextStyle(
+                  color:
+                      Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white
+                          : Colors.black,
+                ),
+              ),
               trailing: Text(
                 _themeModeToString(currentThemeMode),
                 style: TextStyle(
                   fontSize: context.width(0.035),
-                  color: const Color.fromARGB(255, 168, 121, 39),
+                  color: primaryGradientEnd,
                 ),
               ),
               onTap: () {
@@ -309,9 +399,26 @@ class _SettingViewState extends ConsumerState<SettingView> {
               contentPadding: EdgeInsets.symmetric(
                 horizontal: context.middlePadding / 2,
               ),
-              leading: const Icon(Icons.description_outlined),
-              title: const Text('이용약관'),
-              trailing: const Icon(Icons.chevron_right, color: primaryColor),
+              leading: Icon(
+                Icons.description_outlined,
+                color:
+                    Theme.of(context).brightness == Brightness.dark
+                        ? Colors.white
+                        : Colors.black,
+              ),
+              title: Text(
+                '이용약관',
+                style: TextStyle(
+                  color:
+                      Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white
+                          : Colors.black,
+                ),
+              ),
+              trailing: const Icon(
+                Icons.chevron_right,
+                color: primaryGradientStart,
+              ),
               onTap: () async {
                 String urls = dotenv.env['TERMS_URL']!;
                 final Uri url = Uri.parse(urls); // 실제 약관 URL로 변경
@@ -324,8 +431,8 @@ class _SettingViewState extends ConsumerState<SettingView> {
               contentPadding: EdgeInsets.symmetric(
                 horizontal: context.middlePadding / 2,
               ),
-              leading: const Icon(Icons.logout, color: Colors.red),
-              title: const Text("로그아웃", style: TextStyle(color: Colors.red)),
+              leading: const Icon(Icons.logout, color: Colors.orange),
+              title: const Text("로그아웃", style: TextStyle(color: Colors.orange)),
               onTap: () async {
                 showDialog(
                   context: context,
@@ -335,13 +442,9 @@ class _SettingViewState extends ConsumerState<SettingView> {
                         content: const Text('정말로 로그아웃 하시겠습니까?'),
                         actions: [
                           TextButton(
-                            child: const Text('취소'),
-                            onPressed: () => Navigator.of(ctx).pop(),
-                          ),
-                          TextButton(
                             child: const Text(
                               '로그아웃',
-                              style: TextStyle(color: Colors.red),
+                              style: TextStyle(color: Colors.grey),
                             ),
                             onPressed: () {
                               context.pop();
@@ -349,6 +452,10 @@ class _SettingViewState extends ConsumerState<SettingView> {
                                   .read(stateAuthViewModelProvider)
                                   .signout(context);
                             },
+                          ),
+                          TextButton(
+                            child: const Text('취소'),
+                            onPressed: () => Navigator.of(ctx).pop(),
                           ),
                         ],
                       ),
@@ -361,9 +468,12 @@ class _SettingViewState extends ConsumerState<SettingView> {
               ),
               leading: const Icon(
                 Icons.person_remove_outlined,
-                color: Colors.red,
+                color: Colors.deepOrange,
               ),
-              title: const Text("회원탈퇴", style: TextStyle(color: Colors.red)),
+              title: const Text(
+                "회원탈퇴",
+                style: TextStyle(color: Colors.deepOrange),
+              ),
               onTap: () {
                 ref.read(isOpenReSign.notifier).state = true;
               },

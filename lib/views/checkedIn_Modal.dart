@@ -50,15 +50,6 @@ class _CheckedInModalState extends ConsumerState<CheckedInModal> {
                   style: TextStyle(
                     fontSize: context.width(0.06),
                     fontWeight: FontWeight.bold,
-                    // foreground에 Paint를 사용하여 테두리 효과를 줍니다.
-                    foreground:
-                        Paint()
-                          ..style =
-                              PaintingStyle
-                                  .stroke // 선 스타일
-                          ..strokeWidth =
-                              2.5 // 테두리 두께
-                          ..color = Colors.black, // 테두리 색상
                   ),
                 ),
                 // 2. 내부 색상을 채우는 Text (위에 배치)
@@ -213,7 +204,7 @@ class _CheckedInModalState extends ConsumerState<CheckedInModal> {
           SizedBox(height: context.height(0.02)),
           Text(
             textAlign: TextAlign.center,
-            "2025.06 기준 ${currencyFormat.format(state.candidatesCheckedInList[state.selectedIndex!].price)}원",
+            "2025.08 기준 ${currencyFormat.format(state.candidatesCheckedInList[state.selectedIndex!].price)}원",
             style: TextStyle(fontSize: context.width(0.04), color: Colors.grey),
           ),
           SizedBox(height: context.height(0.03)),

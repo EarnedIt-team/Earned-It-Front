@@ -21,9 +21,9 @@ class _HomePieceViewState extends ConsumerState<HomePieceView> {
   void initState() {
     super.initState();
     // 모달이 열릴 때 보상 후보 데이터를 불러옵니다.
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(pieceProvider.notifier).loadRecentPiece(context);
-    });
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   ref.read(pieceProvider.notifier).loadRecentPiece(context);
+    // });
   }
 
   @override
@@ -218,7 +218,7 @@ class _HomePieceViewState extends ConsumerState<HomePieceView> {
                         SizedBox(height: context.height(0.05)),
                         Text(
                           textAlign: TextAlign.center,
-                          '최근에 획득한 조각이 없습니다. \n',
+                          '최근에 설정한 조각이 없습니다. \n',
                           style: TextStyle(
                             color: Colors.grey,
                             fontSize: context.regularFont,
@@ -228,7 +228,7 @@ class _HomePieceViewState extends ConsumerState<HomePieceView> {
                         ),
                         Text(
                           textAlign: TextAlign.center,
-                          '출석체크를 통해 무료로 획득 가능합니다.',
+                          '퍼즐 페이지에서 획득한 조각을 설정해주세요.',
                           style: TextStyle(
                             color: Colors.grey,
                             fontSize: context.width(0.035),
@@ -236,12 +236,12 @@ class _HomePieceViewState extends ConsumerState<HomePieceView> {
                           ),
                         ),
                         SizedBox(height: context.height(0.03)),
-                        ElevatedButton(
-                          onPressed: () {
-                            ref.read(isOpenCheckedIn.notifier).state = true;
-                          },
-                          child: const Text("출석체크하기"),
-                        ),
+                        // ElevatedButton(
+                        //   onPressed: () {
+                        //     ref.read(isOpenCheckedIn.notifier).state = true;
+                        //   },
+                        //   child: const Text("출석체크하기"),
+                        // ),
                       ],
                     ),
           ),

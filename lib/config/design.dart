@@ -128,7 +128,7 @@ final ThemeData darkTheme = ThemeData(
   brightness: Brightness.dark,
   fontFamily: 'Mainfonts',
   colorScheme: ColorScheme.fromSeed(
-    seedColor: primaryColor,
+    seedColor: primaryGradientEnd, // 👈 수정된 부분
     brightness: Brightness.dark,
   ),
   scaffoldBackgroundColor: Colors.black,

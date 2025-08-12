@@ -131,7 +131,7 @@ class LoginView extends ConsumerWidget {
                                         }
                                         : null,
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: primaryColor,
+                                  backgroundColor: primaryGradientEnd,
                                   padding: EdgeInsets.symmetric(
                                     vertical: context.buttonPadding,
                                   ),

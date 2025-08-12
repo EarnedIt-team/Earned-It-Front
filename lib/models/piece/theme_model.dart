@@ -25,6 +25,7 @@ abstract class ThemeModel with _$ThemeModel {
 abstract class SlotModel with _$SlotModel {
   const factory SlotModel({
     required int slotIndex,
+    int? pieceId,
     int? itemId,
     String? itemName,
     String? image,

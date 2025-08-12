@@ -168,30 +168,79 @@ class ForgotPasswordView extends ConsumerWidget {
     switch (state.currentStep) {
       case ForgotPasswordStep.enterEmail:
         return ElevatedButton(
-          style: ElevatedButton.styleFrom(backgroundColor: primaryColor),
+          style: ElevatedButton.styleFrom(backgroundColor: primaryGradientEnd),
           onPressed:
               state.isEmailValid
                   ? () => notifier.requestVerificationCode(context)
                   : null,
-          child: buildButtonChild("인증 요청"),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                "인증 요청",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: state.isEmailValid ? Colors.black : Colors.grey,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Icon(
+                Icons.arrow_forward_ios,
+                size: 16,
+                color: state.isEmailValid ? Colors.black : Colors.grey,
+              ),
+            ],
+          ),
         );
       case ForgotPasswordStep.verifyCode:
         return ElevatedButton(
-          style: ElevatedButton.styleFrom(backgroundColor: primaryColor),
+          style: ElevatedButton.styleFrom(backgroundColor: primaryGradientEnd),
           onPressed:
               notifier.codeController.text.isNotEmpty
                   ? () => notifier.verifyCode(context)
                   : null,
-          child: buildButtonChild("인증 확인"),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                "인증 확인",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color:
+                      notifier.codeController.text.isNotEmpty
+                          ? Colors.black
+                          : Colors.grey,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Icon(
+                Icons.arrow_forward_ios,
+                size: 16,
+                color:
+                    notifier.codeController.text.isNotEmpty
+                        ? Colors.black
+                        : Colors.grey,
+              ),
+            ],
+          ),
         );
       case ForgotPasswordStep.resetPassword:
         return ElevatedButton(
-          style: ElevatedButton.styleFrom(backgroundColor: primaryColor),
+          style: ElevatedButton.styleFrom(backgroundColor: primaryGradientEnd),
           onPressed:
               state.isPasswordValid && state.isPasswordConfirmed
                   ? () => notifier.resetPassword(context)
                   : null,
-          child: const Text("변경 완료"),
+          child: Text(
+            "변경 완료",
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color:
+                  state.isPasswordValid && state.isPasswordConfirmed
+                      ? Colors.black
+                      : Colors.grey,
+            ),
+          ),
         );
     }
   }
@@ -229,6 +278,7 @@ class ForgotPasswordView extends ConsumerWidget {
             suffixIcon: suffixIcon,
             helper: helperWidget,
             errorText: errorText,
+            errorStyle: const TextStyle(color: Colors.red),
           ),
         ),
       ],

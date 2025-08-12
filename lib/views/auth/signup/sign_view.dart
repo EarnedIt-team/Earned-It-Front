@@ -301,7 +301,21 @@ class SignView extends ConsumerWidget {
                                 signUpState.isAgreedToTerms
                             ? () => signUpNotifier.signUp(context)
                             : null,
-                    child: const Text("동의하고 회원가입"),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: primaryGradientEnd,
+                    ),
+                    child: Text(
+                      "동의하고 회원가입",
+                      style: TextStyle(
+                        color:
+                            signUpState.isSuccessfulCode &&
+                                    signUpState.isAvailablePassword &&
+                                    signUpState.isCheckPassword &&
+                                    signUpState.isAgreedToTerms
+                                ? Colors.black
+                                : Colors.grey,
+                      ),
+                    ),
                   ),
                 ),
               ),
@@ -354,6 +368,7 @@ class SignView extends ConsumerWidget {
             suffixIcon: suffixIcon,
             helper: helperWidget,
             errorText: errorText,
+            errorStyle: const TextStyle(color: Colors.red),
             errorMaxLines: 2,
           ),
         ),

@@ -89,7 +89,7 @@ class PieceNotifier extends Notifier<PieceState> {
 
       final response = await _pieceService.loadPieceInfo(
         accessToken: accessToken,
-        pieceId: 20, // 임시로 20번으로 배치
+        pieceId: pieceId, // 임시로 20번으로 배치
       );
 
       // 응답 데이터를 PieceInfoModel로 파싱

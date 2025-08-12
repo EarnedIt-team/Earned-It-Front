@@ -74,33 +74,64 @@ class _OnboardingViewState extends State<OnboardingView> {
                     description:
                         "출석체크로 조각을 랜덤으로 획득하세요. 각 조각에는 실제 수익과 구매 가능한 개수가 표기되는 등 재밌는 통계로 동기부여를 제공합니다.",
                   ),
+                  OnboardingPage(
+                    imagePath: "",
+                    title: "시간은 흘러가지만\n당신의 가치는 쌓입니다",
+                    description:
+                        '"Earned it - 당신의 시간을 가치로 바꾸세요"\n흘려보낸 시간 속에 숨어있던 가치를 확인하세요.',
+                  ),
                 ],
               ),
             ),
-            Positioned(
-              bottom: context.height(0.045),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: List.generate(4, (int index) {
-                  return Container(
-                    margin: EdgeInsets.symmetric(
-                      horizontal: context.width(0.01),
+            if (_currentPage < 4)
+              Positioned(
+                bottom: context.height(0.045),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: List.generate(5, (int index) {
+                    return Container(
+                      margin: EdgeInsets.symmetric(
+                        horizontal: context.width(0.01),
+                      ),
+                      width: context.width(0.015),
+                      height: context.width(0.015),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color:
+                            _currentPage == index
+                                ? Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? primaryGradientEnd
+                                    : Colors.black
+                                : const Color.fromARGB(255, 210, 210, 210),
+                      ),
+                    );
+                  }),
+                ),
+              )
+            else
+              Positioned(
+                left: 0,
+                right: 0,
+                bottom: context.height(0.045),
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: context.middlePadding,
+                  ),
+                  child: SizedBox(
+                    height: context.height(0.065),
+                    child: ElevatedButton(
+                      onPressed: () {
+                        context.push("/sign");
+                      },
+                      child: Text(
+                        "회원가입 후 시작하기",
+                        style: TextStyle(fontSize: context.width(0.045)),
+                      ),
                     ),
-                    width: context.width(0.015),
-                    height: context.width(0.015),
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color:
-                          _currentPage == index
-                              ? Theme.of(context).brightness == Brightness.dark
-                                  ? primaryGradientEnd
-                                  : Colors.black
-                              : const Color.fromARGB(255, 210, 210, 210),
-                    ),
-                  );
-                }),
+                  ),
+                ),
               ),
-            ),
             Positioned(
               right: 30,
               top: 80,
@@ -120,123 +151,6 @@ class _OnboardingViewState extends State<OnboardingView> {
             ),
           ],
         ),
-        // Column(
-        //   mainAxisAlignment: MainAxisAlignment.center,
-        //   crossAxisAlignment: CrossAxisAlignment.center,
-        //   children: <Widget>[
-        //     // PageView가 차지할 공간을 확장하기 위해 Expanded
-        //     Expanded(
-        //       child: PageView(
-        //         controller: _pageController,
-        //         onPageChanged: (int index) {
-        //           setState(() {
-        //             _currentPage = index;
-        //           });
-        //         },
-        //         children: const <Widget>[
-        //           // 첫 번째 온보딩 페이지
-        //           OnboardingPage(
-        //             imagePath: "assets/images/onboarding/page1.png",
-        //             title: "환영합니다!",
-        //             description: "시간을 돈으로 바꾸는 새로운 경험을 시작해보세요.",
-        //           ),
-        //           // 두 번째 온보딩 페이지
-        //           OnboardingPage(
-        //             imagePath: "assets/images/time.png",
-        //             title: "동기부여를 제공",
-        //             description: "매달 구매하고 싶은 위시리스트를 등록하세요.",
-        //           ),
-        //           // 세 번째 온보딩 페이지
-        //           OnboardingPage(
-        //             imagePath: "assets/images/time.png",
-        //             title: "무엇이 가능할까?",
-        //             description: "누적된 금액으로 무엇을 할 수 있을까요?",
-        //           ),
-        //         ],
-        //       ),
-        //     ),
-        //     // pageView indicator
-        //     Row(
-        //       mainAxisAlignment: MainAxisAlignment.center,
-        //       children: List.generate(3, (int index) {
-        //         return Container(
-        //           margin: EdgeInsets.symmetric(
-        //             horizontal: context.width(0.01),
-        //           ),
-        //           width: context.width(0.025),
-        //           height: context.width(0.025),
-        //           decoration: BoxDecoration(
-        //             shape: BoxShape.circle,
-        //             color:
-        //                 _currentPage == index
-        //                     ? primaryColor
-        //                     : const Color.fromARGB(255, 210, 210, 210),
-        //           ),
-        //         );
-        //       }),
-        //     ),
-        //     SizedBox(height: context.height(0.05)), // indicator 와 버튼 사이 간격
-        //     // 회원가입 & 로그인
-        //     Padding(
-        //       padding: EdgeInsets.all(context.middlePadding),
-        //       child: Column(
-        //         children: <Widget>[
-        //           SizedBox(
-        //             width: double.infinity,
-        //             child: ElevatedButton(
-        //               style: ElevatedButton.styleFrom(
-        //                 side: const BorderSide(
-        //                   width: 0.5,
-        //                   color: Color.fromARGB(255, 159, 114, 37),
-        //                 ),
-        //                 backgroundColor: primaryColor,
-        //                 padding: EdgeInsets.symmetric(
-        //                   vertical: context.buttonPadding,
-        //                 ),
-        //               ),
-        //               onPressed: () {
-        //                 context.push("/sign");
-        //               },
-        //               child: Text(
-        //                 "회원가입",
-        //                 style: TextStyle(
-        //                   fontSize: context.regularFont,
-        //                   color: Colors.black,
-        //                 ),
-        //               ),
-        //             ),
-        //           ),
-        //           SizedBox(height: context.height(0.01)), // 버튼 간 간격
-        //           SizedBox(
-        //             width: double.infinity,
-        //             child: ElevatedButton(
-        //               style: ElevatedButton.styleFrom(
-        //                 side: const BorderSide(
-        //                   width: 0.5,
-        //                   color: Colors.grey,
-        //                 ),
-        //                 backgroundColor: Colors.white,
-        //                 padding: EdgeInsets.symmetric(
-        //                   vertical: context.buttonPadding,
-        //                 ),
-        //               ),
-        //               onPressed: () {
-        //                 context.push("/login");
-        //               },
-        //               child: Text(
-        //                 "기존 계정으로 로그인",
-        //                 style: TextStyle(
-        //                   fontSize: context.regularFont,
-        //                   color: Colors.black,
-        //                 ),
-        //               ),
-        //             ),
-        //           ),
-        //         ],
-        //       ),
-        //     ),
-        //   ],
-        // ),
       ),
     );
   }

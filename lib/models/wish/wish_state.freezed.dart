@@ -14,15 +14,14 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$WishState {
 
-// API 호출 중 로딩 상태
- bool get isLoading;/// 즐겨찾기 위시리스트 (Top5)
- List<WishModel> get starWishes;/// 위시리스트 상위 노출 3개
- List<WishModel> get Wishes3;/// 전체 위시리스트 (페이지네이션으로 불러옴)
- List<WishModel> get totalWishes;/// 등록된 위시아이템 개수
- int get currentWishCount;// --- 페이지네이션을 위한 상태 ---
-/// 다음에 불러올 페이지 번호
- int get page;/// 더 불러올 페이지가 남았는지 여부
- bool get hasMore;
+// 기존 상태들
+ bool get isLoading; List<WishModel> get starWishes; List<WishModel> get Wishes3; List<WishModel> get totalWishes;// --- 전체 리스트 기능을 위한 상태 추가 ---
+ int get currentWishCount; int get page; bool get hasMore;// --- 검색 기능을 위한 상태 추가 ---
+/// 검색 API 호출 중 로딩 상태
+ bool get isSearching;/// 검색 결과 리스트
+ List<WishModel> get searchResults;/// 다음에 불러올 검색 결과 페이지 번호
+ int get searchPage;/// 더 불러올 검색 결과가 남았는지 여부
+ bool get searchHasMore;
 /// Create a copy of WishState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -33,16 +32,16 @@ $WishStateCopyWith<WishState> get copyWith => _$WishStateCopyWithImpl<WishState>
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is WishState&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&const DeepCollectionEquality().equals(other.starWishes, starWishes)&&const DeepCollectionEquality().equals(other.Wishes3, Wishes3)&&const DeepCollectionEquality().equals(other.totalWishes, totalWishes)&&(identical(other.currentWishCount, currentWishCount) || other.currentWishCount == currentWishCount)&&(identical(other.page, page) || other.page == page)&&(identical(other.hasMore, hasMore) || other.hasMore == hasMore));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is WishState&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&const DeepCollectionEquality().equals(other.starWishes, starWishes)&&const DeepCollectionEquality().equals(other.Wishes3, Wishes3)&&const DeepCollectionEquality().equals(other.totalWishes, totalWishes)&&(identical(other.currentWishCount, currentWishCount) || other.currentWishCount == currentWishCount)&&(identical(other.page, page) || other.page == page)&&(identical(other.hasMore, hasMore) || other.hasMore == hasMore)&&(identical(other.isSearching, isSearching) || other.isSearching == isSearching)&&const DeepCollectionEquality().equals(other.searchResults, searchResults)&&(identical(other.searchPage, searchPage) || other.searchPage == searchPage)&&(identical(other.searchHasMore, searchHasMore) || other.searchHasMore == searchHasMore));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,isLoading,const DeepCollectionEquality().hash(starWishes),const DeepCollectionEquality().hash(Wishes3),const DeepCollectionEquality().hash(totalWishes),currentWishCount,page,hasMore);
+int get hashCode => Object.hash(runtimeType,isLoading,const DeepCollectionEquality().hash(starWishes),const DeepCollectionEquality().hash(Wishes3),const DeepCollectionEquality().hash(totalWishes),currentWishCount,page,hasMore,isSearching,const DeepCollectionEquality().hash(searchResults),searchPage,searchHasMore);
 
 @override
 String toString() {
-  return 'WishState(isLoading: $isLoading, starWishes: $starWishes, Wishes3: $Wishes3, totalWishes: $totalWishes, currentWishCount: $currentWishCount, page: $page, hasMore: $hasMore)';
+  return 'WishState(isLoading: $isLoading, starWishes: $starWishes, Wishes3: $Wishes3, totalWishes: $totalWishes, currentWishCount: $currentWishCount, page: $page, hasMore: $hasMore, isSearching: $isSearching, searchResults: $searchResults, searchPage: $searchPage, searchHasMore: $searchHasMore)';
 }
 
 
@@ -53,7 +52,7 @@ abstract mixin class $WishStateCopyWith<$Res>  {
   factory $WishStateCopyWith(WishState value, $Res Function(WishState) _then) = _$WishStateCopyWithImpl;
 @useResult
 $Res call({
- bool isLoading, List<WishModel> starWishes, List<WishModel> Wishes3, List<WishModel> totalWishes, int currentWishCount, int page, bool hasMore
+ bool isLoading, List<WishModel> starWishes, List<WishModel> Wishes3, List<WishModel> totalWishes, int currentWishCount, int page, bool hasMore, bool isSearching, List<WishModel> searchResults, int searchPage, bool searchHasMore
 });
 
 
@@ -70,7 +69,7 @@ class _$WishStateCopyWithImpl<$Res>
 
 /// Create a copy of WishState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? isLoading = null,Object? starWishes = null,Object? Wishes3 = null,Object? totalWishes = null,Object? currentWishCount = null,Object? page = null,Object? hasMore = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? isLoading = null,Object? starWishes = null,Object? Wishes3 = null,Object? totalWishes = null,Object? currentWishCount = null,Object? page = null,Object? hasMore = null,Object? isSearching = null,Object? searchResults = null,Object? searchPage = null,Object? searchHasMore = null,}) {
   return _then(_self.copyWith(
 isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
 as bool,starWishes: null == starWishes ? _self.starWishes : starWishes // ignore: cast_nullable_to_non_nullable
@@ -79,6 +78,10 @@ as List<WishModel>,totalWishes: null == totalWishes ? _self.totalWishes : totalW
 as List<WishModel>,currentWishCount: null == currentWishCount ? _self.currentWishCount : currentWishCount // ignore: cast_nullable_to_non_nullable
 as int,page: null == page ? _self.page : page // ignore: cast_nullable_to_non_nullable
 as int,hasMore: null == hasMore ? _self.hasMore : hasMore // ignore: cast_nullable_to_non_nullable
+as bool,isSearching: null == isSearching ? _self.isSearching : isSearching // ignore: cast_nullable_to_non_nullable
+as bool,searchResults: null == searchResults ? _self.searchResults : searchResults // ignore: cast_nullable_to_non_nullable
+as List<WishModel>,searchPage: null == searchPage ? _self.searchPage : searchPage // ignore: cast_nullable_to_non_nullable
+as int,searchHasMore: null == searchHasMore ? _self.searchHasMore : searchHasMore // ignore: cast_nullable_to_non_nullable
 as bool,
   ));
 }
@@ -164,10 +167,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool isLoading,  List<WishModel> starWishes,  List<WishModel> Wishes3,  List<WishModel> totalWishes,  int currentWishCount,  int page,  bool hasMore)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool isLoading,  List<WishModel> starWishes,  List<WishModel> Wishes3,  List<WishModel> totalWishes,  int currentWishCount,  int page,  bool hasMore,  bool isSearching,  List<WishModel> searchResults,  int searchPage,  bool searchHasMore)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _WishState() when $default != null:
-return $default(_that.isLoading,_that.starWishes,_that.Wishes3,_that.totalWishes,_that.currentWishCount,_that.page,_that.hasMore);case _:
+return $default(_that.isLoading,_that.starWishes,_that.Wishes3,_that.totalWishes,_that.currentWishCount,_that.page,_that.hasMore,_that.isSearching,_that.searchResults,_that.searchPage,_that.searchHasMore);case _:
   return orElse();
 
 }
@@ -185,10 +188,10 @@ return $default(_that.isLoading,_that.starWishes,_that.Wishes3,_that.totalWishes
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool isLoading,  List<WishModel> starWishes,  List<WishModel> Wishes3,  List<WishModel> totalWishes,  int currentWishCount,  int page,  bool hasMore)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool isLoading,  List<WishModel> starWishes,  List<WishModel> Wishes3,  List<WishModel> totalWishes,  int currentWishCount,  int page,  bool hasMore,  bool isSearching,  List<WishModel> searchResults,  int searchPage,  bool searchHasMore)  $default,) {final _that = this;
 switch (_that) {
 case _WishState():
-return $default(_that.isLoading,_that.starWishes,_that.Wishes3,_that.totalWishes,_that.currentWishCount,_that.page,_that.hasMore);case _:
+return $default(_that.isLoading,_that.starWishes,_that.Wishes3,_that.totalWishes,_that.currentWishCount,_that.page,_that.hasMore,_that.isSearching,_that.searchResults,_that.searchPage,_that.searchHasMore);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -205,10 +208,10 @@ return $default(_that.isLoading,_that.starWishes,_that.Wishes3,_that.totalWishes
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool isLoading,  List<WishModel> starWishes,  List<WishModel> Wishes3,  List<WishModel> totalWishes,  int currentWishCount,  int page,  bool hasMore)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool isLoading,  List<WishModel> starWishes,  List<WishModel> Wishes3,  List<WishModel> totalWishes,  int currentWishCount,  int page,  bool hasMore,  bool isSearching,  List<WishModel> searchResults,  int searchPage,  bool searchHasMore)?  $default,) {final _that = this;
 switch (_that) {
 case _WishState() when $default != null:
-return $default(_that.isLoading,_that.starWishes,_that.Wishes3,_that.totalWishes,_that.currentWishCount,_that.page,_that.hasMore);case _:
+return $default(_that.isLoading,_that.starWishes,_that.Wishes3,_that.totalWishes,_that.currentWishCount,_that.page,_that.hasMore,_that.isSearching,_that.searchResults,_that.searchPage,_that.searchHasMore);case _:
   return null;
 
 }
@@ -220,45 +223,52 @@ return $default(_that.isLoading,_that.starWishes,_that.Wishes3,_that.totalWishes
 
 
 class _WishState implements WishState {
-  const _WishState({this.isLoading = false, final  List<WishModel> starWishes = const [], final  List<WishModel> Wishes3 = const [], final  List<WishModel> totalWishes = const [], this.currentWishCount = 0, this.page = 0, this.hasMore = true}): _starWishes = starWishes,_Wishes3 = Wishes3,_totalWishes = totalWishes;
+  const _WishState({this.isLoading = false, final  List<WishModel> starWishes = const [], final  List<WishModel> Wishes3 = const [], final  List<WishModel> totalWishes = const [], this.currentWishCount = 0, this.page = 0, this.hasMore = true, this.isSearching = false, final  List<WishModel> searchResults = const [], this.searchPage = 0, this.searchHasMore = true}): _starWishes = starWishes,_Wishes3 = Wishes3,_totalWishes = totalWishes,_searchResults = searchResults;
   
 
-// API 호출 중 로딩 상태
+// 기존 상태들
 @override@JsonKey() final  bool isLoading;
-/// 즐겨찾기 위시리스트 (Top5)
  final  List<WishModel> _starWishes;
-/// 즐겨찾기 위시리스트 (Top5)
 @override@JsonKey() List<WishModel> get starWishes {
   if (_starWishes is EqualUnmodifiableListView) return _starWishes;
   // ignore: implicit_dynamic_type
   return EqualUnmodifiableListView(_starWishes);
 }
 
-/// 위시리스트 상위 노출 3개
  final  List<WishModel> _Wishes3;
-/// 위시리스트 상위 노출 3개
 @override@JsonKey() List<WishModel> get Wishes3 {
   if (_Wishes3 is EqualUnmodifiableListView) return _Wishes3;
   // ignore: implicit_dynamic_type
   return EqualUnmodifiableListView(_Wishes3);
 }
 
-/// 전체 위시리스트 (페이지네이션으로 불러옴)
  final  List<WishModel> _totalWishes;
-/// 전체 위시리스트 (페이지네이션으로 불러옴)
 @override@JsonKey() List<WishModel> get totalWishes {
   if (_totalWishes is EqualUnmodifiableListView) return _totalWishes;
   // ignore: implicit_dynamic_type
   return EqualUnmodifiableListView(_totalWishes);
 }
 
-/// 등록된 위시아이템 개수
+// --- 전체 리스트 기능을 위한 상태 추가 ---
 @override@JsonKey() final  int currentWishCount;
-// --- 페이지네이션을 위한 상태 ---
-/// 다음에 불러올 페이지 번호
 @override@JsonKey() final  int page;
-/// 더 불러올 페이지가 남았는지 여부
 @override@JsonKey() final  bool hasMore;
+// --- 검색 기능을 위한 상태 추가 ---
+/// 검색 API 호출 중 로딩 상태
+@override@JsonKey() final  bool isSearching;
+/// 검색 결과 리스트
+ final  List<WishModel> _searchResults;
+/// 검색 결과 리스트
+@override@JsonKey() List<WishModel> get searchResults {
+  if (_searchResults is EqualUnmodifiableListView) return _searchResults;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_searchResults);
+}
+
+/// 다음에 불러올 검색 결과 페이지 번호
+@override@JsonKey() final  int searchPage;
+/// 더 불러올 검색 결과가 남았는지 여부
+@override@JsonKey() final  bool searchHasMore;
 
 /// Create a copy of WishState
 /// with the given fields replaced by the non-null parameter values.
@@ -270,16 +280,16 @@ _$WishStateCopyWith<_WishState> get copyWith => __$WishStateCopyWithImpl<_WishSt
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _WishState&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&const DeepCollectionEquality().equals(other._starWishes, _starWishes)&&const DeepCollectionEquality().equals(other._Wishes3, _Wishes3)&&const DeepCollectionEquality().equals(other._totalWishes, _totalWishes)&&(identical(other.currentWishCount, currentWishCount) || other.currentWishCount == currentWishCount)&&(identical(other.page, page) || other.page == page)&&(identical(other.hasMore, hasMore) || other.hasMore == hasMore));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _WishState&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&const DeepCollectionEquality().equals(other._starWishes, _starWishes)&&const DeepCollectionEquality().equals(other._Wishes3, _Wishes3)&&const DeepCollectionEquality().equals(other._totalWishes, _totalWishes)&&(identical(other.currentWishCount, currentWishCount) || other.currentWishCount == currentWishCount)&&(identical(other.page, page) || other.page == page)&&(identical(other.hasMore, hasMore) || other.hasMore == hasMore)&&(identical(other.isSearching, isSearching) || other.isSearching == isSearching)&&const DeepCollectionEquality().equals(other._searchResults, _searchResults)&&(identical(other.searchPage, searchPage) || other.searchPage == searchPage)&&(identical(other.searchHasMore, searchHasMore) || other.searchHasMore == searchHasMore));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,isLoading,const DeepCollectionEquality().hash(_starWishes),const DeepCollectionEquality().hash(_Wishes3),const DeepCollectionEquality().hash(_totalWishes),currentWishCount,page,hasMore);
+int get hashCode => Object.hash(runtimeType,isLoading,const DeepCollectionEquality().hash(_starWishes),const DeepCollectionEquality().hash(_Wishes3),const DeepCollectionEquality().hash(_totalWishes),currentWishCount,page,hasMore,isSearching,const DeepCollectionEquality().hash(_searchResults),searchPage,searchHasMore);
 
 @override
 String toString() {
-  return 'WishState(isLoading: $isLoading, starWishes: $starWishes, Wishes3: $Wishes3, totalWishes: $totalWishes, currentWishCount: $currentWishCount, page: $page, hasMore: $hasMore)';
+  return 'WishState(isLoading: $isLoading, starWishes: $starWishes, Wishes3: $Wishes3, totalWishes: $totalWishes, currentWishCount: $currentWishCount, page: $page, hasMore: $hasMore, isSearching: $isSearching, searchResults: $searchResults, searchPage: $searchPage, searchHasMore: $searchHasMore)';
 }
 
 
@@ -290,7 +300,7 @@ abstract mixin class _$WishStateCopyWith<$Res> implements $WishStateCopyWith<$Re
   factory _$WishStateCopyWith(_WishState value, $Res Function(_WishState) _then) = __$WishStateCopyWithImpl;
 @override @useResult
 $Res call({
- bool isLoading, List<WishModel> starWishes, List<WishModel> Wishes3, List<WishModel> totalWishes, int currentWishCount, int page, bool hasMore
+ bool isLoading, List<WishModel> starWishes, List<WishModel> Wishes3, List<WishModel> totalWishes, int currentWishCount, int page, bool hasMore, bool isSearching, List<WishModel> searchResults, int searchPage, bool searchHasMore
 });
 
 
@@ -307,7 +317,7 @@ class __$WishStateCopyWithImpl<$Res>
 
 /// Create a copy of WishState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? isLoading = null,Object? starWishes = null,Object? Wishes3 = null,Object? totalWishes = null,Object? currentWishCount = null,Object? page = null,Object? hasMore = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? isLoading = null,Object? starWishes = null,Object? Wishes3 = null,Object? totalWishes = null,Object? currentWishCount = null,Object? page = null,Object? hasMore = null,Object? isSearching = null,Object? searchResults = null,Object? searchPage = null,Object? searchHasMore = null,}) {
   return _then(_WishState(
 isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
 as bool,starWishes: null == starWishes ? _self._starWishes : starWishes // ignore: cast_nullable_to_non_nullable
@@ -316,6 +326,10 @@ as List<WishModel>,totalWishes: null == totalWishes ? _self._totalWishes : total
 as List<WishModel>,currentWishCount: null == currentWishCount ? _self.currentWishCount : currentWishCount // ignore: cast_nullable_to_non_nullable
 as int,page: null == page ? _self.page : page // ignore: cast_nullable_to_non_nullable
 as int,hasMore: null == hasMore ? _self.hasMore : hasMore // ignore: cast_nullable_to_non_nullable
+as bool,isSearching: null == isSearching ? _self.isSearching : isSearching // ignore: cast_nullable_to_non_nullable
+as bool,searchResults: null == searchResults ? _self._searchResults : searchResults // ignore: cast_nullable_to_non_nullable
+as List<WishModel>,searchPage: null == searchPage ? _self.searchPage : searchPage // ignore: cast_nullable_to_non_nullable
+as int,searchHasMore: null == searchHasMore ? _self.searchHasMore : searchHasMore // ignore: cast_nullable_to_non_nullable
 as bool,
   ));
 }

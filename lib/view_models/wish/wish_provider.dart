@@ -96,6 +96,74 @@ class WishViewModel extends Notifier<WishState> {
     }
   }
 
+  /// 새로운 검색을 시작하거나, 다음 페이지를 불러옵니다.
+  Future<void> searchWishes(
+    BuildContext context, {
+    required String keyword,
+    bool isNewSearch = false, // 새로운 검색인지 여부
+  }) async {
+    // 이미 로딩 중이거나, 더 이상 데이터가 없으면 중복 요청 방지
+    if (state.isSearching || (!isNewSearch && !state.searchHasMore)) return;
+
+    // 새로운 검색이면, 기존 검색 결과를 초기화
+    if (isNewSearch) {
+      state = state.copyWith(
+        searchResults: [],
+        searchPage: 0,
+        searchHasMore: true,
+      );
+    }
+
+    state = state.copyWith(isSearching: true);
+    try {
+      final accessToken = await _storage.read(key: 'accessToken');
+      if (accessToken == null) throw Exception("로그인이 필요합니다.");
+
+      // 현재 필터 상태를 읽어옴
+      final filterState = ref.read(wishFilterViewModelProvider);
+
+      final response = await _wishService.searchWishList(
+        accessToken: accessToken,
+        page: state.searchPage,
+        size: 10,
+        sort: filterState.sortParameter,
+        keyword: keyword,
+        isBought: filterState.filterByBought ? true : null,
+        isStarred: filterState.filterByStarred ? true : null,
+      );
+
+      final responseData = response.data;
+      final List<dynamic> rawWishes = responseData["content"] ?? [];
+      final bool isLastPage = responseData["last"] as bool? ?? true;
+
+      final List<WishModel> newWishes =
+          rawWishes
+              .map((json) => WishModel.fromJson(json as Map<String, dynamic>))
+              .toList();
+
+      state = state.copyWith(
+        searchResults: [...state.searchResults, ...newWishes],
+        searchPage: state.searchPage + 1,
+        searchHasMore: !isLastPage,
+      );
+    } on DioException catch (e) {
+      if (context.mounted) _handleApiError(context, e);
+    } catch (e) {
+      if (context.mounted) _handleGeneralError(context, e);
+    } finally {
+      state = state.copyWith(isSearching: false);
+    }
+  }
+
+  /// 검색 페이지를 벗어날 때 검색 결과를 초기화합니다.
+  void clearSearchResults() {
+    state = state.copyWith(
+      searchResults: <WishModel>[],
+      searchPage: 0,
+      searchHasMore: true,
+    );
+  }
+
   /// 사용자의 전체 위시리스트를 페이지네이션으로 불러옵니다.
   Future<void> fetchMoreWishes(BuildContext context) async {
     if (state.isLoading || !state.hasMore) return;

@@ -173,7 +173,7 @@ abstract class RestClient {
     @Header("Authorization") String accessToken,
   );
 
-  /// 위시리스트 전체 목록 불러오기
+  /// 위시리스트 전체 목록 불러오기 API
   @GET("/api/wish")
   Future<ApiResponse> getWishList(
     @Header("Authorization") String accessToken,
@@ -181,6 +181,18 @@ abstract class RestClient {
     @Query("size") int size,
     @Query("sort") String sort, // 예: "price,asc" 또는 "createdAt,desc"
   );
+
+  /// 위시리스트 검색하기 API
+  @GET("/api/wish/search")
+  Future<ApiResponse> searchWishList(
+    @Header("Authorization") String accessToken, {
+    @Query("page") required int page,
+    @Query("size") required int size,
+    @Query("sort") String? sort,
+    @Query("keyword") String? keyword,
+    @Query("isBought") bool? isBought,
+    @Query("isStarred") bool? isStarred,
+  });
 
   /// 가장 최근에 획득한 조각 불러오기 API
   @GET("/api/piece/recent")

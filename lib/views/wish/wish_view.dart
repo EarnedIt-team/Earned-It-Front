@@ -137,7 +137,7 @@ class _WishViewState extends ConsumerState<WishView> {
                               child: AbsorbPointer(
                                 child: TextField(
                                   decoration: InputDecoration(
-                                    hintText: '브랜드, 이름, 가격 등',
+                                    hintText: '브랜드, 이름 등',
                                     prefixIcon: const Icon(Icons.search),
                                     border: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(
@@ -153,7 +153,7 @@ class _WishViewState extends ConsumerState<WishView> {
                                         Theme.of(context).brightness ==
                                                 Brightness.dark
                                             ? Colors.transparent
-                                            : Colors.white,
+                                            : lightColor,
                                     contentPadding: EdgeInsets.zero,
                                   ),
                                 ),
@@ -605,8 +605,8 @@ class _WishlistItem extends ConsumerWidget {
                             Text(
                               item.vendor,
                               style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: context.width(0.04),
+                                color: Colors.grey,
+                                fontSize: context.width(0.032),
                                 height: 1,
                               ),
                               maxLines: 1,
@@ -633,8 +633,9 @@ class _WishlistItem extends ConsumerWidget {
                           style: TextStyle(
                             color:
                                 Theme.of(context).brightness == Brightness.dark
-                                    ? Colors.grey
-                                    : const Color.fromARGB(255, 114, 114, 114),
+                                    ? Colors.white
+                                    : const Color.fromARGB(255, 44, 44, 44),
+                            fontWeight: FontWeight.w600,
                             fontSize: context.width(0.04),
                             height: 1.5,
                           ),

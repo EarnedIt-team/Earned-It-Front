@@ -464,8 +464,8 @@ class AllWishlistItem extends ConsumerWidget {
                             Text(
                               item.vendor,
                               style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: context.width(0.04),
+                                color: Colors.grey,
+                                fontSize: context.width(0.032),
                                 height: 1,
                               ),
                               maxLines: 1,
@@ -492,8 +492,9 @@ class AllWishlistItem extends ConsumerWidget {
                           style: TextStyle(
                             color:
                                 Theme.of(context).brightness == Brightness.dark
-                                    ? Colors.grey
-                                    : const Color.fromARGB(255, 114, 114, 114),
+                                    ? Colors.white
+                                    : const Color.fromARGB(255, 44, 44, 44),
+                            fontWeight: FontWeight.w600,
                             fontSize: context.width(0.04),
                             height: 1.5,
                           ),

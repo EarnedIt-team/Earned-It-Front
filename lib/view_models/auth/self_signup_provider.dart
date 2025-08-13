@@ -1,12 +1,12 @@
 import 'dart:async';
 import 'package:earned_it/config/exception.dart';
+import 'package:earned_it/config/toastMessage.dart';
 import 'package:earned_it/models/signup/self_signup_state.dart';
 import 'package:earned_it/services/auth/signup_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:toastification/toastification.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 final signUpViewModelProvider =
@@ -76,13 +76,14 @@ class SignUpViewModel extends AutoDisposeNotifier<SelfSignupState> {
       state = state.copyWith(isRequestAuth: true, isProgress: false);
       _agreeCodeController.clear();
       startTimer();
-      toastification.show(
-        context: context,
-        title: const Text("해당 이메일로 인증 코드를 전송했습니다."),
-      );
+      toastMessage(context, '인증 코드를 전송했습니다.');
     } catch (e) {
       state = state.copyWith(isRequestAuth: false, isProgress: false);
-      toastification.show(context: context, title: Text(e.toDisplayString()));
+      toastMessage(
+        context,
+        e.toDisplayString(),
+        type: ToastmessageType.errorType,
+      );
     }
   }
 
@@ -102,7 +103,11 @@ class SignUpViewModel extends AutoDisposeNotifier<SelfSignupState> {
       state = state.copyWith(isSuccessfulCode: true, isProgress: false);
     } catch (e) {
       state = state.copyWith(isSuccessfulCode: false, isProgress: false);
-      toastification.show(context: context, title: Text(e.toDisplayString()));
+      toastMessage(
+        context,
+        e.toDisplayString(),
+        type: ToastmessageType.errorType,
+      );
     }
   }
 
@@ -143,17 +148,18 @@ class SignUpViewModel extends AutoDisposeNotifier<SelfSignupState> {
           _passwordController.text,
         );
         state = state.copyWith(isProgress: false);
-        toastification.show(context: context, title: const Text("회원가입 성공!"));
+        toastMessage(context, '회원가입이 정상 처리되었습니다.');
         context.go("/login");
       } catch (e) {
         state = state.copyWith(isProgress: false);
-        toastification.show(context: context, title: Text(e.toDisplayString()));
+        toastMessage(
+          context,
+          e.toDisplayString(),
+          type: ToastmessageType.errorType,
+        );
       }
     } else {
-      toastification.show(
-        context: context,
-        title: const Text("모든 필수 항목을 확인해주세요."),
-      );
+      toastMessage(context, '필수 항목을 확인해주세요.', type: ToastmessageType.errorType);
     }
   }
 

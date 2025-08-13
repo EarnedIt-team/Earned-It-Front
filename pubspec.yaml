@@ -15,7 +15,7 @@ dependencies:
   go_router: ^16.0.0
   flutter_riverpod: ^2.6.1
   url_launcher: ^6.3.2
-  toastification: ^3.0.3
+  # toastification: ^3.0.3
   freezed: ^3.1.0
   sign_in_with_apple: ^7.0.1
   kakao_flutter_sdk: ^1.9.7+3
@@ -38,6 +38,7 @@ dependencies:
   flutter_slidable: ^4.0.0
   flutter_launcher_icons: ^0.14.4
   image_cropper:
+  fluttertoast: ^8.2.12
 
 dev_dependencies:
   flutter_test:

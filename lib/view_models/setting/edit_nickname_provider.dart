@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:earned_it/config/exception.dart';
+import 'package:earned_it/config/toastMessage.dart';
 import 'package:earned_it/models/setting/nickname_edit_state.dart';
 import 'package:earned_it/services/auth/login_service.dart';
 import 'package:earned_it/services/setting_service.dart';
@@ -8,7 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:go_router/go_router.dart';
-import 'package:toastification/toastification.dart';
 
 // 로직을 처리하는 Notifier(ViewModel) 클래스
 class NicknameEditViewModel extends AutoDisposeNotifier<NicknameEditState> {
@@ -97,14 +97,7 @@ class NicknameEditViewModel extends AutoDisposeNotifier<NicknameEditState> {
           .read(userProvider.notifier)
           .updateNickName(nickName: nicknameController.text);
 
-      toastification.show(
-        alignment: Alignment.topCenter,
-        style: ToastificationStyle.simple,
-        type: ToastificationType.success,
-        context: context,
-        title: const Text("닉네임이 수정되었습니다."),
-        autoCloseDuration: const Duration(seconds: 3),
-      );
+      toastMessage(context, '닉네임이 변경되었습니다.');
 
       context.pop();
     } on DioException catch (e) {
@@ -115,33 +108,27 @@ class NicknameEditViewModel extends AutoDisposeNotifier<NicknameEditState> {
         final String? refreshToken = await _storage.read(key: 'refreshToken');
         try {
           await _loginService.checkToken(refreshToken!);
-          toastification.show(
-            alignment: Alignment.topCenter,
-            style: ToastificationStyle.simple,
-            context: context,
-            title: const Text("잠시 후, 다시 시도해주세요."),
-            autoCloseDuration: const Duration(seconds: 3),
+          toastMessage(
+            context,
+            '잠시 후, 다시 시도해주세요.',
+            type: ToastmessageType.errorType,
           );
         } catch (e) {
           context.go('/login');
-          toastification.show(
-            alignment: Alignment.topCenter,
-            style: ToastificationStyle.simple,
-            context: context,
-            title: const Text("다시 로그인해주세요."),
-            autoCloseDuration: const Duration(seconds: 3),
+          toastMessage(
+            context,
+            '다시 로그인해주세요.',
+            type: ToastmessageType.errorType,
           );
         }
       }
     } catch (e) {
       print('닉네임 설정 중 에러 발생: $e');
       state = state.copyWith(isLoading: false);
-      toastification.show(
-        alignment: Alignment.topCenter,
-        style: ToastificationStyle.simple,
-        context: context,
-        title: Text(e.toDisplayString()),
-        autoCloseDuration: const Duration(seconds: 3),
+      toastMessage(
+        context,
+        e.toDisplayString(),
+        type: ToastmessageType.errorType,
       );
     }
   }

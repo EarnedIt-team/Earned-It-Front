@@ -1,4 +1,5 @@
 import 'package:earned_it/config/exception.dart';
+import 'package:earned_it/config/toastMessage.dart';
 import 'package:earned_it/models/login/login_state.dart';
 import 'package:earned_it/services/auth/apple_login_service.dart';
 import 'package:earned_it/services/auth/kakao_login_service.dart';
@@ -9,7 +10,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:go_router/go_router.dart';
-import 'package:toastification/toastification.dart';
 
 final loginViewModelProvider =
     NotifierProvider.autoDispose<LoginViewModel, LoginState>(
@@ -170,12 +170,10 @@ class LoginViewModel extends AutoDisposeNotifier<LoginState> {
 
   void _handleLoginFailure(BuildContext context, Object e, {String? title}) {
     if (context.mounted) {
-      toastification.show(
-        alignment: Alignment.topCenter,
-        style: ToastificationStyle.simple,
-        context: context,
-        title: Text(title ?? e.toDisplayString()),
-        autoCloseDuration: const Duration(seconds: 3),
+      toastMessage(
+        context,
+        e.toDisplayString(),
+        type: ToastmessageType.errorType,
       );
     }
   }

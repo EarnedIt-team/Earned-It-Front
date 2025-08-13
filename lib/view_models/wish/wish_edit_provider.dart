@@ -1,18 +1,17 @@
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:earned_it/config/exception.dart';
+import 'package:earned_it/config/toastMessage.dart';
 import 'package:earned_it/models/wish/wish_edit_state.dart';
 import 'package:earned_it/models/wish/wish_model.dart';
 import 'package:earned_it/services/auth/login_service.dart';
 import 'package:earned_it/services/wish_service.dart';
-import 'package:earned_it/view_models/user_provider.dart';
 import 'package:earned_it/view_models/wish/wish_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:toastification/toastification.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart'; // path_provider 패키지 import
 
@@ -138,10 +137,10 @@ class WishEditViewModel extends AutoDisposeNotifier<WishEditState> {
 
         if (imageSize > maxSizeInBytes) {
           if (context.mounted) {
-            toastification.show(
-              context: context,
-              type: ToastificationType.error,
-              title: const Text('이미지 크기는 5MB를 초과할 수 없습니다.'),
+            toastMessage(
+              context,
+              '이미지 크기는 최대 5MB 이하입니다.',
+              type: ToastmessageType.errorType,
             );
           }
           return;
@@ -193,11 +192,7 @@ class WishEditViewModel extends AutoDisposeNotifier<WishEditState> {
       await ref.read(wishViewModelProvider.notifier).loadHighLightWish();
 
       if (context.mounted) {
-        toastification.show(
-          context: context,
-          type: ToastificationType.success,
-          title: const Text("위시 아이템이 수정되었습니다."),
-        );
+        toastMessage(context, '위시 아이템이 수정되었습니다.');
         context.pop();
       }
     } on DioException catch (e) {
@@ -213,10 +208,10 @@ class WishEditViewModel extends AutoDisposeNotifier<WishEditState> {
 
   Future<void> _handleApiError(BuildContext context, DioException e) async {
     if (e.response?.data['code'] == "AUTH_REQUIRED") {
-      toastification.show(
-        context: context,
-        title: const Text("토큰이 만료되어 재발급합니다. 잠시 후 다시 시도해주세요."),
-        autoCloseDuration: const Duration(seconds: 3),
+      toastMessage(
+        context,
+        '잠시 후 다시 시도해주세요.',
+        type: ToastmessageType.errorType,
       );
       try {
         final String? refreshToken = await _storage.read(key: 'refreshToken');
@@ -230,10 +225,10 @@ class WishEditViewModel extends AutoDisposeNotifier<WishEditState> {
   }
 
   void _handleGeneralError(BuildContext context, Object e) {
-    toastification.show(
-      context: context,
-      title: Text(e.toDisplayString()),
-      autoCloseDuration: const Duration(seconds: 3),
+    toastMessage(
+      context,
+      e.toDisplayString(),
+      type: ToastmessageType.errorType,
     );
   }
 }

@@ -1,4 +1,5 @@
 import 'package:earned_it/config/design.dart';
+import 'package:earned_it/config/toastMessage.dart';
 import 'package:earned_it/view_models/home_provider.dart';
 import 'package:earned_it/view_models/piece_provider.dart';
 import 'package:earned_it/view_models/user_provider.dart';
@@ -7,7 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
-import 'package:toastification/toastification.dart';
 
 class HomePieceView extends ConsumerStatefulWidget {
   const HomePieceView({super.key});
@@ -187,12 +187,10 @@ class _HomePieceViewState extends ConsumerState<HomePieceView> {
                             if (!userState.isCheckedIn) {
                               ref.read(isOpenCheckedIn.notifier).state = true;
                             } else {
-                              toastification.show(
-                                context: context,
-                                type: ToastificationType.error,
-                                style: ToastificationStyle.flat,
-                                title: const Text('출석 체크는 하루에 한번 가능합니다.'),
-                                autoCloseDuration: const Duration(seconds: 3),
+                              toastMessage(
+                                context,
+                                '출석 체크는 하루에 한번 가능합니다.',
+                                type: ToastmessageType.errorType,
                               );
                             }
                           },

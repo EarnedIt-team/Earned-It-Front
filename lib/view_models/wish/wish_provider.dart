@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:earned_it/config/exception.dart';
+import 'package:earned_it/config/toastMessage.dart';
 import 'package:earned_it/models/wish/wish_filter_state.dart';
 import 'package:earned_it/models/wish/wish_model.dart';
 import 'package:earned_it/models/wish/wish_state.dart';
@@ -11,7 +12,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:go_router/go_router.dart';
-import 'package:toastification/toastification.dart';
 
 final wishViewModelProvider = NotifierProvider<WishViewModel, WishState>(
   WishViewModel.new,
@@ -232,15 +232,16 @@ class WishViewModel extends Notifier<WishState> {
       // 로컬에서 동일한 정보 삭제
       ref.read(wishViewModelProvider.notifier).removeWishItemLocally(wishId);
 
-      await ref.read(wishViewModelProvider.notifier).loadStarWish();
-      await ref.read(wishViewModelProvider.notifier).loadHighLightWish();
+      final String currentLocation = GoRouterState.of(context).uri.toString();
 
-      toastification.show(
-        context: context,
-        type: ToastificationType.success,
-        title: const Text('위시 아이템이 삭제되었습니다.'),
-        autoCloseDuration: const Duration(seconds: 3),
-      );
+      if (currentLocation == '/wish') {
+        await ref.read(wishViewModelProvider.notifier).loadStarWish();
+        await ref.read(wishViewModelProvider.notifier).loadHighLightWish();
+      } else if (currentLocation == '/wishALL') {
+        // await ref.read(wishViewModelProvider.notifier).fetchMoreWishes(context);
+      } else if (currentLocation == '/wishSearch') {
+        // ref.read(wishViewModelProvider.notifier).clearSearchResults();
+      }
     } on DioException catch (e) {
       if (context.mounted) _handleApiError(context, e);
     } catch (e) {
@@ -262,11 +263,15 @@ class WishViewModel extends Notifier<WishState> {
     final newTotalWishes = List<WishModel>.from(state.totalWishes)
       ..removeWhere((item) => item.wishId == wishId);
 
+    final newSearchResults = List<WishModel>.from(state.searchResults)
+      ..removeWhere((item) => item.wishId == wishId);
+
     // 제거된 새 리스트로 상태를 업데이트
     state = state.copyWith(
       starWishes: newStarWishes,
       Wishes3: newHighLightWishes,
       totalWishes: newTotalWishes,
+      searchResults: newSearchResults,
     );
   }
 
@@ -316,16 +321,18 @@ class WishViewModel extends Notifier<WishState> {
 
       // 서버 성공 후, 로컬 상태에서 즉시 구매 상태를 토글
       toggleBoughtStatusLocally(wishId);
+      toastMessage(context, '아이템 정보를 수정했습니다.');
 
-      await ref.read(wishViewModelProvider.notifier).loadStarWish();
-      await ref.read(wishViewModelProvider.notifier).loadHighLightWish();
+      final String currentLocation = GoRouterState.of(context).uri.toString();
 
-      toastification.show(
-        context: context,
-        type: ToastificationType.success,
-        title: const Text('아이템 정보를 수정했습니다.'),
-        autoCloseDuration: const Duration(seconds: 3),
-      );
+      if (currentLocation == '/wish') {
+        await ref.read(wishViewModelProvider.notifier).loadStarWish();
+        await ref.read(wishViewModelProvider.notifier).loadHighLightWish();
+      } else if (currentLocation == '/wishALL') {
+        // await ref.read(wishViewModelProvider.notifier).fetchMoreWishes(context);
+      } else if (currentLocation == '/wishSearch') {
+        // ref.read(wishViewModelProvider.notifier).clearSearchResults();
+      }
     } on DioException catch (e) {
       if (context.mounted) _handleApiError(context, e);
     } catch (e) {
@@ -366,11 +373,21 @@ class WishViewModel extends Notifier<WishState> {
           return item;
         }).toList();
 
+    final newSearchResults =
+        state.searchResults.map((item) {
+          if (item.wishId == wishId) {
+            // freezed의 copyWith를 사용하여 bought 값만 변경
+            return item.copyWith(bought: !item.bought);
+          }
+          return item;
+        }).toList();
+
     // 3. 업데이트된 두 리스트로 상태를 갱신합니다.
     state = state.copyWith(
       starWishes: newStarWishes,
       Wishes3: newHighLightWishes,
       totalWishes: newTotalWishes,
+      searchResults: newSearchResults,
     );
   }
 
@@ -390,16 +407,18 @@ class WishViewModel extends Notifier<WishState> {
 
       // 서버 성공 후, 로컬 상태에서 즉시 Star 상태를 토글
       toggleStarStatusLocally(wishId);
+      toastMessage(context, '아이템 정보를 수정했습니다.');
 
-      await ref.read(wishViewModelProvider.notifier).loadStarWish();
-      await ref.read(wishViewModelProvider.notifier).loadHighLightWish();
+      final String currentLocation = GoRouterState.of(context).uri.toString();
 
-      toastification.show(
-        context: context,
-        type: ToastificationType.success,
-        title: const Text('아이템 정보를 수정했습니다.'),
-        autoCloseDuration: const Duration(seconds: 3),
-      );
+      if (currentLocation == '/wish') {
+        await ref.read(wishViewModelProvider.notifier).loadStarWish();
+        await ref.read(wishViewModelProvider.notifier).loadHighLightWish();
+      } else if (currentLocation == '/wishALL') {
+        // await ref.read(wishViewModelProvider.notifier).fetchMoreWishes(context);
+      } else if (currentLocation == '/wishSearch') {
+        // ref.read(wishViewModelProvider.notifier).clearSearchResults();
+      }
     } on DioException catch (e) {
       if (context.mounted) _handleApiError(context, e);
     } catch (e) {
@@ -440,22 +459,33 @@ class WishViewModel extends Notifier<WishState> {
           return item;
         }).toList();
 
+    final newSearchResults =
+        state.searchResults.map((item) {
+          if (item.wishId == wishId) {
+            // freezed의 copyWith를 사용하여 starred 값만 변경
+            return item.copyWith(starred: !item.starred);
+          }
+          return item;
+        }).toList();
+
     // 3. 업데이트된 두 리스트로 상태를 갱신합니다.
     state = state.copyWith(
       starWishes: newStarWishes,
       Wishes3: newHighLightWishes,
       totalWishes: newTotalWishes,
+      searchResults: newSearchResults,
     );
   }
 
   // --- 에러 처리 헬퍼 메서드 ---
   Future<void> _handleApiError(BuildContext context, DioException e) async {
     if (e.response?.data['code'] == "AUTH_REQUIRED") {
-      toastification.show(
-        context: context,
-        title: const Text("토큰이 만료되어 재발급합니다. 잠시 후 다시 시도해주세요."),
-        autoCloseDuration: const Duration(seconds: 3),
+      toastMessage(
+        context,
+        '잠시 후 다시 시도해주세요.',
+        type: ToastmessageType.errorType,
       );
+
       try {
         final refreshToken = await _storage.read(key: 'refreshToken');
         await _loginService.checkToken(refreshToken!);
@@ -468,10 +498,10 @@ class WishViewModel extends Notifier<WishState> {
   }
 
   void _handleGeneralError(BuildContext context, Object e) {
-    toastification.show(
-      context: context,
-      title: Text(e.toDisplayString()),
-      autoCloseDuration: const Duration(seconds: 3),
+    toastMessage(
+      context,
+      e.toDisplayString(),
+      type: ToastmessageType.errorType,
     );
   }
 }

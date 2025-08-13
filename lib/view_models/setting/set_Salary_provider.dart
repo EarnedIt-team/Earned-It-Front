@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:earned_it/config/exception.dart';
+import 'package:earned_it/config/toastMessage.dart';
 import 'package:earned_it/models/setting/set_salary_state.dart';
 import 'package:earned_it/services/auth/login_service.dart';
 import 'package:earned_it/view_models/user_provider.dart';
@@ -9,7 +10,6 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:earned_it/services/setting_service.dart';
-import 'package:toastification/toastification.dart';
 
 // NotifierProvider.autoDispose 정의
 final setSalaryViewModelProvider =
@@ -175,11 +175,7 @@ class SetSalaryViewModel extends AutoDisposeNotifier<SetSalaryState> {
             newEarningsPerSecond: newAmountPerSec,
           );
 
-      toastification.show(
-        context: context,
-        type: ToastificationType.success,
-        title: const Text("월 수익이 설정되었습니다."),
-      );
+      toastMessage(context, '월 수익이 설정되었습니다.');
 
       context.pop();
     } on DioException catch (e) {
@@ -197,13 +193,14 @@ class SetSalaryViewModel extends AutoDisposeNotifier<SetSalaryState> {
       final String? refreshToken = await _storage.read(key: 'refreshToken');
       try {
         await _loginService.checkToken(refreshToken!);
-        toastification.show(
-          context: context,
-          title: const Text("잠시 후, 다시 시도해주세요."),
+        toastMessage(
+          context,
+          '잠시 후, 다시 시도해주세요.',
+          type: ToastmessageType.errorType,
         );
       } catch (e) {
         context.go('/login');
-        toastification.show(context: context, title: const Text("다시 로그인해주세요."));
+        toastMessage(context, '다시 로그인해주세요.', type: ToastmessageType.errorType);
       }
     } else {
       _handleGeneralError(context, e);
@@ -212,6 +209,10 @@ class SetSalaryViewModel extends AutoDisposeNotifier<SetSalaryState> {
 
   void _handleGeneralError(BuildContext context, Object e) {
     state = state.copyWith(isLoading: false);
-    toastification.show(context: context, title: Text(e.toDisplayString()));
+    toastMessage(
+      context,
+      e.toDisplayString(),
+      type: ToastmessageType.errorType,
+    );
   }
 }

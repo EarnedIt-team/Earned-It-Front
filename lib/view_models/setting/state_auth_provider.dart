@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:earned_it/config/exception.dart';
+import 'package:earned_it/config/toastMessage.dart';
 import 'package:earned_it/services/auth/login_service.dart';
 import 'package:earned_it/services/auth/logout_service.dart';
 import 'package:earned_it/services/auth/resign_service.dart';
@@ -12,7 +13,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:toastification/toastification.dart';
 
 // 로딩 상태 Provider
 final stateAuthLoadingProvider = StateProvider<bool>((ref) => false);
@@ -72,11 +72,7 @@ class StateAuthViewModel {
       await _clearAllUserData();
 
       if (context.mounted) {
-        toastification.show(
-          context: context,
-          type: ToastificationType.success,
-          title: Text(successMessage),
-        );
+        toastMessage(context, successMessage);
         // 3. 모든 정리가 끝난 후 페이지 이동
         context.go('/login');
       }
@@ -85,9 +81,10 @@ class StateAuthViewModel {
     } catch (e) {
       print('$errorMessage: $e');
       if (context.mounted) {
-        toastification.show(
-          context: context,
-          title: Text("$errorMessage: ${e.toDisplayString()}"),
+        toastMessage(
+          context,
+          e.toDisplayString(),
+          type: ToastmessageType.errorType,
         );
       }
     } finally {
@@ -119,13 +116,14 @@ class StateAuthViewModel {
       final String? refreshToken = await _storage.read(key: 'refreshToken');
       try {
         await _ref.read(loginServiceProvider).checkToken(refreshToken!);
-        toastification.show(
-          context: context,
-          title: const Text("잠시 후, 다시 시도해주세요."),
+        toastMessage(
+          context,
+          '잠시 후, 다시 시도해주세요.',
+          type: ToastmessageType.errorType,
         );
       } catch (e) {
         context.go('/login');
-        toastification.show(context: context, title: const Text("다시 로그인해주세요."));
+        toastMessage(context, '다시 로그인해주세요.', type: ToastmessageType.errorType);
       }
     } else {
       _handleGeneralError(context, e);
@@ -134,6 +132,10 @@ class StateAuthViewModel {
 
   /// 일반 에러 처리 헬퍼 메서드
   void _handleGeneralError(BuildContext context, Object e) {
-    toastification.show(context: context, title: Text(e.toDisplayString()));
+    toastMessage(
+      context,
+      e.toDisplayString(),
+      type: ToastmessageType.errorType,
+    );
   }
 }

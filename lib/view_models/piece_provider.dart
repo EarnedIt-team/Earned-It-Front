@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:earned_it/config/toastMessage.dart';
 import 'package:earned_it/models/piece/piece_info_model.dart';
 import 'package:earned_it/models/piece/piece_state.dart';
 import 'package:earned_it/models/piece/theme_model.dart';
@@ -7,7 +8,6 @@ import 'package:earned_it/views/navigation_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:toastification/toastification.dart';
 
 final pieceProvider = NotifierProvider<PieceNotifier, PieceState>(
   PieceNotifier.new,
@@ -146,10 +146,6 @@ class PieceNotifier extends Notifier<PieceState> {
 
   void _handleGeneralError(BuildContext context, Object e) {
     state = state.copyWith(isLoading: false);
-    toastification.show(
-      context: context,
-      title: Text(e.toString()),
-      autoCloseDuration: const Duration(seconds: 3),
-    );
+    toastMessage(context, e.toString(), type: ToastmessageType.errorType);
   }
 }

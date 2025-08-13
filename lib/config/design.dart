@@ -73,6 +73,8 @@ const Color primaryGradientEnd = Color.fromRGBO(
   1,
 ); // rgba(235, 94, 112, 1)
 
+const Color primaryButtonColor = Color(0x99FF3C27);
+
 const Color lightColor = Color.fromRGBO(252, 253, 255, 1);
 
 // 2. 앱 전체에서 재사용할 그라데이션 BoxDecoration 정의
@@ -143,6 +145,7 @@ final ThemeData darkTheme = ThemeData(
       systemNavigationBarIconBrightness: Brightness.light,
     ),
     elevation: 0,
+
     backgroundColor: Colors.black,
     foregroundColor: Colors.white,
   ),

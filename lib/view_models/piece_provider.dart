@@ -1,13 +1,15 @@
 import 'package:dio/dio.dart';
+import 'package:earned_it/config/toastMessage.dart';
 import 'package:earned_it/models/piece/piece_info_model.dart';
 import 'package:earned_it/models/piece/piece_state.dart';
 import 'package:earned_it/models/piece/theme_model.dart';
 import 'package:earned_it/services/piece_service.dart';
+import 'package:earned_it/view_models/user_provider.dart';
 import 'package:earned_it/views/navigation_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:toastification/toastification.dart';
+import 'package:go_router/go_router.dart';
 
 final pieceProvider = NotifierProvider<PieceNotifier, PieceState>(
   PieceNotifier.new,
@@ -50,8 +52,8 @@ class PieceNotifier extends Notifier<PieceState> {
     }
   }
 
-  /// 퍼즐 리스트를 불러오기
-  Future<void> loadPuzzleList(BuildContext context) async {
+  /// 퍼즐 리스트 & 정보를 불러오기
+  Future<void> loadPuzzle(BuildContext context) async {
     try {
       state = state.copyWith(isLoading: true);
       final accessToken = await _storage.read(key: 'accessToken');
@@ -68,7 +70,15 @@ class PieceNotifier extends Notifier<PieceState> {
               )
               .toList();
 
-      state = state.copyWith(isLoading: false, pieces: themeList);
+      state = state.copyWith(
+        isLoading: false,
+        pieces: themeList,
+        themeCount: data['puzzleInfo']['themeCount'] ?? 0,
+        completedThemeCount: data['puzzleInfo']['completedThemeCount'] ?? 0,
+        totalPieceCount: data['puzzleInfo']['totalPieceCount'] ?? 0,
+        completedPieceCount: data['puzzleInfo']['completedPieceCount'] ?? 0,
+        totalAccumulatedValue: data['puzzleInfo']['totalAccumulatedValue'] ?? 0,
+      );
     } on DioException catch (e) {
       if (context.mounted) _handleApiError(context, e);
     } catch (e) {
@@ -129,6 +139,30 @@ class PieceNotifier extends Notifier<PieceState> {
     }
   }
 
+  /// 선택한 조각을 메인으로 고정하도록 서버에 요청합니다.
+  Future<void> pinPieceToMain(BuildContext context, int pieceId) async {
+    try {
+      final accessToken = await _storage.read(key: 'accessToken');
+      if (accessToken == null) throw Exception("로그인이 필요합니다.");
+
+      // 1. PieceService를 통해 API 호출
+      await _pieceService.keepPiece(accessToken: accessToken, pieceId: pieceId);
+
+      // 2. 성공 후, 전체 유저 정보를 다시 불러와 메인 조각을 갱신
+      //    (loadUser가 recentlyPiece도 업데이트한다고 가정)
+      // await ref.read(userProvider.notifier).loadUser();
+
+      if (context.mounted) {
+        toastMessage(context, '메인 조각으로 고정되었습니다.');
+        context.pop();
+      }
+    } on DioException catch (e) {
+      if (context.mounted) _handleGeneralError(context, e);
+    } catch (e) {
+      if (context.mounted) _handleGeneralError(context, e);
+    }
+  }
+
   /// 상태를 초기화하는 메소드
   void reset() {
     state = const PieceState(); // 다시 초기 상태로 되돌립니다.
@@ -146,10 +180,6 @@ class PieceNotifier extends Notifier<PieceState> {
 
   void _handleGeneralError(BuildContext context, Object e) {
     state = state.copyWith(isLoading: false);
-    toastification.show(
-      context: context,
-      title: Text(e.toString()),
-      autoCloseDuration: const Duration(seconds: 3),
-    );
+    toastMessage(context, e.toString(), type: ToastmessageType.errorType);
   }
 }

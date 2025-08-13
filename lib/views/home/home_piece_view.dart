@@ -1,4 +1,5 @@
 import 'package:earned_it/config/design.dart';
+import 'package:earned_it/config/toastMessage.dart';
 import 'package:earned_it/view_models/home_provider.dart';
 import 'package:earned_it/view_models/piece_provider.dart';
 import 'package:earned_it/view_models/user_provider.dart';
@@ -7,7 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
-import 'package:toastification/toastification.dart';
 
 class HomePieceView extends ConsumerStatefulWidget {
   const HomePieceView({super.key});
@@ -21,9 +21,9 @@ class _HomePieceViewState extends ConsumerState<HomePieceView> {
   void initState() {
     super.initState();
     // 모달이 열릴 때 보상 후보 데이터를 불러옵니다.
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(pieceProvider.notifier).loadRecentPiece(context);
-    });
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   ref.read(pieceProvider.notifier).loadRecentPiece(context);
+    // });
   }
 
   @override
@@ -54,9 +54,30 @@ class _HomePieceViewState extends ConsumerState<HomePieceView> {
                 pieceState.recentlyPiece != null
                     ? Column(
                       children: [
+                        Container(
+                          decoration: const BoxDecoration(
+                            color: primaryColor,
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(18.0),
+                            ),
+                          ),
+                          padding: EdgeInsets.symmetric(
+                            horizontal: context.width(0.03),
+                            vertical: context.width(0.02),
+                          ),
+                          // 👇 4. 계산된 조각 수를 Text 위젯에 반영
+                          child: Text(
+                            "x ${currencyFormat.format(buyablePieces)}",
+                            style: TextStyle(
+                              fontSize: context.width(0.035),
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
                         SizedBox(
-                          width: context.height(0.33),
-                          height: context.height(0.33),
+                          width: context.width(0.6),
+                          height: context.width(0.6),
                           child: Stack(
                             alignment: Alignment.center,
                             children: [
@@ -68,7 +89,7 @@ class _HomePieceViewState extends ConsumerState<HomePieceView> {
                                   pieceState.recentlyPiece!.image!,
                                   width: context.height(0.3),
                                   height: context.height(0.3),
-                                  fit: BoxFit.cover,
+                                  fit: BoxFit.contain,
                                   loadingBuilder: (
                                     context,
                                     child,
@@ -99,66 +120,9 @@ class _HomePieceViewState extends ConsumerState<HomePieceView> {
                                           ),
                                 ),
                               ),
-                              // Positioned(
-                              //   bottom: 0,
-                              //   right: 0,
-                              //   child: FloatingActionButton(
-                              //     onPressed: () {
-                              //       if (!userState.isCheckedIn) {
-                              //         ref.read(isOpenCheckedIn.notifier).state =
-                              //             true;
-                              //       } else {
-                              //         toastification.show(
-                              //           context: context,
-                              //           type: ToastificationType.error,
-                              //           style: ToastificationStyle.flat,
-                              //           title: const Text(
-                              //             '출석 체크는 하루에 한번 가능합니다.',
-                              //           ),
-                              //           autoCloseDuration: const Duration(
-                              //             seconds: 3,
-                              //           ),
-                              //         );
-                              //       }
-                              //     },
-                              //     shape: RoundedRectangleBorder(
-                              //       borderRadius: BorderRadius.circular(30.0),
-                              //     ),
-                              //     child: Icon(
-                              //       Icons.cached,
-                              //       size: context.width(0.08),
-                              //     ),
-                              //   ),
-                              // ),
-                              Positioned(
-                                top: 0,
-                                left: 0,
-                                child: Container(
-                                  decoration: const BoxDecoration(
-                                    color: primaryColor,
-                                    borderRadius: BorderRadius.all(
-                                      Radius.circular(18.0),
-                                    ),
-                                  ),
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: context.width(0.03),
-                                    vertical: context.width(0.02),
-                                  ),
-                                  // 👇 4. 계산된 조각 수를 Text 위젯에 반영
-                                  child: Text(
-                                    "x ${currencyFormat.format(buyablePieces)}",
-                                    style: TextStyle(
-                                      fontSize: context.width(0.035),
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                              ),
                             ],
                           ),
                         ),
-                        SizedBox(height: context.height(0.05)),
                         Text(
                           pieceState.recentlyPiece!.vendor!,
                           style: TextStyle(fontSize: context.width(0.04)),
@@ -187,12 +151,10 @@ class _HomePieceViewState extends ConsumerState<HomePieceView> {
                             if (!userState.isCheckedIn) {
                               ref.read(isOpenCheckedIn.notifier).state = true;
                             } else {
-                              toastification.show(
-                                context: context,
-                                type: ToastificationType.error,
-                                style: ToastificationStyle.flat,
-                                title: const Text('출석 체크는 하루에 한번 가능합니다.'),
-                                autoCloseDuration: const Duration(seconds: 3),
+                              toastMessage(
+                                context,
+                                '출석 체크는 하루에 한번 가능합니다.',
+                                type: ToastmessageType.errorType,
                               );
                             }
                           },
@@ -218,7 +180,7 @@ class _HomePieceViewState extends ConsumerState<HomePieceView> {
                         SizedBox(height: context.height(0.05)),
                         Text(
                           textAlign: TextAlign.center,
-                          '최근에 획득한 조각이 없습니다. \n',
+                          '최근에 설정한 조각이 없습니다. \n',
                           style: TextStyle(
                             color: Colors.grey,
                             fontSize: context.regularFont,
@@ -228,7 +190,7 @@ class _HomePieceViewState extends ConsumerState<HomePieceView> {
                         ),
                         Text(
                           textAlign: TextAlign.center,
-                          '출석체크를 통해 무료로 획득 가능합니다.',
+                          '"퍼즐 페이지"에서 획득한 조각을 설정해주세요.',
                           style: TextStyle(
                             color: Colors.grey,
                             fontSize: context.width(0.035),

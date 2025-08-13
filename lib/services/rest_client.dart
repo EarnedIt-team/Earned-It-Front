@@ -212,4 +212,11 @@ abstract class RestClient {
     @Header("Authorization") String accesstoken,
     @Path("pieceId") int pieceId,
   );
+
+  /// 조각 고정하기 API
+  @PATCH("/api/piece/{pieceId}/main")
+  Future<ApiResponse> keepPiece(
+    @Header("Authorization") String accesstoken,
+    @Path("pieceId") int pieceId,
+  );
 }

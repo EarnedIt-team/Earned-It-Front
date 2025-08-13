@@ -1,6 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:dio/dio.dart';
 import 'package:earned_it/config/exception.dart';
+import 'package:earned_it/config/toastMessage.dart';
 import 'package:earned_it/models/wish/wish_model.dart';
 import 'package:earned_it/models/wish/wish_order_state.dart';
 import 'package:earned_it/services/auth/login_service.dart';
@@ -10,7 +11,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:go_router/go_router.dart';
-import 'package:toastification/toastification.dart';
 
 class WishOrderViewModel extends Notifier<WishOrderState> {
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
@@ -78,11 +78,7 @@ class WishOrderViewModel extends Notifier<WishOrderState> {
           .updateStarWishesLocally(state.currentList);
 
       if (context.mounted) {
-        toastification.show(
-          context: context,
-          type: ToastificationType.success,
-          title: const Text('리스트 순서가 저장되었습니다.'),
-        );
+        toastMessage(context, '리스트 순서가 저장되었습니다.');
         context.pop();
       }
     } on DioException catch (e) {
@@ -100,10 +96,10 @@ class WishOrderViewModel extends Notifier<WishOrderState> {
   Future<void> _handleApiError(BuildContext context, DioException e) async {
     state = state.copyWith(isLoading: false);
     if (e.response?.data['code'] == "AUTH_REQUIRED") {
-      toastification.show(
-        context: context,
-        title: const Text("토큰이 만료되어 재발급합니다. 잠시 후 다시 시도해주세요."),
-        autoCloseDuration: const Duration(seconds: 3),
+      toastMessage(
+        context,
+        '잠시 후 다시 시도해주세요.',
+        type: ToastmessageType.errorType,
       );
       try {
         final refreshToken = await _storage.read(key: 'refreshToken');
@@ -118,12 +114,10 @@ class WishOrderViewModel extends Notifier<WishOrderState> {
 
   void _handleGeneralError(BuildContext context, Object e) {
     state = state.copyWith(isLoading: false);
-    toastification.show(
-      context: context,
-      type: ToastificationType.error,
-      style: ToastificationStyle.flat,
-      title: Text(e.toDisplayString()),
-      autoCloseDuration: const Duration(seconds: 3),
+    toastMessage(
+      context,
+      e.toDisplayString(),
+      type: ToastmessageType.errorType,
     );
   }
 }

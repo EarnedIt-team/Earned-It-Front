@@ -45,8 +45,8 @@ class LoginView extends ConsumerWidget {
                             Image.asset(
                               Theme.of(context).brightness == Brightness.dark
                                   ? "assets/images/logo_dark.png"
-                                  : "assets/images/logo_light.png",
-                              width: context.width(0.55),
+                                  : "assets/images/logo_light_color.png",
+                              width: context.width(0.5),
                             ),
                             SizedBox(height: context.height(0.07)),
                             // 이메일 & 비밀번호

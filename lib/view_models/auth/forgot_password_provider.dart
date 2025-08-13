@@ -1,13 +1,13 @@
 import 'dart:async';
 import 'package:dio/dio.dart';
 import 'package:earned_it/config/exception.dart';
+import 'package:earned_it/config/toastMessage.dart';
 import 'package:earned_it/models/user/forgot_password_state.dart';
 import 'package:earned_it/services/auth/forgot_password_service.dart';
 import 'package:earned_it/services/auth/login_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:toastification/toastification.dart';
 
 enum ForgotPasswordStep { enterEmail, verifyCode, resetPassword }
 
@@ -101,11 +101,7 @@ class ForgotPasswordViewModel extends AutoDisposeNotifier<ForgotPasswordState> {
     state = state.copyWith(isLoading: true);
     try {
       await _forgotPasswordService.sendpasswordEmail(emailController.text);
-      toastification.show(
-        context: context,
-        type: ToastificationType.success,
-        title: const Text('인증번호가 발송되었습니다.'),
-      );
+      toastMessage(context, '인증번호가 발송되었습니다.');
       state = state.copyWith(currentStep: ForgotPasswordStep.verifyCode);
       _startTimer(); // 수정된 타이머 시작 함수 호출
     } on DioException catch (e) {
@@ -122,11 +118,7 @@ class ForgotPasswordViewModel extends AutoDisposeNotifier<ForgotPasswordState> {
     codeController.clear();
     try {
       await _forgotPasswordService.sendpasswordEmail(emailController.text);
-      toastification.show(
-        context: context,
-        type: ToastificationType.info,
-        title: const Text('인증번호가 재전송되었습니다.'),
-      );
+      toastMessage(context, '인증번호가 재전송되었습니다.');
       _startTimer(); // 수정된 타이머 시작 함수 호출
     } on DioException catch (e) {
       if (context.mounted) _handleApiError(context, e);
@@ -145,11 +137,7 @@ class ForgotPasswordViewModel extends AutoDisposeNotifier<ForgotPasswordState> {
         codeController.text,
       );
       _timer?.cancel();
-      toastification.show(
-        context: context,
-        type: ToastificationType.success,
-        title: const Text('인증이 완료되었습니다.'),
-      );
+      toastMessage(context, '인증이 완료되었습니다.');
       state = state.copyWith(
         isCodeVerified: true,
         currentStep: ForgotPasswordStep.resetPassword,
@@ -171,11 +159,7 @@ class ForgotPasswordViewModel extends AutoDisposeNotifier<ForgotPasswordState> {
         emailController.text,
         passwordController.text,
       );
-      toastification.show(
-        context: context,
-        type: ToastificationType.success,
-        title: const Text('비밀번호가 성공적으로 변경되었습니다.'),
-      );
+      toastMessage(context, '비밀번호가 성공적으로 변경되었습니다.');
       if (context.mounted) context.go('/login');
     } on DioException catch (e) {
       if (context.mounted) _handleApiError(context, e);
@@ -203,12 +187,10 @@ class ForgotPasswordViewModel extends AutoDisposeNotifier<ForgotPasswordState> {
 
   void _handleGeneralError(BuildContext context, Object e) {
     state = state.copyWith(isLoading: false);
-    toastification.show(
-      context: context,
-      type: ToastificationType.error,
-      style: ToastificationStyle.flat,
-      title: Text(e.toDisplayString()),
-      autoCloseDuration: const Duration(seconds: 3),
+    toastMessage(
+      context,
+      e.toDisplayString(),
+      type: ToastmessageType.errorType,
     );
   }
 }

@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import 'package:earned_it/config/exception.dart';
+import 'package:earned_it/config/toastMessage.dart';
 import 'package:earned_it/services/auth/login_service.dart';
 import 'package:earned_it/services/setting_service.dart';
 import 'package:earned_it/view_models/user_provider.dart';
@@ -11,7 +12,6 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:toastification/toastification.dart';
 
 // 로딩 상태 Provider
 final profileImageLoadingProvider = StateProvider<bool>((ref) => false);
@@ -69,10 +69,10 @@ class ProfileImageViewModel {
       final imageSize = await imageFile.length();
 
       if (imageSize > maxSizeInBytes) {
-        toastification.show(
-          context: context,
-          type: ToastificationType.error,
-          title: const Text('이미지 크기는 5MB를 초과할 수 없습니다.'),
+        toastMessage(
+          context,
+          '이미지는 최대 5MB 이하로 가능합니다.',
+          type: ToastmessageType.errorType,
         );
         return;
       }
@@ -81,10 +81,10 @@ class ProfileImageViewModel {
     } catch (e) {
       debugPrint('Image processing error: $e');
       if (context.mounted) {
-        toastification.show(
-          context: context,
-          type: ToastificationType.error,
-          title: const Text('이미지 처리 중 오류가 발생했습니다.'),
+        toastMessage(
+          context,
+          '이미지 처리 중 오류가 발생했습니다.',
+          type: ToastmessageType.errorType,
         );
       }
     }
@@ -113,12 +113,8 @@ class ProfileImageViewModel {
       await _ref.read(userProvider.notifier).loadProfile();
 
       if (context.mounted) {
-        toastification.show(
-          context: context,
-          type: ToastificationType.success,
-          title: const Text('프로필 이미지가 변경되었습니다.'),
-        );
-        Navigator.of(context).pop();
+        toastMessage(context, '프로필 이미지가 변경되었습니다.');
+        context.pop();
       }
     } on DioException catch (e) {
       _ref.read(profileImageLoadingProvider.notifier).state = false;
@@ -128,33 +124,27 @@ class ProfileImageViewModel {
         final String? refreshToken = await _storage.read(key: 'refreshToken');
         try {
           await _ref.read(loginServiceProvider).checkToken(refreshToken!);
-          toastification.show(
-            alignment: Alignment.topCenter,
-            style: ToastificationStyle.simple,
-            context: context,
-            title: const Text("잠시 후, 다시 시도해주세요."),
-            autoCloseDuration: const Duration(seconds: 3),
+          toastMessage(
+            context,
+            '잠시 후, 다시 시도해주세요.',
+            type: ToastmessageType.errorType,
           );
         } catch (e) {
           context.go('/login');
-          toastification.show(
-            alignment: Alignment.topCenter,
-            style: ToastificationStyle.simple,
-            context: context,
-            title: const Text("다시 로그인해주세요."),
-            autoCloseDuration: const Duration(seconds: 3),
+          toastMessage(
+            context,
+            '다시 로그인해주세요.',
+            type: ToastmessageType.errorType,
           );
         }
       }
     } catch (e) {
       print('프로필 이미지 설정 중 에러 발생: $e');
       _ref.read(profileImageLoadingProvider.notifier).state = false;
-      toastification.show(
-        alignment: Alignment.topCenter,
-        style: ToastificationStyle.simple,
-        context: context,
-        title: Text(e.toDisplayString()),
-        autoCloseDuration: const Duration(seconds: 3),
+      toastMessage(
+        context,
+        e.toDisplayString(),
+        type: ToastmessageType.errorType,
       );
     } finally {
       if (_ref.exists(profileImageLoadingProvider)) {
@@ -178,12 +168,8 @@ class ProfileImageViewModel {
       _ref.read(userProvider.notifier).updateUserProfileImage(null);
 
       if (context.mounted) {
-        toastification.show(
-          context: context,
-          type: ToastificationType.success,
-          title: const Text('프로필 이미지가 삭제되었습니다.'),
-        );
-        Navigator.of(context).pop();
+        toastMessage(context, '프로필 이미지가 삭제되었습니다.');
+        context.pop();
       }
     } on DioException catch (e) {
       _ref.read(profileImageLoadingProvider.notifier).state = false;
@@ -193,33 +179,27 @@ class ProfileImageViewModel {
         final String? refreshToken = await _storage.read(key: 'refreshToken');
         try {
           await _ref.read(loginServiceProvider).checkToken(refreshToken!);
-          toastification.show(
-            alignment: Alignment.topCenter,
-            style: ToastificationStyle.simple,
-            context: context,
-            title: const Text("잠시 후, 다시 시도해주세요."),
-            autoCloseDuration: const Duration(seconds: 3),
+          toastMessage(
+            context,
+            '잠시 후, 다시 시도해주세요.',
+            type: ToastmessageType.errorType,
           );
         } catch (e) {
           context.go('/login');
-          toastification.show(
-            alignment: Alignment.topCenter,
-            style: ToastificationStyle.simple,
-            context: context,
-            title: const Text("다시 로그인해주세요."),
-            autoCloseDuration: const Duration(seconds: 3),
+          toastMessage(
+            context,
+            '다시 로그인해주세요.',
+            type: ToastmessageType.errorType,
           );
         }
       }
     } catch (e) {
       print('프로필 이미지 삭제 중 에러 발생: $e');
       _ref.read(profileImageLoadingProvider.notifier).state = false;
-      toastification.show(
-        alignment: Alignment.topCenter,
-        style: ToastificationStyle.simple,
-        context: context,
-        title: Text(e.toDisplayString()),
-        autoCloseDuration: const Duration(seconds: 3),
+      toastMessage(
+        context,
+        e.toDisplayString(),
+        type: ToastmessageType.errorType,
       );
     } finally {
       if (_ref.exists(profileImageLoadingProvider)) {

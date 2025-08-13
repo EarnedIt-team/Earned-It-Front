@@ -50,7 +50,7 @@ class WishOrderModal extends ConsumerWidget {
                     color:
                         Theme.of(context).brightness == Brightness.dark
                             ? const Color.fromARGB(125, 87, 80, 68)
-                            : const Color.fromARGB(255, 255, 234, 197),
+                            : Colors.transparent,
                     elevation: 0,
                     key: ValueKey(
                       item.wishId,
@@ -59,12 +59,12 @@ class WishOrderModal extends ConsumerWidget {
                       // 1. shape 속성은 테두리와 둥근 모서리를 정의합니다.
                       shape: RoundedRectangleBorder(
                         side: const BorderSide(
-                          color: primaryColor, // 테두리 색상
+                          color: primaryGradientStart, // 테두리 색상
                           width: 1, // 테두리 두께
                         ),
                         borderRadius: BorderRadius.circular(8.0),
                       ),
-                      splashColor: primaryColor,
+                      splashColor: primaryGradientStart,
                       leading: const Icon(Icons.drag_handle),
                       title: Text(
                         item.name,
@@ -93,7 +93,7 @@ class WishOrderModal extends ConsumerWidget {
                 Expanded(
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: primaryColor,
+                      backgroundColor: primaryGradientEnd,
                     ),
                     onPressed:
                         state.canSubmit

@@ -68,56 +68,60 @@ class _WishSearchViewState extends ConsumerState<WishSearchView> {
       }
     });
 
-    return Scaffold(
-      appBar: AppBar(
-        title: TextField(
-          controller: _searchController,
-          autofocus: true,
-          decoration: InputDecoration(
-            hintText: '위시리스트 검색...',
-            border: InputBorder.none,
-            suffixIcon: IconButton(
-              icon: const Icon(Icons.search),
-              onPressed: _performSearch,
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Scaffold(
+        appBar: AppBar(
+          title: TextField(
+            controller: _searchController,
+            autofocus: true,
+            decoration: InputDecoration(
+              hintText: '위시리스트 검색...',
+              border: InputBorder.none,
+              suffixIcon: IconButton(
+                icon: const Icon(Icons.search),
+                onPressed: _performSearch,
+              ),
             ),
+            onSubmitted: (_) => _performSearch(),
           ),
-          onSubmitted: (_) => _performSearch(),
+          scrolledUnderElevation: 0,
         ),
-        scrolledUnderElevation: 0,
-      ),
-      body: Column(
-        children: [
-          _buildFilterBar(context, ref),
-          Expanded(
-            child:
-                searchResults.isEmpty && !wishState.isSearching
-                    ? const Center(child: Text('검색 결과가 없습니다.'))
-                    : ListView.builder(
-                      controller: _scrollController,
-                      padding: const EdgeInsets.all(8.0),
-                      itemCount:
-                          searchResults.length +
-                          (wishState.searchHasMore ? 1 : 0),
-                      itemBuilder: (context, index) {
-                        if (index == searchResults.length) {
-                          return wishState.isSearching
-                              ? const Padding(
-                                padding: EdgeInsets.symmetric(vertical: 16.0),
-                                child: Center(
-                                  child: CircularProgressIndicator(),
-                                ),
-                              )
-                              : const SizedBox.shrink();
-                        }
-                        final item = searchResults[index];
-                        return _AllWishlistItem(
-                          key: ValueKey(item.wishId),
-                          item: item,
-                        );
-                      },
-                    ),
-          ),
-        ],
+        body: Column(
+          children: [
+            _buildFilterBar(context, ref),
+            Expanded(
+              child:
+                  searchResults.isEmpty && !wishState.isSearching
+                      ? const Center(child: Text('검색 결과가 없습니다.'))
+                      : ListView.builder(
+                        keyboardDismissBehavior:
+                            ScrollViewKeyboardDismissBehavior.onDrag,
+                        controller: _scrollController,
+                        itemCount:
+                            searchResults.length +
+                            (wishState.searchHasMore ? 1 : 0),
+                        itemBuilder: (context, index) {
+                          if (index == searchResults.length) {
+                            return wishState.isSearching
+                                ? const Padding(
+                                  padding: EdgeInsets.symmetric(vertical: 16.0),
+                                  child: Center(
+                                    child: CircularProgressIndicator(),
+                                  ),
+                                )
+                                : const SizedBox.shrink();
+                          }
+                          final item = searchResults[index];
+                          return _AllWishlistItem(
+                            key: ValueKey(item.wishId),
+                            item: item,
+                          );
+                        },
+                      ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -254,11 +258,34 @@ class _AllWishlistItem extends ConsumerWidget {
               context.push('/wishDetail', extra: item);
             },
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: context.middlePadding),
+              padding: EdgeInsets.only(
+                left: item.bought || item.starred ? 0 : context.middlePadding,
+                right: context.middlePadding,
+              ),
               constraints: BoxConstraints(minHeight: context.height(0.1)),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
+                  SizedBox(width: context.middlePadding / 4),
+                  Column(
+                    children: [
+                      if (item.starred)
+                        Icon(
+                          Icons.stars,
+                          size: context.width(0.04),
+                          color: Colors.amber,
+                        ),
+                      if (item.bought && item.starred)
+                        SizedBox(height: context.height(0.01)),
+                      if (item.bought)
+                        Icon(
+                          Icons.check_circle,
+                          size: context.width(0.04),
+                          color: Colors.lightBlue,
+                        ),
+                    ],
+                  ),
+                  SizedBox(width: context.middlePadding / 4),
                   SizedBox(
                     width: context.height(0.08),
                     height: context.height(0.08),
@@ -305,19 +332,6 @@ class _AllWishlistItem extends ConsumerWidget {
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                               ),
-                              const SizedBox(width: 5),
-                              if (item.bought)
-                                Icon(
-                                  Icons.check,
-                                  size: context.width(0.04),
-                                  color: Colors.lightBlue,
-                                ),
-                              if (item.starred)
-                                Icon(
-                                  Icons.star_rounded,
-                                  size: context.width(0.04),
-                                  color: Colors.amber,
-                                ),
                             ],
                           ),
 

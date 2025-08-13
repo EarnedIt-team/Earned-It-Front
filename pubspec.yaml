@@ -2,7 +2,7 @@ name: earned_it
 description: "A new Flutter project."
 publish_to: 'none'
 
-version: 1.1.0+1
+version: 1.1.1+1
 
 environment:
   sdk: ^3.7.0
@@ -15,7 +15,7 @@ dependencies:
   go_router: ^16.0.0
   flutter_riverpod: ^2.6.1
   url_launcher: ^6.3.2
-  toastification: ^3.0.3
+  # toastification: ^3.0.3
   freezed: ^3.1.0
   sign_in_with_apple: ^7.0.1
   kakao_flutter_sdk: ^1.9.7+3
@@ -38,6 +38,7 @@ dependencies:
   flutter_slidable: ^4.0.0
   flutter_launcher_icons: ^0.14.4
   image_cropper:
+  fluttertoast: ^8.2.12
 
 dev_dependencies:
   flutter_test:
@@ -63,6 +64,7 @@ flutter:
 
     - assets/images/default_profile.png
     - assets/images/logo_light.png
+    - assets/images/logo_light_color.png
     - assets/images/logo_dark.png
     - assets/images/time.png
     - assets/images/login/kakao_login.png
@@ -77,6 +79,8 @@ flutter:
     - assets/images/money/money_largeSmall.png
     - assets/images/money/money_largeMiddle.png
     - assets/images/piece/unknow_piece.png
+
+    - assets/images/keep_icon.png
 
     - assets/images/onboarding/page1.png
     - assets/images/onboarding/page2.png

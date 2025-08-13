@@ -16,6 +16,7 @@ _PieceInfoModel _$PieceInfoModelFromJson(Map<String, dynamic> json) =>
       name: json['name'] as String?,
       price: (json['price'] as num?)?.toInt(),
       description: json['description'] as String?,
+      mainPiece: json['mainPiece'] as bool?,
     );
 
 Map<String, dynamic> _$PieceInfoModelToJson(_PieceInfoModel instance) =>
@@ -28,4 +29,5 @@ Map<String, dynamic> _$PieceInfoModelToJson(_PieceInfoModel instance) =>
       'name': instance.name,
       'price': instance.price,
       'description': instance.description,
+      'mainPiece': instance.mainPiece,
     };

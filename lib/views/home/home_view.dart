@@ -97,12 +97,12 @@ class _HomeViewState extends ConsumerState<HomeView> {
         surfaceTintColor: Colors.transparent,
         title: Image.asset(
           Theme.of(context).brightness == Brightness.dark
-              ? "assets/images/logo_dark.png"
-              : "assets/images/logo_light.png",
-          width: context.width(0.35),
+              ? "assets/images/logo_light.png"
+              : "assets/images/logo_light_color.png",
+          width: context.width(0.3),
         ),
         centerTitle: false,
-        actionsPadding: const EdgeInsets.symmetric(horizontal: 30),
+        actionsPadding: EdgeInsets.symmetric(horizontal: context.middlePadding),
         actions: [
           AnimatedToggleSwitch.dual(
             current: homeState.toggleIndex,
@@ -113,30 +113,26 @@ class _HomeViewState extends ConsumerState<HomeView> {
             height: 40,
             styleBuilder:
                 (value) => ToggleStyle(
-                  borderColor: Colors.black,
+                  borderColor:
+                      Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white
+                          : Colors.black,
                   indicatorColor: Colors.white,
-                  boxShadow: [
-                    BoxShadow(
-                      color: context.shadowColor,
-                      spreadRadius: 1,
-                      blurRadius: 2,
-                      offset: const Offset(0, 1.5),
-                    ),
-                  ],
-                  backgroundColor: value == 0 ? Colors.green : Colors.blue,
+                  backgroundColor:
+                      value == 0 ? primaryGradientStart : primaryGradientEnd,
                 ),
             iconBuilder:
                 (value) =>
                     value == 0
-                        ? const Icon(
+                        ? Icon(
                           Icons.local_mall,
-                          color: Colors.green,
-                          size: 25.0,
+                          color: primaryGradientStart,
+                          size: context.width(0.06),
                         )
-                        : const Icon(
+                        : Icon(
                           Icons.extension,
-                          color: Colors.blue,
-                          size: 25.0,
+                          color: primaryGradientEnd,
+                          size: context.width(0.06),
                         ),
             textBuilder:
                 (value) =>
@@ -181,84 +177,101 @@ class _HomeViewState extends ConsumerState<HomeView> {
         left: context.middlePadding,
         right: context.middlePadding,
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text.rich(
-                TextSpan(
-                  style: TextStyle(
-                    fontSize: context.height(0.02),
-                    fontWeight: FontWeight.bold,
-                  ),
-                  children: [
-                    const TextSpan(text: '금월 누적 금액'),
-                    if (userState.isearningsPerSecond) ...<InlineSpan>[
-                      TextSpan(
-                        text:
-                            '  ( ${decimalFormat.format(userState.earningsPerSecond)}',
-                        style: TextStyle(
-                          fontSize: context.height(0.018),
-                          fontWeight: FontWeight.w100,
-                          color: Colors.grey,
-                        ),
-                      ),
-                      TextSpan(
-                        text: '₩ /sec )',
-                        style: TextStyle(
-                          fontSize: context.height(0.015),
-                          fontWeight: FontWeight.w100,
-                          color: Colors.grey,
-                        ),
-                      ),
-                    ],
-                  ],
-                ),
+          Text.rich(
+            TextSpan(
+              style: TextStyle(
+                fontSize: context.height(0.02),
+                fontWeight: FontWeight.bold,
               ),
-              SizedBox(height: context.height(0.005)),
-              userState.isearningsPerSecond
-                  ? Row(
-                    crossAxisAlignment: CrossAxisAlignment.baseline,
-                    textBaseline: TextBaseline.alphabetic,
-                    children: <Widget>[
-                      AnimatedDigitWidget(
-                        value: homeState.currentEarnedAmount.toInt(),
-                        textStyle: TextStyle(
-                          fontSize: context.height(0.035),
-                          fontWeight: FontWeight.bold,
-                          color:
-                              Theme.of(context).brightness == Brightness.dark
-                                  ? Colors.white
-                                  : Colors.black,
-                        ),
-                        enableSeparator: true,
-                      ),
-                      Text(
-                        " 원",
-                        style: TextStyle(fontSize: context.height(0.02)),
-                      ),
-                    ],
-                  )
-                  : Text(
-                    "설정된 금액이 없습니다.",
+              children: [
+                if (userState.isearningsPerSecond) ...<InlineSpan>[
+                  TextSpan(
+                    text:
+                        '+ ${decimalFormat.format(userState.earningsPerSecond)}',
                     style: TextStyle(
                       fontSize: context.height(0.018),
+                      fontWeight: FontWeight.w100,
                       color: Colors.grey,
                     ),
                   ),
-            ],
+                  TextSpan(
+                    text: '₩ /sec',
+                    style: TextStyle(
+                      fontSize: context.height(0.015),
+                      fontWeight: FontWeight.w100,
+                      color: Colors.grey,
+                    ),
+                  ),
+                ],
+              ],
+            ),
           ),
+          Text(
+            "금월 누적 금액",
+            style: TextStyle(
+              fontSize: context.height(0.02),
+              fontWeight: FontWeight.bold,
+              color:
+                  Theme.of(context).brightness == Brightness.dark
+                      ? Colors.white
+                      : Colors.black,
+            ),
+          ),
+          SizedBox(height: context.height(0.005)),
           userState.isearningsPerSecond
-              ? _buildAmountImage(context, homeState.currentEarnedAmount)
-              : ElevatedButton(
-                onPressed: () => context.push('/setSalary'),
-                child: const Text("월 수익 설정하기"),
+              ? Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.baseline,
+                textBaseline: TextBaseline.alphabetic,
+                children: <Widget>[
+                  AnimatedDigitWidget(
+                    value: homeState.currentEarnedAmount.toInt(),
+                    textStyle: TextStyle(
+                      fontSize: context.height(0.035),
+                      fontWeight: FontWeight.bold,
+                      color:
+                          Theme.of(context).brightness == Brightness.dark
+                              ? Colors.white
+                              : Colors.black,
+                    ),
+                    enableSeparator: true,
+                  ),
+                  Text(
+                    " 원",
+                    style: TextStyle(
+                      fontSize: context.height(0.02),
+                      color:
+                          Theme.of(context).brightness == Brightness.dark
+                              ? Colors.white
+                              : Colors.black,
+                    ),
+                  ),
+                ],
+              )
+              : Text(
+                "설정된 금액이 없습니다.",
+                style: TextStyle(
+                  fontSize: context.height(0.018),
+                  color: Colors.grey,
+                ),
               ),
         ],
       ),
+      // child: Row(
+      //   mainAxisAlignment: MainAxisAlignment.center,
+      //   children: [
+      //     userState.isearningsPerSecond
+      //         ? _buildAmountImage(context, homeState.currentEarnedAmount)
+      //         : ElevatedButton(
+      //           onPressed: () => context.push('/setSalary'),
+      //           child: const Text("월 수익 설정하기"),
+      //         ),
+      //   ],
+      // ),
     );
   }
 
@@ -393,6 +406,8 @@ class _HomeViewState extends ConsumerState<HomeView> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
                 item.vendor,
                 style: TextStyle(
                   color: Colors.grey,
@@ -400,14 +415,18 @@ class _HomeViewState extends ConsumerState<HomeView> {
                 ),
               ),
               Text(
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
                 item.name,
                 textAlign: TextAlign.center,
                 style: TextStyle(
+                  color:
+                      Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white
+                          : Colors.black,
                   fontSize: MediaQuery.of(context).size.width * 0.05,
                   fontWeight: FontWeight.bold,
                 ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
               ),
             ],
           ),
@@ -446,8 +465,8 @@ class _HomeViewState extends ConsumerState<HomeView> {
         SizedBox(height: context.height(0.02)),
         ConstrainedBox(
           constraints: BoxConstraints(
-            maxWidth: context.width(0.7),
-            minHeight: context.height(0.055),
+            maxWidth: context.width(0.6),
+            minHeight: context.height(0.06),
           ),
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
@@ -462,7 +481,9 @@ class _HomeViewState extends ConsumerState<HomeView> {
                   Theme.of(context).brightness == Brightness.dark
                       ? const Color.fromARGB(97, 75, 75, 75)
                       : const Color.fromARGB(255, 234, 234, 234),
-              backgroundColor: Colors.white,
+              backgroundColor: const Color.fromARGB(255, 242, 254, 242),
+              shadowColor: Colors.transparent,
+              elevation: 0,
             ),
             onPressed:
                 displayInfo.progress >= 1.0
@@ -473,10 +494,13 @@ class _HomeViewState extends ConsumerState<HomeView> {
               children: [
                 Icon(
                   displayInfo.progress >= 1.0
-                      ? Icons.shopping_cart_outlined
+                      ? Icons.shopping_bag
                       : Icons.timer_outlined,
                   color:
-                      displayInfo.progress >= 1.0 ? Colors.black : Colors.grey,
+                      displayInfo.progress >= 1.0
+                          ? const Color.fromARGB(255, 62, 62, 62)
+                          : Colors.grey,
+                  size: context.width(0.04),
                 ),
                 const SizedBox(width: 8),
                 Text(
@@ -488,6 +512,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
                         displayInfo.progress >= 1.0
                             ? Colors.black
                             : Colors.grey,
+                    fontSize: context.width(0.037),
                     fontWeight: FontWeight.bold,
                   ),
                 ),

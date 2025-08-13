@@ -563,11 +563,39 @@ class _WishlistItem extends ConsumerWidget {
               context.push('/wishDetail', extra: item);
             },
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: context.middlePadding),
+              padding: EdgeInsets.only(
+                left: item.bought || item.starred ? 0 : context.middlePadding,
+                right: context.middlePadding,
+              ),
               constraints: BoxConstraints(minHeight: context.height(0.1)),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
+                  SizedBox(width: context.middlePadding / 4),
+                  Container(
+                    color: Colors.transparent,
+                    height: context.height(0.08),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        if (item.starred)
+                          Icon(
+                            Icons.stars,
+                            size: context.width(0.04),
+                            color: Colors.amber,
+                          ),
+                        if (item.bought && item.starred)
+                          SizedBox(height: context.height(0.01)),
+                        if (item.bought)
+                          Icon(
+                            Icons.check_circle,
+                            size: context.width(0.04),
+                            color: Colors.lightBlue,
+                          ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(width: context.middlePadding / 4),
                   SizedBox(
                     width: context.height(0.08),
                     height: context.height(0.08),
@@ -594,7 +622,8 @@ class _WishlistItem extends ConsumerWidget {
                       ),
                     ),
                   ),
-                  const SizedBox(width: 16),
+
+                  SizedBox(width: context.width(0.03)),
                   Expanded(
                     child: Padding(
                       padding: EdgeInsets.only(right: context.width(0.05)),
@@ -614,19 +643,6 @@ class _WishlistItem extends ConsumerWidget {
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                               ),
-                              const SizedBox(width: 5),
-                              if (item.bought)
-                                Icon(
-                                  Icons.check,
-                                  size: context.width(0.04),
-                                  color: Colors.lightBlue,
-                                ),
-                              if (item.starred)
-                                Icon(
-                                  Icons.star_rounded,
-                                  size: context.width(0.04),
-                                  color: Colors.amber,
-                                ),
                             ],
                           ),
 

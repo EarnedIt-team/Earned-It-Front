@@ -50,15 +50,6 @@ class _CheckedInModalState extends ConsumerState<CheckedInModal> {
                   style: TextStyle(
                     fontSize: context.width(0.06),
                     fontWeight: FontWeight.bold,
-                    // foreground에 Paint를 사용하여 테두리 효과를 줍니다.
-                    foreground:
-                        Paint()
-                          ..style =
-                              PaintingStyle
-                                  .stroke // 선 스타일
-                          ..strokeWidth =
-                              2.5 // 테두리 두께
-                          ..color = Colors.black, // 테두리 색상
                   ),
                 ),
                 // 2. 내부 색상을 채우는 Text (위에 배치)
@@ -69,7 +60,7 @@ class _CheckedInModalState extends ConsumerState<CheckedInModal> {
                   style: TextStyle(
                     fontSize: context.width(0.06),
                     fontWeight: FontWeight.bold,
-                    color: primaryColor, // 내부 색상
+                    color: primaryGradientStart, // 내부 색상
                   ),
                 ),
               ],
@@ -94,26 +85,27 @@ class _CheckedInModalState extends ConsumerState<CheckedInModal> {
             ),
 
             SizedBox(height: context.height(0.03)),
-            TextButton(
-              onPressed:
-                  !state.isLoading
-                      ? () async {
-                        if (state.reward == null) {
-                          await notifier.hideForToday();
+            if (!state.isLoading && state.selectedIndex == null)
+              TextButton(
+                onPressed:
+                    !state.isLoading
+                        ? () async {
+                          if (state.reward == null) {
+                            await notifier.hideForToday();
+                          }
+                          if (context.mounted) context.pop();
                         }
-                        if (context.mounted) context.pop();
-                      }
-                      : null,
-              child: const Text(
-                textAlign: TextAlign.center,
-                "오늘은 이제 그만보기",
-                style: TextStyle(
-                  color: Colors.grey,
-                  decoration: TextDecoration.underline,
-                  decorationColor: Colors.grey,
+                        : null,
+                child: const Text(
+                  textAlign: TextAlign.center,
+                  "오늘은 이제 그만보기",
+                  style: TextStyle(
+                    color: Colors.grey,
+                    decoration: TextDecoration.underline,
+                    decorationColor: Colors.grey,
+                  ),
                 ),
               ),
-            ),
           ],
         ),
       ),
@@ -178,7 +170,7 @@ class _CheckedInModalState extends ConsumerState<CheckedInModal> {
               "${state.candidatesCheckedInList[state.selectedIndex!].image}",
               width: context.height(0.25),
               height: context.height(0.25),
-              fit: BoxFit.cover,
+              fit: BoxFit.contain,
               loadingBuilder: (context, child, loadingProgress) {
                 if (loadingProgress == null) return child;
                 return Center(
@@ -212,7 +204,7 @@ class _CheckedInModalState extends ConsumerState<CheckedInModal> {
           SizedBox(height: context.height(0.02)),
           Text(
             textAlign: TextAlign.center,
-            "2025.06 기준 ${currencyFormat.format(state.candidatesCheckedInList[state.selectedIndex!].price)}원",
+            "2025.08 기준 ${currencyFormat.format(state.candidatesCheckedInList[state.selectedIndex!].price)}원",
             style: TextStyle(fontSize: context.width(0.04), color: Colors.grey),
           ),
           SizedBox(height: context.height(0.03)),
@@ -220,7 +212,9 @@ class _CheckedInModalState extends ConsumerState<CheckedInModal> {
             width: double.infinity,
             height: context.height(0.06),
             child: ElevatedButton(
-              style: ElevatedButton.styleFrom(backgroundColor: primaryColor),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: primaryGradientEnd,
+              ),
               onPressed: () {
                 context.pop();
               },

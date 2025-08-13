@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:earned_it/config/exception.dart';
+import 'package:earned_it/config/toastMessage.dart';
 import 'package:earned_it/models/checkedIn/checkedIn_model.dart';
 import 'package:earned_it/models/checkedIn/checkedIn_state.dart';
 import 'package:earned_it/services/auth/login_service.dart';
@@ -11,7 +12,6 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:toastification/toastification.dart';
 
 final checkedInViewModelProvider =
     NotifierProvider.autoDispose<CheckedInViewModel, CheckedInState>(
@@ -128,10 +128,6 @@ class CheckedInViewModel extends AutoDisposeNotifier<CheckedInState> {
 
   void _handleGeneralError(BuildContext context, Object e) {
     state = state.copyWith(isLoading: false);
-    toastification.show(
-      context: context,
-      title: Text(e.toString()),
-      autoCloseDuration: const Duration(seconds: 3),
-    );
+    toastMessage(context, e.toString(), type: ToastmessageType.errorType);
   }
 }

@@ -6,6 +6,7 @@ import 'package:earned_it/view_models/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart'; // 최신 패키지명으로 수정
 
 late RestClient restClient;
@@ -32,6 +33,7 @@ void main() async {
 
   restClient = RestClient(dio);
 
+  await initializeDateFormatting('ko', null);
   runApp(const ProviderScope(child: MyApp()));
 }
 

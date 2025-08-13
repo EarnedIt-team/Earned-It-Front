@@ -74,8 +74,8 @@ class _SplashViewState extends ConsumerState<SplashView> {
               SizedBox(height: context.height(0.005)),
               Image.asset(
                 Theme.of(context).brightness == Brightness.dark
-                    ? "assets/images/logo_color.png"
-                    : "assets/images/logo_no_color.png",
+                    ? "assets/images/logo_dark.png"
+                    : "assets/images/logo_light.png",
                 width: context.width(0.6),
               ),
             ],

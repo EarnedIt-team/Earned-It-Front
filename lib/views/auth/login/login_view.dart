@@ -44,8 +44,8 @@ class LoginView extends ConsumerWidget {
                             // 메인 로고
                             Image.asset(
                               Theme.of(context).brightness == Brightness.dark
-                                  ? "assets/images/logo_no_color.png"
-                                  : "assets/images/logo_color.png",
+                                  ? "assets/images/logo_dark.png"
+                                  : "assets/images/logo_light_color.png",
                               width: context.width(0.5),
                             ),
                             SizedBox(height: context.height(0.07)),

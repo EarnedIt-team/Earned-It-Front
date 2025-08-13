@@ -23,7 +23,8 @@ mixin _$PieceInfoModel {
  String? get vendor;/// 조각 이름
  String? get name;/// 가격
  int? get price;/// 상세 설명
- String? get description;
+ String? get description;/// 메인 고정 여부
+ bool? get isMainPiece;
 /// Create a copy of PieceInfoModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -36,16 +37,16 @@ $PieceInfoModelCopyWith<PieceInfoModel> get copyWith => _$PieceInfoModelCopyWith
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is PieceInfoModel&&(identical(other.pieceId, pieceId) || other.pieceId == pieceId)&&(identical(other.rarity, rarity) || other.rarity == rarity)&&(identical(other.collectedAt, collectedAt) || other.collectedAt == collectedAt)&&(identical(other.image, image) || other.image == image)&&(identical(other.vendor, vendor) || other.vendor == vendor)&&(identical(other.name, name) || other.name == name)&&(identical(other.price, price) || other.price == price)&&(identical(other.description, description) || other.description == description));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is PieceInfoModel&&(identical(other.pieceId, pieceId) || other.pieceId == pieceId)&&(identical(other.rarity, rarity) || other.rarity == rarity)&&(identical(other.collectedAt, collectedAt) || other.collectedAt == collectedAt)&&(identical(other.image, image) || other.image == image)&&(identical(other.vendor, vendor) || other.vendor == vendor)&&(identical(other.name, name) || other.name == name)&&(identical(other.price, price) || other.price == price)&&(identical(other.description, description) || other.description == description)&&(identical(other.isMainPiece, isMainPiece) || other.isMainPiece == isMainPiece));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,pieceId,rarity,collectedAt,image,vendor,name,price,description);
+int get hashCode => Object.hash(runtimeType,pieceId,rarity,collectedAt,image,vendor,name,price,description,isMainPiece);
 
 @override
 String toString() {
-  return 'PieceInfoModel(pieceId: $pieceId, rarity: $rarity, collectedAt: $collectedAt, image: $image, vendor: $vendor, name: $name, price: $price, description: $description)';
+  return 'PieceInfoModel(pieceId: $pieceId, rarity: $rarity, collectedAt: $collectedAt, image: $image, vendor: $vendor, name: $name, price: $price, description: $description, isMainPiece: $isMainPiece)';
 }
 
 
@@ -56,7 +57,7 @@ abstract mixin class $PieceInfoModelCopyWith<$Res>  {
   factory $PieceInfoModelCopyWith(PieceInfoModel value, $Res Function(PieceInfoModel) _then) = _$PieceInfoModelCopyWithImpl;
 @useResult
 $Res call({
- int? pieceId, String? rarity, String? collectedAt, String? image, String? vendor, String? name, int? price, String? description
+ int? pieceId, String? rarity, String? collectedAt, String? image, String? vendor, String? name, int? price, String? description, bool? isMainPiece
 });
 
 
@@ -73,7 +74,7 @@ class _$PieceInfoModelCopyWithImpl<$Res>
 
 /// Create a copy of PieceInfoModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? pieceId = freezed,Object? rarity = freezed,Object? collectedAt = freezed,Object? image = freezed,Object? vendor = freezed,Object? name = freezed,Object? price = freezed,Object? description = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? pieceId = freezed,Object? rarity = freezed,Object? collectedAt = freezed,Object? image = freezed,Object? vendor = freezed,Object? name = freezed,Object? price = freezed,Object? description = freezed,Object? isMainPiece = freezed,}) {
   return _then(_self.copyWith(
 pieceId: freezed == pieceId ? _self.pieceId : pieceId // ignore: cast_nullable_to_non_nullable
 as int?,rarity: freezed == rarity ? _self.rarity : rarity // ignore: cast_nullable_to_non_nullable
@@ -83,7 +84,8 @@ as String?,vendor: freezed == vendor ? _self.vendor : vendor // ignore: cast_nul
 as String?,name: freezed == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String?,price: freezed == price ? _self.price : price // ignore: cast_nullable_to_non_nullable
 as int?,description: freezed == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,isMainPiece: freezed == isMainPiece ? _self.isMainPiece : isMainPiece // ignore: cast_nullable_to_non_nullable
+as bool?,
   ));
 }
 
@@ -168,10 +170,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int? pieceId,  String? rarity,  String? collectedAt,  String? image,  String? vendor,  String? name,  int? price,  String? description)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int? pieceId,  String? rarity,  String? collectedAt,  String? image,  String? vendor,  String? name,  int? price,  String? description,  bool? isMainPiece)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _PieceInfoModel() when $default != null:
-return $default(_that.pieceId,_that.rarity,_that.collectedAt,_that.image,_that.vendor,_that.name,_that.price,_that.description);case _:
+return $default(_that.pieceId,_that.rarity,_that.collectedAt,_that.image,_that.vendor,_that.name,_that.price,_that.description,_that.isMainPiece);case _:
   return orElse();
 
 }
@@ -189,10 +191,10 @@ return $default(_that.pieceId,_that.rarity,_that.collectedAt,_that.image,_that.v
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int? pieceId,  String? rarity,  String? collectedAt,  String? image,  String? vendor,  String? name,  int? price,  String? description)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int? pieceId,  String? rarity,  String? collectedAt,  String? image,  String? vendor,  String? name,  int? price,  String? description,  bool? isMainPiece)  $default,) {final _that = this;
 switch (_that) {
 case _PieceInfoModel():
-return $default(_that.pieceId,_that.rarity,_that.collectedAt,_that.image,_that.vendor,_that.name,_that.price,_that.description);case _:
+return $default(_that.pieceId,_that.rarity,_that.collectedAt,_that.image,_that.vendor,_that.name,_that.price,_that.description,_that.isMainPiece);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -209,10 +211,10 @@ return $default(_that.pieceId,_that.rarity,_that.collectedAt,_that.image,_that.v
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int? pieceId,  String? rarity,  String? collectedAt,  String? image,  String? vendor,  String? name,  int? price,  String? description)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int? pieceId,  String? rarity,  String? collectedAt,  String? image,  String? vendor,  String? name,  int? price,  String? description,  bool? isMainPiece)?  $default,) {final _that = this;
 switch (_that) {
 case _PieceInfoModel() when $default != null:
-return $default(_that.pieceId,_that.rarity,_that.collectedAt,_that.image,_that.vendor,_that.name,_that.price,_that.description);case _:
+return $default(_that.pieceId,_that.rarity,_that.collectedAt,_that.image,_that.vendor,_that.name,_that.price,_that.description,_that.isMainPiece);case _:
   return null;
 
 }
@@ -224,7 +226,7 @@ return $default(_that.pieceId,_that.rarity,_that.collectedAt,_that.image,_that.v
 @JsonSerializable()
 
 class _PieceInfoModel implements PieceInfoModel {
-  const _PieceInfoModel({this.pieceId, this.rarity, this.collectedAt, this.image, this.vendor, this.name, this.price, this.description});
+  const _PieceInfoModel({this.pieceId, this.rarity, this.collectedAt, this.image, this.vendor, this.name, this.price, this.description, this.isMainPiece});
   factory _PieceInfoModel.fromJson(Map<String, dynamic> json) => _$PieceInfoModelFromJson(json);
 
 /// 조각 Id
@@ -243,6 +245,8 @@ class _PieceInfoModel implements PieceInfoModel {
 @override final  int? price;
 /// 상세 설명
 @override final  String? description;
+/// 메인 고정 여부
+@override final  bool? isMainPiece;
 
 /// Create a copy of PieceInfoModel
 /// with the given fields replaced by the non-null parameter values.
@@ -257,16 +261,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _PieceInfoModel&&(identical(other.pieceId, pieceId) || other.pieceId == pieceId)&&(identical(other.rarity, rarity) || other.rarity == rarity)&&(identical(other.collectedAt, collectedAt) || other.collectedAt == collectedAt)&&(identical(other.image, image) || other.image == image)&&(identical(other.vendor, vendor) || other.vendor == vendor)&&(identical(other.name, name) || other.name == name)&&(identical(other.price, price) || other.price == price)&&(identical(other.description, description) || other.description == description));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _PieceInfoModel&&(identical(other.pieceId, pieceId) || other.pieceId == pieceId)&&(identical(other.rarity, rarity) || other.rarity == rarity)&&(identical(other.collectedAt, collectedAt) || other.collectedAt == collectedAt)&&(identical(other.image, image) || other.image == image)&&(identical(other.vendor, vendor) || other.vendor == vendor)&&(identical(other.name, name) || other.name == name)&&(identical(other.price, price) || other.price == price)&&(identical(other.description, description) || other.description == description)&&(identical(other.isMainPiece, isMainPiece) || other.isMainPiece == isMainPiece));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,pieceId,rarity,collectedAt,image,vendor,name,price,description);
+int get hashCode => Object.hash(runtimeType,pieceId,rarity,collectedAt,image,vendor,name,price,description,isMainPiece);
 
 @override
 String toString() {
-  return 'PieceInfoModel(pieceId: $pieceId, rarity: $rarity, collectedAt: $collectedAt, image: $image, vendor: $vendor, name: $name, price: $price, description: $description)';
+  return 'PieceInfoModel(pieceId: $pieceId, rarity: $rarity, collectedAt: $collectedAt, image: $image, vendor: $vendor, name: $name, price: $price, description: $description, isMainPiece: $isMainPiece)';
 }
 
 
@@ -277,7 +281,7 @@ abstract mixin class _$PieceInfoModelCopyWith<$Res> implements $PieceInfoModelCo
   factory _$PieceInfoModelCopyWith(_PieceInfoModel value, $Res Function(_PieceInfoModel) _then) = __$PieceInfoModelCopyWithImpl;
 @override @useResult
 $Res call({
- int? pieceId, String? rarity, String? collectedAt, String? image, String? vendor, String? name, int? price, String? description
+ int? pieceId, String? rarity, String? collectedAt, String? image, String? vendor, String? name, int? price, String? description, bool? isMainPiece
 });
 
 
@@ -294,7 +298,7 @@ class __$PieceInfoModelCopyWithImpl<$Res>
 
 /// Create a copy of PieceInfoModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? pieceId = freezed,Object? rarity = freezed,Object? collectedAt = freezed,Object? image = freezed,Object? vendor = freezed,Object? name = freezed,Object? price = freezed,Object? description = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? pieceId = freezed,Object? rarity = freezed,Object? collectedAt = freezed,Object? image = freezed,Object? vendor = freezed,Object? name = freezed,Object? price = freezed,Object? description = freezed,Object? isMainPiece = freezed,}) {
   return _then(_PieceInfoModel(
 pieceId: freezed == pieceId ? _self.pieceId : pieceId // ignore: cast_nullable_to_non_nullable
 as int?,rarity: freezed == rarity ? _self.rarity : rarity // ignore: cast_nullable_to_non_nullable
@@ -304,7 +308,8 @@ as String?,vendor: freezed == vendor ? _self.vendor : vendor // ignore: cast_nul
 as String?,name: freezed == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String?,price: freezed == price ? _self.price : price // ignore: cast_nullable_to_non_nullable
 as int?,description: freezed == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,isMainPiece: freezed == isMainPiece ? _self.isMainPiece : isMainPiece // ignore: cast_nullable_to_non_nullable
+as bool?,
   ));
 }
 

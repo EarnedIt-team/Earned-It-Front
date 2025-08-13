@@ -14,9 +14,14 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$PieceState {
 
-// 처리 여부
- bool get isLoading;// 가장 최근에 획득한 조각
- PieceInfoModel? get recentlyPiece;// 선택한 조각
+/// 처리 여부
+ bool get isLoading;/// 전체 테마 개수
+ int get themeCount;/// 현재 완성한 테마 개수
+ int get completedThemeCount;/// 전체 조각 개수
+ int get totalPieceCount;/// 현재 획득한 조각 개수
+ int get completedPieceCount;/// 획득한 조각의 가치
+ int get totalAccumulatedValue;/// 가장 최근에 획득한 조각
+ PieceInfoModel? get recentlyPiece;/// 선택한 조각
  PieceInfoModel? get selectedPiece;/// 현재까지 획득한 조각 리스트 (퍼즐 View)
  List<ThemeModel> get pieces;
 /// Create a copy of PieceState
@@ -29,16 +34,16 @@ $PieceStateCopyWith<PieceState> get copyWith => _$PieceStateCopyWithImpl<PieceSt
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is PieceState&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.recentlyPiece, recentlyPiece) || other.recentlyPiece == recentlyPiece)&&(identical(other.selectedPiece, selectedPiece) || other.selectedPiece == selectedPiece)&&const DeepCollectionEquality().equals(other.pieces, pieces));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is PieceState&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.themeCount, themeCount) || other.themeCount == themeCount)&&(identical(other.completedThemeCount, completedThemeCount) || other.completedThemeCount == completedThemeCount)&&(identical(other.totalPieceCount, totalPieceCount) || other.totalPieceCount == totalPieceCount)&&(identical(other.completedPieceCount, completedPieceCount) || other.completedPieceCount == completedPieceCount)&&(identical(other.totalAccumulatedValue, totalAccumulatedValue) || other.totalAccumulatedValue == totalAccumulatedValue)&&(identical(other.recentlyPiece, recentlyPiece) || other.recentlyPiece == recentlyPiece)&&(identical(other.selectedPiece, selectedPiece) || other.selectedPiece == selectedPiece)&&const DeepCollectionEquality().equals(other.pieces, pieces));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,isLoading,recentlyPiece,selectedPiece,const DeepCollectionEquality().hash(pieces));
+int get hashCode => Object.hash(runtimeType,isLoading,themeCount,completedThemeCount,totalPieceCount,completedPieceCount,totalAccumulatedValue,recentlyPiece,selectedPiece,const DeepCollectionEquality().hash(pieces));
 
 @override
 String toString() {
-  return 'PieceState(isLoading: $isLoading, recentlyPiece: $recentlyPiece, selectedPiece: $selectedPiece, pieces: $pieces)';
+  return 'PieceState(isLoading: $isLoading, themeCount: $themeCount, completedThemeCount: $completedThemeCount, totalPieceCount: $totalPieceCount, completedPieceCount: $completedPieceCount, totalAccumulatedValue: $totalAccumulatedValue, recentlyPiece: $recentlyPiece, selectedPiece: $selectedPiece, pieces: $pieces)';
 }
 
 
@@ -49,7 +54,7 @@ abstract mixin class $PieceStateCopyWith<$Res>  {
   factory $PieceStateCopyWith(PieceState value, $Res Function(PieceState) _then) = _$PieceStateCopyWithImpl;
 @useResult
 $Res call({
- bool isLoading, PieceInfoModel? recentlyPiece, PieceInfoModel? selectedPiece, List<ThemeModel> pieces
+ bool isLoading, int themeCount, int completedThemeCount, int totalPieceCount, int completedPieceCount, int totalAccumulatedValue, PieceInfoModel? recentlyPiece, PieceInfoModel? selectedPiece, List<ThemeModel> pieces
 });
 
 
@@ -66,10 +71,15 @@ class _$PieceStateCopyWithImpl<$Res>
 
 /// Create a copy of PieceState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? isLoading = null,Object? recentlyPiece = freezed,Object? selectedPiece = freezed,Object? pieces = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? isLoading = null,Object? themeCount = null,Object? completedThemeCount = null,Object? totalPieceCount = null,Object? completedPieceCount = null,Object? totalAccumulatedValue = null,Object? recentlyPiece = freezed,Object? selectedPiece = freezed,Object? pieces = null,}) {
   return _then(_self.copyWith(
 isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
-as bool,recentlyPiece: freezed == recentlyPiece ? _self.recentlyPiece : recentlyPiece // ignore: cast_nullable_to_non_nullable
+as bool,themeCount: null == themeCount ? _self.themeCount : themeCount // ignore: cast_nullable_to_non_nullable
+as int,completedThemeCount: null == completedThemeCount ? _self.completedThemeCount : completedThemeCount // ignore: cast_nullable_to_non_nullable
+as int,totalPieceCount: null == totalPieceCount ? _self.totalPieceCount : totalPieceCount // ignore: cast_nullable_to_non_nullable
+as int,completedPieceCount: null == completedPieceCount ? _self.completedPieceCount : completedPieceCount // ignore: cast_nullable_to_non_nullable
+as int,totalAccumulatedValue: null == totalAccumulatedValue ? _self.totalAccumulatedValue : totalAccumulatedValue // ignore: cast_nullable_to_non_nullable
+as int,recentlyPiece: freezed == recentlyPiece ? _self.recentlyPiece : recentlyPiece // ignore: cast_nullable_to_non_nullable
 as PieceInfoModel?,selectedPiece: freezed == selectedPiece ? _self.selectedPiece : selectedPiece // ignore: cast_nullable_to_non_nullable
 as PieceInfoModel?,pieces: null == pieces ? _self.pieces : pieces // ignore: cast_nullable_to_non_nullable
 as List<ThemeModel>,
@@ -181,10 +191,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool isLoading,  PieceInfoModel? recentlyPiece,  PieceInfoModel? selectedPiece,  List<ThemeModel> pieces)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool isLoading,  int themeCount,  int completedThemeCount,  int totalPieceCount,  int completedPieceCount,  int totalAccumulatedValue,  PieceInfoModel? recentlyPiece,  PieceInfoModel? selectedPiece,  List<ThemeModel> pieces)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _PieceState() when $default != null:
-return $default(_that.isLoading,_that.recentlyPiece,_that.selectedPiece,_that.pieces);case _:
+return $default(_that.isLoading,_that.themeCount,_that.completedThemeCount,_that.totalPieceCount,_that.completedPieceCount,_that.totalAccumulatedValue,_that.recentlyPiece,_that.selectedPiece,_that.pieces);case _:
   return orElse();
 
 }
@@ -202,10 +212,10 @@ return $default(_that.isLoading,_that.recentlyPiece,_that.selectedPiece,_that.pi
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool isLoading,  PieceInfoModel? recentlyPiece,  PieceInfoModel? selectedPiece,  List<ThemeModel> pieces)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool isLoading,  int themeCount,  int completedThemeCount,  int totalPieceCount,  int completedPieceCount,  int totalAccumulatedValue,  PieceInfoModel? recentlyPiece,  PieceInfoModel? selectedPiece,  List<ThemeModel> pieces)  $default,) {final _that = this;
 switch (_that) {
 case _PieceState():
-return $default(_that.isLoading,_that.recentlyPiece,_that.selectedPiece,_that.pieces);case _:
+return $default(_that.isLoading,_that.themeCount,_that.completedThemeCount,_that.totalPieceCount,_that.completedPieceCount,_that.totalAccumulatedValue,_that.recentlyPiece,_that.selectedPiece,_that.pieces);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -222,10 +232,10 @@ return $default(_that.isLoading,_that.recentlyPiece,_that.selectedPiece,_that.pi
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool isLoading,  PieceInfoModel? recentlyPiece,  PieceInfoModel? selectedPiece,  List<ThemeModel> pieces)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool isLoading,  int themeCount,  int completedThemeCount,  int totalPieceCount,  int completedPieceCount,  int totalAccumulatedValue,  PieceInfoModel? recentlyPiece,  PieceInfoModel? selectedPiece,  List<ThemeModel> pieces)?  $default,) {final _that = this;
 switch (_that) {
 case _PieceState() when $default != null:
-return $default(_that.isLoading,_that.recentlyPiece,_that.selectedPiece,_that.pieces);case _:
+return $default(_that.isLoading,_that.themeCount,_that.completedThemeCount,_that.totalPieceCount,_that.completedPieceCount,_that.totalAccumulatedValue,_that.recentlyPiece,_that.selectedPiece,_that.pieces);case _:
   return null;
 
 }
@@ -237,14 +247,24 @@ return $default(_that.isLoading,_that.recentlyPiece,_that.selectedPiece,_that.pi
 
 
 class _PieceState implements PieceState {
-  const _PieceState({this.isLoading = false, this.recentlyPiece, this.selectedPiece, final  List<ThemeModel> pieces = const []}): _pieces = pieces;
+  const _PieceState({this.isLoading = false, this.themeCount = 0, this.completedThemeCount = 0, this.totalPieceCount = 0, this.completedPieceCount = 0, this.totalAccumulatedValue = 0, this.recentlyPiece, this.selectedPiece, final  List<ThemeModel> pieces = const []}): _pieces = pieces;
   
 
-// 처리 여부
+/// 처리 여부
 @override@JsonKey() final  bool isLoading;
-// 가장 최근에 획득한 조각
+/// 전체 테마 개수
+@override@JsonKey() final  int themeCount;
+/// 현재 완성한 테마 개수
+@override@JsonKey() final  int completedThemeCount;
+/// 전체 조각 개수
+@override@JsonKey() final  int totalPieceCount;
+/// 현재 획득한 조각 개수
+@override@JsonKey() final  int completedPieceCount;
+/// 획득한 조각의 가치
+@override@JsonKey() final  int totalAccumulatedValue;
+/// 가장 최근에 획득한 조각
 @override final  PieceInfoModel? recentlyPiece;
-// 선택한 조각
+/// 선택한 조각
 @override final  PieceInfoModel? selectedPiece;
 /// 현재까지 획득한 조각 리스트 (퍼즐 View)
  final  List<ThemeModel> _pieces;
@@ -266,16 +286,16 @@ _$PieceStateCopyWith<_PieceState> get copyWith => __$PieceStateCopyWithImpl<_Pie
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _PieceState&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.recentlyPiece, recentlyPiece) || other.recentlyPiece == recentlyPiece)&&(identical(other.selectedPiece, selectedPiece) || other.selectedPiece == selectedPiece)&&const DeepCollectionEquality().equals(other._pieces, _pieces));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _PieceState&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.themeCount, themeCount) || other.themeCount == themeCount)&&(identical(other.completedThemeCount, completedThemeCount) || other.completedThemeCount == completedThemeCount)&&(identical(other.totalPieceCount, totalPieceCount) || other.totalPieceCount == totalPieceCount)&&(identical(other.completedPieceCount, completedPieceCount) || other.completedPieceCount == completedPieceCount)&&(identical(other.totalAccumulatedValue, totalAccumulatedValue) || other.totalAccumulatedValue == totalAccumulatedValue)&&(identical(other.recentlyPiece, recentlyPiece) || other.recentlyPiece == recentlyPiece)&&(identical(other.selectedPiece, selectedPiece) || other.selectedPiece == selectedPiece)&&const DeepCollectionEquality().equals(other._pieces, _pieces));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,isLoading,recentlyPiece,selectedPiece,const DeepCollectionEquality().hash(_pieces));
+int get hashCode => Object.hash(runtimeType,isLoading,themeCount,completedThemeCount,totalPieceCount,completedPieceCount,totalAccumulatedValue,recentlyPiece,selectedPiece,const DeepCollectionEquality().hash(_pieces));
 
 @override
 String toString() {
-  return 'PieceState(isLoading: $isLoading, recentlyPiece: $recentlyPiece, selectedPiece: $selectedPiece, pieces: $pieces)';
+  return 'PieceState(isLoading: $isLoading, themeCount: $themeCount, completedThemeCount: $completedThemeCount, totalPieceCount: $totalPieceCount, completedPieceCount: $completedPieceCount, totalAccumulatedValue: $totalAccumulatedValue, recentlyPiece: $recentlyPiece, selectedPiece: $selectedPiece, pieces: $pieces)';
 }
 
 
@@ -286,7 +306,7 @@ abstract mixin class _$PieceStateCopyWith<$Res> implements $PieceStateCopyWith<$
   factory _$PieceStateCopyWith(_PieceState value, $Res Function(_PieceState) _then) = __$PieceStateCopyWithImpl;
 @override @useResult
 $Res call({
- bool isLoading, PieceInfoModel? recentlyPiece, PieceInfoModel? selectedPiece, List<ThemeModel> pieces
+ bool isLoading, int themeCount, int completedThemeCount, int totalPieceCount, int completedPieceCount, int totalAccumulatedValue, PieceInfoModel? recentlyPiece, PieceInfoModel? selectedPiece, List<ThemeModel> pieces
 });
 
 
@@ -303,10 +323,15 @@ class __$PieceStateCopyWithImpl<$Res>
 
 /// Create a copy of PieceState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? isLoading = null,Object? recentlyPiece = freezed,Object? selectedPiece = freezed,Object? pieces = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? isLoading = null,Object? themeCount = null,Object? completedThemeCount = null,Object? totalPieceCount = null,Object? completedPieceCount = null,Object? totalAccumulatedValue = null,Object? recentlyPiece = freezed,Object? selectedPiece = freezed,Object? pieces = null,}) {
   return _then(_PieceState(
 isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
-as bool,recentlyPiece: freezed == recentlyPiece ? _self.recentlyPiece : recentlyPiece // ignore: cast_nullable_to_non_nullable
+as bool,themeCount: null == themeCount ? _self.themeCount : themeCount // ignore: cast_nullable_to_non_nullable
+as int,completedThemeCount: null == completedThemeCount ? _self.completedThemeCount : completedThemeCount // ignore: cast_nullable_to_non_nullable
+as int,totalPieceCount: null == totalPieceCount ? _self.totalPieceCount : totalPieceCount // ignore: cast_nullable_to_non_nullable
+as int,completedPieceCount: null == completedPieceCount ? _self.completedPieceCount : completedPieceCount // ignore: cast_nullable_to_non_nullable
+as int,totalAccumulatedValue: null == totalAccumulatedValue ? _self.totalAccumulatedValue : totalAccumulatedValue // ignore: cast_nullable_to_non_nullable
+as int,recentlyPiece: freezed == recentlyPiece ? _self.recentlyPiece : recentlyPiece // ignore: cast_nullable_to_non_nullable
 as PieceInfoModel?,selectedPiece: freezed == selectedPiece ? _self.selectedPiece : selectedPiece // ignore: cast_nullable_to_non_nullable
 as PieceInfoModel?,pieces: null == pieces ? _self._pieces : pieces // ignore: cast_nullable_to_non_nullable
 as List<ThemeModel>,

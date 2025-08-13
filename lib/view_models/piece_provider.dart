@@ -50,8 +50,8 @@ class PieceNotifier extends Notifier<PieceState> {
     }
   }
 
-  /// 퍼즐 리스트를 불러오기
-  Future<void> loadPuzzleList(BuildContext context) async {
+  /// 퍼즐 리스트 & 정보를 불러오기
+  Future<void> loadPuzzle(BuildContext context) async {
     try {
       state = state.copyWith(isLoading: true);
       final accessToken = await _storage.read(key: 'accessToken');
@@ -68,7 +68,15 @@ class PieceNotifier extends Notifier<PieceState> {
               )
               .toList();
 
-      state = state.copyWith(isLoading: false, pieces: themeList);
+      state = state.copyWith(
+        isLoading: false,
+        pieces: themeList,
+        themeCount: data['puzzleInfo']['themeCount'] ?? 0,
+        completedThemeCount: data['puzzleInfo']['completedThemeCount'] ?? 0,
+        totalPieceCount: data['puzzleInfo']['totalPieceCount'] ?? 0,
+        completedPieceCount: data['puzzleInfo']['completedPieceCount'] ?? 0,
+        totalAccumulatedValue: data['puzzleInfo']['totalAccumulatedValue'] ?? 0,
+      );
     } on DioException catch (e) {
       if (context.mounted) _handleApiError(context, e);
     } catch (e) {

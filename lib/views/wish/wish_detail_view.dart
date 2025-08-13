@@ -37,7 +37,10 @@ class WishDetailView extends ConsumerWidget {
 
     final String formattedDate =
         item.createdAt.isNotEmpty
-            ? DateFormat('yyyy.MM.dd').format(DateTime.parse(item.createdAt))
+            ? DateFormat(
+              'yyyy.MM.dd a h:mm:ss',
+              'ko_KR',
+            ).format(DateTime.parse(item.createdAt))
             : '날짜 정보 없음';
 
     return Scaffold(

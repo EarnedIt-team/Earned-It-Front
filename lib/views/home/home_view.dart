@@ -97,8 +97,8 @@ class _HomeViewState extends ConsumerState<HomeView> {
         surfaceTintColor: Colors.transparent,
         title: Image.asset(
           Theme.of(context).brightness == Brightness.dark
-              ? "assets/images/logo_no_color.png"
-              : "assets/images/logo_color.png",
+              ? "assets/images/logo_light.png"
+              : "assets/images/logo_light_color.png",
           width: context.width(0.3),
         ),
         centerTitle: false,

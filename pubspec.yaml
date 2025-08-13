@@ -64,9 +64,8 @@ flutter:
 
     - assets/images/default_profile.png
     - assets/images/logo_light.png
+    - assets/images/logo_light_color.png
     - assets/images/logo_dark.png
-    - assets/images/logo_color.png
-    - assets/images/logo_no_color.png
     - assets/images/time.png
     - assets/images/login/kakao_login.png
     - assets/images/login/apple_login_light.png
@@ -80,6 +79,8 @@ flutter:
     - assets/images/money/money_largeSmall.png
     - assets/images/money/money_largeMiddle.png
     - assets/images/piece/unknow_piece.png
+
+    - assets/images/keep_icon.png
 
     - assets/images/onboarding/page1.png
     - assets/images/onboarding/page2.png

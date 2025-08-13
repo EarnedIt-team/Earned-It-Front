@@ -72,4 +72,25 @@ class PieceService {
       throw Exception("서버에서 에러가 발생했습니다.");
     }
   }
+
+  /// 선택한 조각을 고정하도록 서버에 요청합니다.
+  Future<ApiResponse> keepPiece({
+    required String accessToken,
+    required int pieceId,
+  }) async {
+    try {
+      String token = "Bearer $accessToken";
+
+      final ApiResponse response = await _restClient.keepPiece(token, pieceId);
+
+      if (response.code != "SUCCESS") {
+        throw Exception(response.message);
+      }
+      return response;
+    } on DioException catch (e) {
+      throw Exception(e.response?.data["message"] ?? "요청 처리 중 에러가 발생했습니다.");
+    } catch (e) {
+      throw Exception("서버에서 에러가 발생했습니다.");
+    }
+  }
 }

@@ -172,7 +172,7 @@ class _SettingViewState extends ConsumerState<SettingView> {
                                 ),
 
                                 Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  mainAxisAlignment: MainAxisAlignment.start,
                                   children: [
                                     Text(
                                       userState.name,
@@ -182,11 +182,13 @@ class _SettingViewState extends ConsumerState<SettingView> {
                                                     Brightness.dark
                                                 ? Colors.white
                                                 : Colors.black,
-                                        fontSize: context.width(0.04),
+                                        fontSize: context.width(0.035),
                                       ),
                                     ),
                                   ],
                                 ),
+
+                                const SizedBox(height: 10),
 
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.start,
@@ -207,7 +209,7 @@ class _SettingViewState extends ConsumerState<SettingView> {
                                 ),
 
                                 Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  mainAxisAlignment: MainAxisAlignment.start,
                                   children: <Widget>[
                                     Text(
                                       "${numberFormat.format(userState.monthlySalary)} 원",
@@ -217,7 +219,7 @@ class _SettingViewState extends ConsumerState<SettingView> {
                                                     Brightness.dark
                                                 ? Colors.white
                                                 : Colors.black,
-                                        fontSize: context.width(0.04),
+                                        fontSize: context.width(0.035),
                                       ),
                                     ),
                                   ],

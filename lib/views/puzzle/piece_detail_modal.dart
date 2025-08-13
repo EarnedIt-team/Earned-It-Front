@@ -1,6 +1,8 @@
 import 'package:earned_it/config/design.dart';
 import 'package:earned_it/models/piece/piece_info_model.dart';
+import 'package:earned_it/services/piece_service.dart';
 import 'package:earned_it/view_models/home_provider.dart';
+import 'package:earned_it/view_models/piece_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -29,7 +31,7 @@ class PieceDetailModal extends ConsumerWidget {
             : '미획득';
 
     // isMainPiece가 null일 경우 false로 처리
-    final bool isMain = pieceInfo.isMainPiece ?? false;
+    final bool isMain = pieceInfo.mainPiece ?? false;
 
     return SafeArea(
       child: Padding(
@@ -125,12 +127,19 @@ class PieceDetailModal extends ConsumerWidget {
                             isMain
                                 ? null
                                 : () {
-                                  // TODO: 메인으로 고정하는 API 호출 로직
+                                  ref
+                                      .read(pieceProvider.notifier)
+                                      .pinPieceToMain(
+                                        context,
+                                        pieceInfo.pieceId!,
+                                      );
                                 },
                         style: ElevatedButton.styleFrom(
                           backgroundColor:
-                              isMain ? Colors.grey : primaryGradientStart,
-                          disabledBackgroundColor: Colors.grey.shade300,
+                              isMain
+                                  ? Colors.grey
+                                  : const Color.fromARGB(255, 255, 136, 117),
+                          disabledBackgroundColor: Colors.grey,
                         ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -143,7 +152,7 @@ class PieceDetailModal extends ConsumerWidget {
                               isMain ? "고정됨" : "메인으로 고정",
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
-                                color: isMain ? Colors.grey[600] : Colors.black,
+                                color: isMain ? Colors.grey[800] : Colors.black,
                               ),
                             ),
                           ],

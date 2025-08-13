@@ -182,7 +182,7 @@ class SetSalaryViewModel extends AutoDisposeNotifier<SetSalaryState> {
       if (context.mounted) _handleApiError(context, e);
     } catch (e) {
       print('월 급여 설정 중 에러 발생: $e');
-      if (context.mounted) _handleGeneralError(context, e);
+      // if (context.mounted) _handleGeneralError(context, e);
     }
   }
 

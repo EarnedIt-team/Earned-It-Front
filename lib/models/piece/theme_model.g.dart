@@ -34,6 +34,7 @@ _SlotModel _$SlotModelFromJson(Map<String, dynamic> json) => _SlotModel(
   image: json['image'] as String?,
   value: (json['value'] as num?)?.toInt(),
   collectedAt: json['collectedAt'] as String?,
+  mainPiece: json['mainPiece'] as bool?,
   isCollected: json['collected'] as bool,
 );
 
@@ -46,5 +47,6 @@ Map<String, dynamic> _$SlotModelToJson(_SlotModel instance) =>
       'image': instance.image,
       'value': instance.value,
       'collectedAt': instance.collectedAt,
+      'mainPiece': instance.mainPiece,
       'collected': instance.isCollected,
     };

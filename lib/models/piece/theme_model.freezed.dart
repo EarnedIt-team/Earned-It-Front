@@ -301,7 +301,7 @@ as List<SlotModel>,
 /// @nodoc
 mixin _$SlotModel {
 
- int get slotIndex; int? get pieceId; int? get itemId; String? get itemName; String? get image; int? get value; String? get collectedAt;// 3. JSON의 'collected' 키를 'isCollected' 필드에 매핑합니다.
+ int get slotIndex; int? get pieceId; int? get itemId; String? get itemName; String? get image; int? get value; String? get collectedAt; bool? get mainPiece;// 3. JSON의 'collected' 키를 'isCollected' 필드에 매핑합니다.
 @JsonKey(name: 'collected') bool get isCollected;
 /// Create a copy of SlotModel
 /// with the given fields replaced by the non-null parameter values.
@@ -315,16 +315,16 @@ $SlotModelCopyWith<SlotModel> get copyWith => _$SlotModelCopyWithImpl<SlotModel>
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SlotModel&&(identical(other.slotIndex, slotIndex) || other.slotIndex == slotIndex)&&(identical(other.pieceId, pieceId) || other.pieceId == pieceId)&&(identical(other.itemId, itemId) || other.itemId == itemId)&&(identical(other.itemName, itemName) || other.itemName == itemName)&&(identical(other.image, image) || other.image == image)&&(identical(other.value, value) || other.value == value)&&(identical(other.collectedAt, collectedAt) || other.collectedAt == collectedAt)&&(identical(other.isCollected, isCollected) || other.isCollected == isCollected));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SlotModel&&(identical(other.slotIndex, slotIndex) || other.slotIndex == slotIndex)&&(identical(other.pieceId, pieceId) || other.pieceId == pieceId)&&(identical(other.itemId, itemId) || other.itemId == itemId)&&(identical(other.itemName, itemName) || other.itemName == itemName)&&(identical(other.image, image) || other.image == image)&&(identical(other.value, value) || other.value == value)&&(identical(other.collectedAt, collectedAt) || other.collectedAt == collectedAt)&&(identical(other.mainPiece, mainPiece) || other.mainPiece == mainPiece)&&(identical(other.isCollected, isCollected) || other.isCollected == isCollected));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,slotIndex,pieceId,itemId,itemName,image,value,collectedAt,isCollected);
+int get hashCode => Object.hash(runtimeType,slotIndex,pieceId,itemId,itemName,image,value,collectedAt,mainPiece,isCollected);
 
 @override
 String toString() {
-  return 'SlotModel(slotIndex: $slotIndex, pieceId: $pieceId, itemId: $itemId, itemName: $itemName, image: $image, value: $value, collectedAt: $collectedAt, isCollected: $isCollected)';
+  return 'SlotModel(slotIndex: $slotIndex, pieceId: $pieceId, itemId: $itemId, itemName: $itemName, image: $image, value: $value, collectedAt: $collectedAt, mainPiece: $mainPiece, isCollected: $isCollected)';
 }
 
 
@@ -335,7 +335,7 @@ abstract mixin class $SlotModelCopyWith<$Res>  {
   factory $SlotModelCopyWith(SlotModel value, $Res Function(SlotModel) _then) = _$SlotModelCopyWithImpl;
 @useResult
 $Res call({
- int slotIndex, int? pieceId, int? itemId, String? itemName, String? image, int? value, String? collectedAt,@JsonKey(name: 'collected') bool isCollected
+ int slotIndex, int? pieceId, int? itemId, String? itemName, String? image, int? value, String? collectedAt, bool? mainPiece,@JsonKey(name: 'collected') bool isCollected
 });
 
 
@@ -352,7 +352,7 @@ class _$SlotModelCopyWithImpl<$Res>
 
 /// Create a copy of SlotModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? slotIndex = null,Object? pieceId = freezed,Object? itemId = freezed,Object? itemName = freezed,Object? image = freezed,Object? value = freezed,Object? collectedAt = freezed,Object? isCollected = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? slotIndex = null,Object? pieceId = freezed,Object? itemId = freezed,Object? itemName = freezed,Object? image = freezed,Object? value = freezed,Object? collectedAt = freezed,Object? mainPiece = freezed,Object? isCollected = null,}) {
   return _then(_self.copyWith(
 slotIndex: null == slotIndex ? _self.slotIndex : slotIndex // ignore: cast_nullable_to_non_nullable
 as int,pieceId: freezed == pieceId ? _self.pieceId : pieceId // ignore: cast_nullable_to_non_nullable
@@ -361,7 +361,8 @@ as int?,itemName: freezed == itemName ? _self.itemName : itemName // ignore: cas
 as String?,image: freezed == image ? _self.image : image // ignore: cast_nullable_to_non_nullable
 as String?,value: freezed == value ? _self.value : value // ignore: cast_nullable_to_non_nullable
 as int?,collectedAt: freezed == collectedAt ? _self.collectedAt : collectedAt // ignore: cast_nullable_to_non_nullable
-as String?,isCollected: null == isCollected ? _self.isCollected : isCollected // ignore: cast_nullable_to_non_nullable
+as String?,mainPiece: freezed == mainPiece ? _self.mainPiece : mainPiece // ignore: cast_nullable_to_non_nullable
+as bool?,isCollected: null == isCollected ? _self.isCollected : isCollected // ignore: cast_nullable_to_non_nullable
 as bool,
   ));
 }
@@ -447,10 +448,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int slotIndex,  int? pieceId,  int? itemId,  String? itemName,  String? image,  int? value,  String? collectedAt, @JsonKey(name: 'collected')  bool isCollected)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int slotIndex,  int? pieceId,  int? itemId,  String? itemName,  String? image,  int? value,  String? collectedAt,  bool? mainPiece, @JsonKey(name: 'collected')  bool isCollected)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _SlotModel() when $default != null:
-return $default(_that.slotIndex,_that.pieceId,_that.itemId,_that.itemName,_that.image,_that.value,_that.collectedAt,_that.isCollected);case _:
+return $default(_that.slotIndex,_that.pieceId,_that.itemId,_that.itemName,_that.image,_that.value,_that.collectedAt,_that.mainPiece,_that.isCollected);case _:
   return orElse();
 
 }
@@ -468,10 +469,10 @@ return $default(_that.slotIndex,_that.pieceId,_that.itemId,_that.itemName,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int slotIndex,  int? pieceId,  int? itemId,  String? itemName,  String? image,  int? value,  String? collectedAt, @JsonKey(name: 'collected')  bool isCollected)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int slotIndex,  int? pieceId,  int? itemId,  String? itemName,  String? image,  int? value,  String? collectedAt,  bool? mainPiece, @JsonKey(name: 'collected')  bool isCollected)  $default,) {final _that = this;
 switch (_that) {
 case _SlotModel():
-return $default(_that.slotIndex,_that.pieceId,_that.itemId,_that.itemName,_that.image,_that.value,_that.collectedAt,_that.isCollected);case _:
+return $default(_that.slotIndex,_that.pieceId,_that.itemId,_that.itemName,_that.image,_that.value,_that.collectedAt,_that.mainPiece,_that.isCollected);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -488,10 +489,10 @@ return $default(_that.slotIndex,_that.pieceId,_that.itemId,_that.itemName,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int slotIndex,  int? pieceId,  int? itemId,  String? itemName,  String? image,  int? value,  String? collectedAt, @JsonKey(name: 'collected')  bool isCollected)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int slotIndex,  int? pieceId,  int? itemId,  String? itemName,  String? image,  int? value,  String? collectedAt,  bool? mainPiece, @JsonKey(name: 'collected')  bool isCollected)?  $default,) {final _that = this;
 switch (_that) {
 case _SlotModel() when $default != null:
-return $default(_that.slotIndex,_that.pieceId,_that.itemId,_that.itemName,_that.image,_that.value,_that.collectedAt,_that.isCollected);case _:
+return $default(_that.slotIndex,_that.pieceId,_that.itemId,_that.itemName,_that.image,_that.value,_that.collectedAt,_that.mainPiece,_that.isCollected);case _:
   return null;
 
 }
@@ -503,7 +504,7 @@ return $default(_that.slotIndex,_that.pieceId,_that.itemId,_that.itemName,_that.
 @JsonSerializable()
 
 class _SlotModel implements SlotModel {
-  const _SlotModel({required this.slotIndex, this.pieceId, this.itemId, this.itemName, this.image, this.value, this.collectedAt, @JsonKey(name: 'collected') required this.isCollected});
+  const _SlotModel({required this.slotIndex, this.pieceId, this.itemId, this.itemName, this.image, this.value, this.collectedAt, this.mainPiece, @JsonKey(name: 'collected') required this.isCollected});
   factory _SlotModel.fromJson(Map<String, dynamic> json) => _$SlotModelFromJson(json);
 
 @override final  int slotIndex;
@@ -513,6 +514,7 @@ class _SlotModel implements SlotModel {
 @override final  String? image;
 @override final  int? value;
 @override final  String? collectedAt;
+@override final  bool? mainPiece;
 // 3. JSON의 'collected' 키를 'isCollected' 필드에 매핑합니다.
 @override@JsonKey(name: 'collected') final  bool isCollected;
 
@@ -529,16 +531,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SlotModel&&(identical(other.slotIndex, slotIndex) || other.slotIndex == slotIndex)&&(identical(other.pieceId, pieceId) || other.pieceId == pieceId)&&(identical(other.itemId, itemId) || other.itemId == itemId)&&(identical(other.itemName, itemName) || other.itemName == itemName)&&(identical(other.image, image) || other.image == image)&&(identical(other.value, value) || other.value == value)&&(identical(other.collectedAt, collectedAt) || other.collectedAt == collectedAt)&&(identical(other.isCollected, isCollected) || other.isCollected == isCollected));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SlotModel&&(identical(other.slotIndex, slotIndex) || other.slotIndex == slotIndex)&&(identical(other.pieceId, pieceId) || other.pieceId == pieceId)&&(identical(other.itemId, itemId) || other.itemId == itemId)&&(identical(other.itemName, itemName) || other.itemName == itemName)&&(identical(other.image, image) || other.image == image)&&(identical(other.value, value) || other.value == value)&&(identical(other.collectedAt, collectedAt) || other.collectedAt == collectedAt)&&(identical(other.mainPiece, mainPiece) || other.mainPiece == mainPiece)&&(identical(other.isCollected, isCollected) || other.isCollected == isCollected));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,slotIndex,pieceId,itemId,itemName,image,value,collectedAt,isCollected);
+int get hashCode => Object.hash(runtimeType,slotIndex,pieceId,itemId,itemName,image,value,collectedAt,mainPiece,isCollected);
 
 @override
 String toString() {
-  return 'SlotModel(slotIndex: $slotIndex, pieceId: $pieceId, itemId: $itemId, itemName: $itemName, image: $image, value: $value, collectedAt: $collectedAt, isCollected: $isCollected)';
+  return 'SlotModel(slotIndex: $slotIndex, pieceId: $pieceId, itemId: $itemId, itemName: $itemName, image: $image, value: $value, collectedAt: $collectedAt, mainPiece: $mainPiece, isCollected: $isCollected)';
 }
 
 
@@ -549,7 +551,7 @@ abstract mixin class _$SlotModelCopyWith<$Res> implements $SlotModelCopyWith<$Re
   factory _$SlotModelCopyWith(_SlotModel value, $Res Function(_SlotModel) _then) = __$SlotModelCopyWithImpl;
 @override @useResult
 $Res call({
- int slotIndex, int? pieceId, int? itemId, String? itemName, String? image, int? value, String? collectedAt,@JsonKey(name: 'collected') bool isCollected
+ int slotIndex, int? pieceId, int? itemId, String? itemName, String? image, int? value, String? collectedAt, bool? mainPiece,@JsonKey(name: 'collected') bool isCollected
 });
 
 
@@ -566,7 +568,7 @@ class __$SlotModelCopyWithImpl<$Res>
 
 /// Create a copy of SlotModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? slotIndex = null,Object? pieceId = freezed,Object? itemId = freezed,Object? itemName = freezed,Object? image = freezed,Object? value = freezed,Object? collectedAt = freezed,Object? isCollected = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? slotIndex = null,Object? pieceId = freezed,Object? itemId = freezed,Object? itemName = freezed,Object? image = freezed,Object? value = freezed,Object? collectedAt = freezed,Object? mainPiece = freezed,Object? isCollected = null,}) {
   return _then(_SlotModel(
 slotIndex: null == slotIndex ? _self.slotIndex : slotIndex // ignore: cast_nullable_to_non_nullable
 as int,pieceId: freezed == pieceId ? _self.pieceId : pieceId // ignore: cast_nullable_to_non_nullable
@@ -575,7 +577,8 @@ as int?,itemName: freezed == itemName ? _self.itemName : itemName // ignore: cas
 as String?,image: freezed == image ? _self.image : image // ignore: cast_nullable_to_non_nullable
 as String?,value: freezed == value ? _self.value : value // ignore: cast_nullable_to_non_nullable
 as int?,collectedAt: freezed == collectedAt ? _self.collectedAt : collectedAt // ignore: cast_nullable_to_non_nullable
-as String?,isCollected: null == isCollected ? _self.isCollected : isCollected // ignore: cast_nullable_to_non_nullable
+as String?,mainPiece: freezed == mainPiece ? _self.mainPiece : mainPiece // ignore: cast_nullable_to_non_nullable
+as bool?,isCollected: null == isCollected ? _self.isCollected : isCollected // ignore: cast_nullable_to_non_nullable
 as bool,
   ));
 }

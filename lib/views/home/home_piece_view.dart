@@ -54,9 +54,30 @@ class _HomePieceViewState extends ConsumerState<HomePieceView> {
                 pieceState.recentlyPiece != null
                     ? Column(
                       children: [
+                        Container(
+                          decoration: const BoxDecoration(
+                            color: primaryColor,
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(18.0),
+                            ),
+                          ),
+                          padding: EdgeInsets.symmetric(
+                            horizontal: context.width(0.03),
+                            vertical: context.width(0.02),
+                          ),
+                          // 👇 4. 계산된 조각 수를 Text 위젯에 반영
+                          child: Text(
+                            "x ${currencyFormat.format(buyablePieces)}",
+                            style: TextStyle(
+                              fontSize: context.width(0.035),
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
                         SizedBox(
-                          width: context.height(0.33),
-                          height: context.height(0.33),
+                          width: context.width(0.6),
+                          height: context.width(0.6),
                           child: Stack(
                             alignment: Alignment.center,
                             children: [
@@ -68,7 +89,7 @@ class _HomePieceViewState extends ConsumerState<HomePieceView> {
                                   pieceState.recentlyPiece!.image!,
                                   width: context.height(0.3),
                                   height: context.height(0.3),
-                                  fit: BoxFit.cover,
+                                  fit: BoxFit.contain,
                                   loadingBuilder: (
                                     context,
                                     child,
@@ -99,66 +120,9 @@ class _HomePieceViewState extends ConsumerState<HomePieceView> {
                                           ),
                                 ),
                               ),
-                              // Positioned(
-                              //   bottom: 0,
-                              //   right: 0,
-                              //   child: FloatingActionButton(
-                              //     onPressed: () {
-                              //       if (!userState.isCheckedIn) {
-                              //         ref.read(isOpenCheckedIn.notifier).state =
-                              //             true;
-                              //       } else {
-                              //         toastification.show(
-                              //           context: context,
-                              //           type: ToastificationType.error,
-                              //           style: ToastificationStyle.flat,
-                              //           title: const Text(
-                              //             '출석 체크는 하루에 한번 가능합니다.',
-                              //           ),
-                              //           autoCloseDuration: const Duration(
-                              //             seconds: 3,
-                              //           ),
-                              //         );
-                              //       }
-                              //     },
-                              //     shape: RoundedRectangleBorder(
-                              //       borderRadius: BorderRadius.circular(30.0),
-                              //     ),
-                              //     child: Icon(
-                              //       Icons.cached,
-                              //       size: context.width(0.08),
-                              //     ),
-                              //   ),
-                              // ),
-                              Positioned(
-                                top: 0,
-                                left: 0,
-                                child: Container(
-                                  decoration: const BoxDecoration(
-                                    color: primaryColor,
-                                    borderRadius: BorderRadius.all(
-                                      Radius.circular(18.0),
-                                    ),
-                                  ),
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: context.width(0.03),
-                                    vertical: context.width(0.02),
-                                  ),
-                                  // 👇 4. 계산된 조각 수를 Text 위젯에 반영
-                                  child: Text(
-                                    "x ${currencyFormat.format(buyablePieces)}",
-                                    style: TextStyle(
-                                      fontSize: context.width(0.035),
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                              ),
                             ],
                           ),
                         ),
-                        SizedBox(height: context.height(0.05)),
                         Text(
                           pieceState.recentlyPiece!.vendor!,
                           style: TextStyle(fontSize: context.width(0.04)),
@@ -234,12 +198,12 @@ class _HomePieceViewState extends ConsumerState<HomePieceView> {
                           ),
                         ),
                         SizedBox(height: context.height(0.03)),
-                        // ElevatedButton(
-                        //   onPressed: () {
-                        //     ref.read(isOpenCheckedIn.notifier).state = true;
-                        //   },
-                        //   child: const Text("출석체크하기"),
-                        // ),
+                        ElevatedButton(
+                          onPressed: () {
+                            ref.read(isOpenCheckedIn.notifier).state = true;
+                          },
+                          child: const Text("출석체크하기"),
+                        ),
                       ],
                     ),
           ),

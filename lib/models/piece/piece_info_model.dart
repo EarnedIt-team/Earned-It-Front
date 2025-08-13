@@ -31,7 +31,7 @@ abstract class PieceInfoModel with _$PieceInfoModel {
     String? description,
 
     /// 메인 고정 여부
-    bool? isMainPiece,
+    bool? mainPiece,
   }) = _PieceInfoModel;
 
   factory PieceInfoModel.fromJson(Map<String, dynamic> json) =>

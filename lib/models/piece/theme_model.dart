@@ -31,6 +31,7 @@ abstract class SlotModel with _$SlotModel {
     String? image,
     int? value,
     String? collectedAt,
+    bool? mainPiece,
     // 3. JSON의 'collected' 키를 'isCollected' 필드에 매핑합니다.
     @JsonKey(name: 'collected') required bool isCollected,
   }) = _SlotModel;

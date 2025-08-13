@@ -327,17 +327,41 @@ class _PuzzleViewState extends ConsumerState<PuzzleView> {
       child: Center(
         child:
             slot.isCollected && slot.image != null && slot.image!.isNotEmpty
-                ? ClipRRect(
-                  borderRadius: BorderRadius.circular(10.5),
-                  child: Image.network(
-                    slot.image!,
-                    width: double.infinity,
-                    height: double.infinity,
-                    fit: BoxFit.contain,
-                    errorBuilder:
-                        (context, error, stackTrace) =>
-                            const Icon(Icons.error_outline, color: Colors.grey),
-                  ),
+                ? Stack(
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(10.5),
+                      child: Image.network(
+                        slot.image!,
+                        width: double.infinity,
+                        height: double.infinity,
+                        fit: BoxFit.contain,
+                        errorBuilder:
+                            (context, error, stackTrace) => const Icon(
+                              Icons.error_outline,
+                              color: Colors.grey,
+                            ),
+                      ),
+                    ),
+                    if (slot.mainPiece!)
+                      Positioned(
+                        top: 5,
+                        left: 5,
+                        child: Container(
+                          padding: const EdgeInsets.all(5.0), // 원 안의 이미지 여백
+                          decoration: const BoxDecoration(
+                            color: primaryGradientStart, // 원형 배경색
+                            shape: BoxShape.circle, // 모양을 원으로 지정
+                          ),
+                          child: Image.asset(
+                            'assets/images/keep_icon.png',
+                            color: Colors.black,
+                            width: context.width(0.04), // 아이콘 이미지 크기
+                            height: context.width(0.04),
+                          ),
+                        ),
+                      ),
+                  ],
                 )
                 : Image.asset(
                   "assets/images/piece/unknow_piece.png",

@@ -429,6 +429,7 @@ class AllWishlistItem extends ConsumerWidget {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
+                  SizedBox(width: context.middlePadding / 4),
                   Column(
                     children: [
                       if (item.starred)
@@ -447,7 +448,7 @@ class AllWishlistItem extends ConsumerWidget {
                         ),
                     ],
                   ),
-                  const SizedBox(width: 5),
+                  SizedBox(width: context.middlePadding / 4),
                   SizedBox(
                     width: context.height(0.08),
                     height: context.height(0.08),

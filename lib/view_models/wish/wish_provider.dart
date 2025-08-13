@@ -321,7 +321,7 @@ class WishViewModel extends Notifier<WishState> {
 
       // 서버 성공 후, 로컬 상태에서 즉시 구매 상태를 토글
       toggleBoughtStatusLocally(wishId);
-      toastMessage(context, '아이템 정보를 수정했습니다.');
+      toastMessage(context, '구매 여부를 수정했습니다.');
 
       final String currentLocation = GoRouterState.of(context).uri.toString();
 
@@ -407,18 +407,11 @@ class WishViewModel extends Notifier<WishState> {
 
       // 서버 성공 후, 로컬 상태에서 즉시 Star 상태를 토글
       toggleStarStatusLocally(wishId);
-      toastMessage(context, '아이템 정보를 수정했습니다.');
+      toastMessage(context, 'Star 정보를 수정했습니다.');
 
       final String currentLocation = GoRouterState.of(context).uri.toString();
 
-      if (currentLocation == '/wish') {
-        await ref.read(wishViewModelProvider.notifier).loadStarWish();
-        await ref.read(wishViewModelProvider.notifier).loadHighLightWish();
-      } else if (currentLocation == '/wishALL') {
-        // await ref.read(wishViewModelProvider.notifier).fetchMoreWishes(context);
-      } else if (currentLocation == '/wishSearch') {
-        // ref.read(wishViewModelProvider.notifier).clearSearchResults();
-      }
+      await ref.read(wishViewModelProvider.notifier).loadStarWish();
     } on DioException catch (e) {
       if (context.mounted) _handleApiError(context, e);
     } catch (e) {

@@ -226,7 +226,7 @@ class _HomePieceViewState extends ConsumerState<HomePieceView> {
                         ),
                         Text(
                           textAlign: TextAlign.center,
-                          '퍼즐 페이지에서 획득한 조각을 설정해주세요.',
+                          '"퍼즐 페이지"에서 획득한 조각을 설정해주세요.',
                           style: TextStyle(
                             color: Colors.grey,
                             fontSize: context.width(0.035),

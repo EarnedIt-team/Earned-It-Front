@@ -32,7 +32,7 @@ class PieceDetailModal extends StatelessWidget {
                 pieceInfo.image ?? '',
                 width: context.height(0.3),
                 height: context.height(0.3),
-                fit: BoxFit.cover,
+                fit: BoxFit.contain,
                 loadingBuilder:
                     (context, child, progress) =>
                         progress == null

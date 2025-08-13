@@ -406,6 +406,8 @@ class _HomeViewState extends ConsumerState<HomeView> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
                 item.vendor,
                 style: TextStyle(
                   color: Colors.grey,
@@ -413,6 +415,8 @@ class _HomeViewState extends ConsumerState<HomeView> {
                 ),
               ),
               Text(
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
                 item.name,
                 textAlign: TextAlign.center,
                 style: TextStyle(
@@ -423,8 +427,6 @@ class _HomeViewState extends ConsumerState<HomeView> {
                   fontSize: MediaQuery.of(context).size.width * 0.05,
                   fontWeight: FontWeight.bold,
                 ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
               ),
             ],
           ),
@@ -463,8 +465,8 @@ class _HomeViewState extends ConsumerState<HomeView> {
         SizedBox(height: context.height(0.02)),
         ConstrainedBox(
           constraints: BoxConstraints(
-            maxWidth: context.width(0.7),
-            minHeight: context.height(0.055),
+            maxWidth: context.width(0.6),
+            minHeight: context.height(0.06),
           ),
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
@@ -479,7 +481,9 @@ class _HomeViewState extends ConsumerState<HomeView> {
                   Theme.of(context).brightness == Brightness.dark
                       ? const Color.fromARGB(97, 75, 75, 75)
                       : const Color.fromARGB(255, 234, 234, 234),
-              backgroundColor: Colors.white,
+              backgroundColor: const Color.fromARGB(255, 242, 254, 242),
+              shadowColor: Colors.transparent,
+              elevation: 0,
             ),
             onPressed:
                 displayInfo.progress >= 1.0
@@ -490,10 +494,13 @@ class _HomeViewState extends ConsumerState<HomeView> {
               children: [
                 Icon(
                   displayInfo.progress >= 1.0
-                      ? Icons.shopping_cart_outlined
+                      ? Icons.shopping_bag
                       : Icons.timer_outlined,
                   color:
-                      displayInfo.progress >= 1.0 ? Colors.black : Colors.grey,
+                      displayInfo.progress >= 1.0
+                          ? const Color.fromARGB(255, 62, 62, 62)
+                          : Colors.grey,
+                  size: context.width(0.04),
                 ),
                 const SizedBox(width: 8),
                 Text(
@@ -505,6 +512,7 @@ class _HomeViewState extends ConsumerState<HomeView> {
                         displayInfo.progress >= 1.0
                             ? Colors.black
                             : Colors.grey,
+                    fontSize: context.width(0.037),
                     fontWeight: FontWeight.bold,
                   ),
                 ),

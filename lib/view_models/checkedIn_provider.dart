@@ -128,6 +128,10 @@ class CheckedInViewModel extends AutoDisposeNotifier<CheckedInState> {
 
   void _handleGeneralError(BuildContext context, Object e) {
     state = state.copyWith(isLoading: false);
-    toastMessage(context, e.toString(), type: ToastmessageType.errorType);
+    toastMessage(
+      context,
+      e.toDisplayString(),
+      type: ToastmessageType.errorType,
+    );
   }
 }

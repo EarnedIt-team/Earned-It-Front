@@ -125,7 +125,7 @@ class _OnboardingViewState extends State<OnboardingView> {
                         height: context.height(0.065),
                         child: ElevatedButton(
                           onPressed: () {
-                            context.go("/home");
+                            context.go("/login");
                           },
                           child: Text(
                             "Earned it 시작하기",
@@ -135,10 +135,10 @@ class _OnboardingViewState extends State<OnboardingView> {
                       ),
                       TextButton(
                         onPressed: () {
-                          context.go("/login");
+                          context.go("/home");
                         },
                         child: Text(
-                          "기존 계정으로 로그인",
+                          "로그인 없이 사용하기",
                           style: TextStyle(
                             color:
                                 Theme.of(context).brightness == Brightness.dark
@@ -157,7 +157,7 @@ class _OnboardingViewState extends State<OnboardingView> {
                 top: 80,
                 child: IconButton(
                   onPressed: () {
-                    context.go("/home");
+                    context.go("/login");
                   },
                   icon: Icon(
                     Icons.close,

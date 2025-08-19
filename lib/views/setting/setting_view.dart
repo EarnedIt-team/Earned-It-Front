@@ -496,7 +496,7 @@ class _SettingViewState extends ConsumerState<SettingView> {
                           : Colors.black,
                 ),
                 title: Text(
-                  "기존 계정으로 로그인",
+                  "로그인",
                   style: TextStyle(
                     color:
                         Theme.of(context).brightness == Brightness.dark

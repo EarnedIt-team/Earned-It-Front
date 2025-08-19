@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:earned_it/config/exception.dart';
 import 'package:earned_it/config/toastMessage.dart';
 import 'package:earned_it/models/piece/piece_info_model.dart';
 import 'package:earned_it/models/piece/piece_state.dart';
@@ -174,12 +175,16 @@ class PieceNotifier extends Notifier<PieceState> {
     if (e.response?.data['code'] == "AUTH_REQUIRED") {
       // ... (토큰 재발급 로직)
     } else {
-      _handleGeneralError(context, e);
+      _handleGeneralError(context, e.toDisplayString());
     }
   }
 
   void _handleGeneralError(BuildContext context, Object e) {
     state = state.copyWith(isLoading: false);
-    toastMessage(context, e.toString(), type: ToastmessageType.errorType);
+    toastMessage(
+      context,
+      e.toDisplayString(),
+      type: ToastmessageType.errorType,
+    );
   }
 }

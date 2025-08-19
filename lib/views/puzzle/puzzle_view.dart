@@ -399,20 +399,30 @@ class _PuzzleViewState extends ConsumerState<PuzzleView> {
             ),
           ),
           SizedBox(height: context.height(0.02)),
-          ElevatedButton(
-            onPressed: () {
-              if (!userState.isCheckedIn) {
-                ref.read(isOpenPieceInfo.notifier).state = true;
-              } else {
-                toastMessage(
-                  context,
-                  '출석 체크는 하루에 한번 가능합니다.',
-                  type: ToastmessageType.errorType,
-                );
-              }
-            },
-            child: const Text("출석체크하기"),
-          ),
+          if (userState.isLogin == true)
+            ElevatedButton(
+              onPressed: () {
+                if (!userState.isCheckedIn) {
+                  ref.read(isOpenPieceInfo.notifier).state = true;
+                } else {
+                  toastMessage(
+                    context,
+                    '출석 체크는 하루에 한번 가능합니다.',
+                    type: ToastmessageType.errorType,
+                  );
+                }
+              },
+              child: const Text("출석체크하기"),
+            )
+          else
+            Text(
+              "- 로그인이 필요한 서비스 입니다 -",
+              style: TextStyle(
+                color: Colors.grey,
+                fontSize: context.width(0.035),
+                fontWeight: FontWeight.bold,
+              ),
+            ),
         ],
       ),
     );

@@ -6,6 +6,7 @@ import 'package:earned_it/view_models/home_provider.dart';
 import 'package:earned_it/view_models/user_provider.dart';
 import 'package:earned_it/view_models/wish/wish_provider.dart';
 import 'package:earned_it/views/home/home_piece_view.dart';
+import 'package:earned_it/views/splash_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -41,8 +42,16 @@ class _HomeViewState extends ConsumerState<HomeView> {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await ref.read(userProvider.notifier).loadUser();
 
-      if (ref.read(userProvider.notifier).state.isearningsPerSecond == false) {
-        context.go("/initHome");
+      final storage = ref.read(secureStorageProvider);
+      String? token = await storage.read(key: 'refreshToken');
+
+      if (token != null && token.isNotEmpty) {
+        if (ref.read(userProvider.notifier).state.isearningsPerSecond ==
+            false) {
+          context.go("/initHome");
+        }
+      } else {
+        context.go("/home");
       }
     });
   }

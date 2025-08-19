@@ -118,17 +118,36 @@ class _OnboardingViewState extends State<OnboardingView> {
                   padding: EdgeInsets.symmetric(
                     horizontal: context.middlePadding,
                   ),
-                  child: SizedBox(
-                    height: context.height(0.065),
-                    child: ElevatedButton(
-                      onPressed: () {
-                        context.go("/login");
-                      },
-                      child: Text(
-                        "Earned it 시작하기",
-                        style: TextStyle(fontSize: context.width(0.045)),
+                  child: Column(
+                    children: [
+                      SizedBox(
+                        width: context.width(1),
+                        height: context.height(0.065),
+                        child: ElevatedButton(
+                          onPressed: () {
+                            context.go("/home");
+                          },
+                          child: Text(
+                            "Earned it 시작하기",
+                            style: TextStyle(fontSize: context.width(0.045)),
+                          ),
+                        ),
                       ),
-                    ),
+                      TextButton(
+                        onPressed: () {
+                          context.go("/login");
+                        },
+                        child: Text(
+                          "기존 계정으로 로그인",
+                          style: TextStyle(
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? Colors.grey
+                                    : Colors.grey[300],
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -138,7 +157,7 @@ class _OnboardingViewState extends State<OnboardingView> {
                 top: 80,
                 child: IconButton(
                   onPressed: () {
-                    context.go("/login");
+                    context.go("/home");
                   },
                   icon: Icon(
                     Icons.close,

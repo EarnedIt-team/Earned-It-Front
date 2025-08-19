@@ -33,7 +33,7 @@ class InitHomeView extends ConsumerWidget {
             Image.asset(
               Theme.of(context).brightness == Brightness.dark
                   ? "assets/images/logo_dark.png"
-                  : "assets/images/logo_light.png",
+                  : "assets/images/logo_light_color.png",
               width: context.width(0.35),
             ),
             SizedBox(height: context.height(0.03)),

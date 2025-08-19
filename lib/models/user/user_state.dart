@@ -7,6 +7,9 @@ part 'user_state.g.dart';
 @freezed
 abstract class UserState with _$UserState {
   const factory UserState({
+    /// 로그인 처리 여부
+    @Default(false) bool isLogin,
+
     /// 사용자 닉네임
     @Default('') String name,
 

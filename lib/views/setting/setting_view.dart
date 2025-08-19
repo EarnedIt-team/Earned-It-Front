@@ -102,11 +102,6 @@ class _SettingViewState extends ConsumerState<SettingView> {
                               child: Image.asset(
                                 "assets/images/default_profile.png",
                                 fit: BoxFit.cover,
-                                color:
-                                    Theme.of(context).brightness ==
-                                            Brightness.dark
-                                        ? const Color.fromARGB(255, 82, 82, 82)
-                                        : Colors.grey,
                                 width: context.width(0.2),
                               ),
                             ),
@@ -252,91 +247,94 @@ class _SettingViewState extends ConsumerState<SettingView> {
 
             // --- 프로필 섹션 ---
             const SizedBox(height: 15),
-            _buildSectionHeader("프로필"),
-            ListTile(
-              contentPadding: EdgeInsets.symmetric(
-                horizontal: context.middlePadding / 2,
-              ),
-              leading: Icon(
-                Icons.edit_outlined,
-                color:
-                    Theme.of(context).brightness == Brightness.dark
-                        ? Colors.white
-                        : Colors.black,
-              ),
-              title: Text(
-                '닉네임 수정',
-                style: TextStyle(
+            if (userState.isLogin == true) _buildSectionHeader("프로필"),
+            if (userState.isLogin == true)
+              ListTile(
+                contentPadding: EdgeInsets.symmetric(
+                  horizontal: context.middlePadding / 2,
+                ),
+                leading: Icon(
+                  Icons.edit_outlined,
                   color:
                       Theme.of(context).brightness == Brightness.dark
                           ? Colors.white
                           : Colors.black,
                 ),
+                title: Text(
+                  '닉네임 수정',
+                  style: TextStyle(
+                    color:
+                        Theme.of(context).brightness == Brightness.dark
+                            ? Colors.white
+                            : Colors.black,
+                  ),
+                ),
+                trailing: const Icon(
+                  Icons.chevron_right,
+                  color: primaryGradientEnd,
+                ),
+                onTap: () {
+                  context.push('/editName');
+                },
               ),
-              trailing: const Icon(
-                Icons.chevron_right,
-                color: primaryGradientEnd,
-              ),
-              onTap: () {
-                context.push('/editName');
-              },
-            ),
-            ListTile(
-              contentPadding: EdgeInsets.symmetric(
-                horizontal: context.middlePadding / 2,
-              ),
-              leading: Icon(
-                Icons.photo_camera_outlined,
-                color:
-                    Theme.of(context).brightness == Brightness.dark
-                        ? Colors.white
-                        : Colors.black,
-              ),
-              title: Text(
-                '프로필 사진 변경',
-                style: TextStyle(
+            if (userState.isLogin == true)
+              ListTile(
+                contentPadding: EdgeInsets.symmetric(
+                  horizontal: context.middlePadding / 2,
+                ),
+                leading: Icon(
+                  Icons.photo_camera_outlined,
                   color:
                       Theme.of(context).brightness == Brightness.dark
                           ? Colors.white
                           : Colors.black,
                 ),
+                title: Text(
+                  '프로필 사진 변경',
+                  style: TextStyle(
+                    color:
+                        Theme.of(context).brightness == Brightness.dark
+                            ? Colors.white
+                            : Colors.black,
+                  ),
+                ),
+                trailing: const Icon(
+                  Icons.chevron_right,
+                  color: primaryGradientEnd,
+                ),
+                onTap: () {
+                  ref.read(isOpenEditProfileImage.notifier).state = true;
+                },
               ),
-              trailing: const Icon(
-                Icons.chevron_right,
-                color: primaryGradientEnd,
-              ),
-              onTap: () {
-                ref.read(isOpenEditProfileImage.notifier).state = true;
-              },
-            ),
-            ListTile(
-              contentPadding: EdgeInsets.symmetric(
-                horizontal: context.middlePadding / 2,
-              ),
-              leading: Icon(
-                Icons.attach_money_outlined,
-                color:
-                    Theme.of(context).brightness == Brightness.dark
-                        ? Colors.white
-                        : Colors.black,
-              ),
-              title: Text(
-                "월 수익 설정",
-                style: TextStyle(
+            if (userState.isLogin == true)
+              ListTile(
+                contentPadding: EdgeInsets.symmetric(
+                  horizontal: context.middlePadding / 2,
+                ),
+                leading: Icon(
+                  Icons.attach_money_outlined,
                   color:
                       Theme.of(context).brightness == Brightness.dark
                           ? Colors.white
                           : Colors.black,
                 ),
+                title: Text(
+                  "월 수익 설정",
+                  style: TextStyle(
+                    color:
+                        Theme.of(context).brightness == Brightness.dark
+                            ? Colors.white
+                            : Colors.black,
+                  ),
+                ),
+                trailing: const Icon(
+                  Icons.chevron_right,
+                  color: primaryGradientEnd,
+                ),
+                onTap: () {
+                  context.push('/setSalary');
+                },
               ),
-              trailing: const Icon(
-                Icons.chevron_right,
-                color: primaryGradientEnd,
-              ),
-              onTap: () {
-                context.push('/setSalary');
-              },
-            ),
             // --- 앱 설정 섹션 ---
             _buildSectionHeader("앱 설정"),
             ListTile(
@@ -429,57 +427,112 @@ class _SettingViewState extends ConsumerState<SettingView> {
                 }
               },
             ),
-            ListTile(
-              contentPadding: EdgeInsets.symmetric(
-                horizontal: context.middlePadding / 2,
-              ),
-              leading: const Icon(Icons.logout, color: Colors.orange),
-              title: const Text("로그아웃", style: TextStyle(color: Colors.orange)),
-              onTap: () async {
-                showDialog(
-                  context: context,
-                  builder:
-                      (ctx) => AlertDialog(
-                        title: const Text('로그아웃'),
-                        content: const Text('정말로 로그아웃 하시겠습니까?'),
-                        actions: [
-                          TextButton(
-                            child: const Text(
-                              '로그아웃',
-                              style: TextStyle(color: Colors.grey),
+            if (userState.isLogin == true)
+              ListTile(
+                contentPadding: EdgeInsets.symmetric(
+                  horizontal: context.middlePadding / 2,
+                ),
+                leading: const Icon(Icons.logout, color: Colors.orange),
+                title: const Text(
+                  "로그아웃",
+                  style: TextStyle(color: Colors.orange),
+                ),
+                onTap: () async {
+                  showDialog(
+                    context: context,
+                    builder:
+                        (ctx) => AlertDialog(
+                          title: const Text('로그아웃'),
+                          content: const Text('정말로 로그아웃 하시겠습니까?'),
+                          actions: [
+                            TextButton(
+                              child: const Text(
+                                '로그아웃',
+                                style: TextStyle(color: Colors.grey),
+                              ),
+                              onPressed: () {
+                                context.pop();
+                                ref
+                                    .read(stateAuthViewModelProvider)
+                                    .signout(context);
+                              },
                             ),
-                            onPressed: () {
-                              context.pop();
-                              ref
-                                  .read(stateAuthViewModelProvider)
-                                  .signout(context);
-                            },
-                          ),
-                          TextButton(
-                            child: const Text('취소'),
-                            onPressed: () => Navigator.of(ctx).pop(),
-                          ),
-                        ],
-                      ),
-                );
-              },
-            ),
-            ListTile(
-              contentPadding: EdgeInsets.symmetric(
-                horizontal: context.middlePadding / 2,
+                            TextButton(
+                              child: const Text('취소'),
+                              onPressed: () => Navigator.of(ctx).pop(),
+                            ),
+                          ],
+                        ),
+                  );
+                },
               ),
-              leading: const Icon(
-                Icons.person_remove_outlined,
-                color: Colors.deepOrange,
+            if (userState.isLogin == true)
+              ListTile(
+                contentPadding: EdgeInsets.symmetric(
+                  horizontal: context.middlePadding / 2,
+                ),
+                leading: const Icon(
+                  Icons.person_remove_outlined,
+                  color: Colors.deepOrange,
+                ),
+                title: const Text(
+                  "회원탈퇴",
+                  style: TextStyle(color: Colors.deepOrange),
+                ),
+                onTap: () {
+                  ref.read(isOpenReSign.notifier).state = true;
+                },
               ),
-              title: const Text(
-                "회원탈퇴",
-                style: TextStyle(color: Colors.deepOrange),
+            if (userState.name.isEmpty)
+              ListTile(
+                contentPadding: EdgeInsets.symmetric(
+                  horizontal: context.middlePadding / 2,
+                ),
+                leading: Icon(
+                  Icons.login,
+                  color:
+                      Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white
+                          : Colors.black,
+                ),
+                title: Text(
+                  "기존 계정으로 로그인",
+                  style: TextStyle(
+                    color:
+                        Theme.of(context).brightness == Brightness.dark
+                            ? Colors.white
+                            : Colors.black,
+                  ),
+                ),
+                onTap: () {
+                  context.go("/login");
+                },
               ),
-              onTap: () {
-                ref.read(isOpenReSign.notifier).state = true;
-              },
-            ),
+            if (userState.name.isEmpty)
+              ListTile(
+                contentPadding: EdgeInsets.symmetric(
+                  horizontal: context.middlePadding / 2,
+                ),
+                leading: Icon(
+                  Icons.person_add,
+                  color:
+                      Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white
+                          : Colors.black,
+                ),
+                title: Text(
+                  "회원가입",
+                  style: TextStyle(
+                    color:
+                        Theme.of(context).brightness == Brightness.dark
+                            ? Colors.white
+                            : Colors.black,
+                  ),
+                ),
+                onTap: () {
+                  context.push("/sign");
+                },
+              ),
           ],
         ),
       ),

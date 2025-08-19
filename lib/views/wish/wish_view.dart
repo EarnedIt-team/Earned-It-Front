@@ -1,4 +1,5 @@
 import 'package:earned_it/view_models/home_provider.dart';
+import 'package:earned_it/view_models/user_provider.dart';
 import 'package:earned_it/view_models/wish/wish_order_provider.dart';
 import 'package:earned_it/view_models/wish/wish_provider.dart';
 import 'dart:math';
@@ -6,6 +7,7 @@ import 'package:animated_digit/animated_digit.dart';
 import 'package:earned_it/config/design.dart';
 import 'package:earned_it/models/wish/wish_model.dart';
 import 'package:earned_it/views/navigation_view.dart';
+import 'package:earned_it/views/splash_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -41,6 +43,7 @@ class _WishViewState extends ConsumerState<WishView> {
 
   @override
   Widget build(BuildContext context) {
+    final userState = ref.watch(userProvider);
     final wishState = ref.watch(wishViewModelProvider);
     final starWishList = wishState.starWishes;
     final HighLightWishList = wishState.Wishes3;
@@ -108,12 +111,22 @@ class _WishViewState extends ConsumerState<WishView> {
                             ),
                           ),
                           SizedBox(height: context.height(0.02)),
-                          ElevatedButton(
-                            onPressed: () {
-                              context.push('/addWish');
-                            },
-                            child: const Text("위시리스트 추가"),
-                          ),
+                          if (userState.isLogin == true)
+                            ElevatedButton(
+                              onPressed: () {
+                                context.push('/addWish');
+                              },
+                              child: const Text("위시리스트 추가"),
+                            )
+                          else
+                            Text(
+                              "- 로그인이 필요한 서비스 입니다 -",
+                              style: TextStyle(
+                                color: Colors.grey,
+                                fontSize: context.width(0.035),
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                         ],
                       ),
                     )

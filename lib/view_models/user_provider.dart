@@ -31,6 +31,7 @@ class UserNotifier extends Notifier<UserState> {
       final responseData = response.data as Map<String, dynamic>;
 
       state = state.copyWith(
+        isLogin: true, // 로그인 여부 체크
         // 월 수익
         monthlySalary: response.data["userInfo"]["amount"] ?? 1000,
         // 월 수익 날짜

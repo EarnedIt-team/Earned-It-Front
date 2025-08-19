@@ -3,6 +3,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:earned_it/models/home/home_state.dart';
 import 'package:earned_it/view_models/user_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:home_widget/home_widget.dart';
 
 final homeViewModelProvider =
     NotifierProvider.autoDispose<HomeViewModel, HomeState>(HomeViewModel.new);
@@ -12,8 +13,12 @@ class HomeViewModel extends AutoDisposeNotifier<HomeState> {
       CarouselSliderController();
   Timer? _timer;
 
+  static const String appGroupId = 'group.earnedItHomeScreen';
+
   @override
   HomeState build() {
+    HomeWidget.setAppGroupId(appGroupId);
+
     ref.onDispose(() {
       _timer?.cancel();
     });
@@ -55,6 +60,12 @@ class HomeViewModel extends AutoDisposeNotifier<HomeState> {
       lastPayday = DateTime(now.year, now.month - 1, payday);
     }
 
+    HomeWidget.saveWidgetData<int>(
+      'lastPaydayTimestamp',
+      lastPayday.millisecondsSinceEpoch,
+    );
+    HomeWidget.saveWidgetData<double>('earningsPerSecond', earningsPerSecond);
+
     final initialElapsedSeconds = now.difference(lastPayday).inSeconds;
     state = state.copyWith(
       currentEarnedAmount: initialElapsedSeconds * earningsPerSecond,
@@ -64,6 +75,8 @@ class HomeViewModel extends AutoDisposeNotifier<HomeState> {
       state = state.copyWith(
         currentEarnedAmount: state.currentEarnedAmount + earningsPerSecond,
       );
+
+      HomeWidget.updateWidget(iOSName: 'EarnedItHomeWidget');
     });
   }
 }

@@ -7,6 +7,7 @@ part of 'user_state.dart';
 // **************************************************************************
 
 _UserState _$UserStateFromJson(Map<String, dynamic> json) => _UserState(
+  isLogin: json['isLogin'] as bool? ?? false,
   name: json['name'] as String? ?? '',
   profileImage: json['profileImage'] as String? ?? '',
   isearningsPerSecond: json['hasSalary'] as bool? ?? false,
@@ -19,6 +20,7 @@ _UserState _$UserStateFromJson(Map<String, dynamic> json) => _UserState(
 
 Map<String, dynamic> _$UserStateToJson(_UserState instance) =>
     <String, dynamic>{
+      'isLogin': instance.isLogin,
       'name': instance.name,
       'profileImage': instance.profileImage,
       'hasSalary': instance.isearningsPerSecond,

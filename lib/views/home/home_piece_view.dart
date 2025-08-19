@@ -198,12 +198,22 @@ class _HomePieceViewState extends ConsumerState<HomePieceView> {
                           ),
                         ),
                         SizedBox(height: context.height(0.03)),
-                        ElevatedButton(
-                          onPressed: () {
-                            ref.read(isOpenCheckedIn.notifier).state = true;
-                          },
-                          child: const Text("출석체크하기"),
-                        ),
+                        if (userState.isLogin == true)
+                          ElevatedButton(
+                            onPressed: () {
+                              ref.read(isOpenCheckedIn.notifier).state = true;
+                            },
+                            child: const Text("출석체크하기"),
+                          )
+                        else
+                          Text(
+                            "- 로그인이 필요한 서비스 입니다 -",
+                            style: TextStyle(
+                              color: Colors.grey,
+                              fontSize: context.width(0.035),
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                       ],
                     ),
           ),

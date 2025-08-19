@@ -190,34 +190,52 @@ class _HomeViewState extends ConsumerState<HomeView> {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Text.rich(
-            TextSpan(
-              style: TextStyle(
-                fontSize: context.height(0.02),
-                fontWeight: FontWeight.bold,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(width: context.width(0.035)),
+              Text.rich(
+                TextSpan(
+                  style: TextStyle(
+                    fontSize: context.height(0.02),
+                    fontWeight: FontWeight.bold,
+                  ),
+                  children: [
+                    if (userState.isearningsPerSecond) ...<InlineSpan>[
+                      TextSpan(
+                        text:
+                            '+ ${decimalFormat.format(userState.earningsPerSecond)}',
+                        style: TextStyle(
+                          fontSize: context.height(0.018),
+                          fontWeight: FontWeight.w100,
+                          color: Colors.grey,
+                        ),
+                      ),
+                      TextSpan(
+                        text: '₩ /sec',
+                        style: TextStyle(
+                          fontSize: context.height(0.015),
+                          fontWeight: FontWeight.w100,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
               ),
-              children: [
-                if (userState.isearningsPerSecond) ...<InlineSpan>[
-                  TextSpan(
-                    text:
-                        '+ ${decimalFormat.format(userState.earningsPerSecond)}',
-                    style: TextStyle(
-                      fontSize: context.height(0.018),
-                      fontWeight: FontWeight.w100,
-                      color: Colors.grey,
-                    ),
-                  ),
-                  TextSpan(
-                    text: '₩ /sec',
-                    style: TextStyle(
-                      fontSize: context.height(0.015),
-                      fontWeight: FontWeight.w100,
-                      color: Colors.grey,
-                    ),
-                  ),
-                ],
-              ],
-            ),
+              Tooltip(
+                showDuration: const Duration(seconds: 5),
+                triggerMode: TooltipTriggerMode.tap,
+                message:
+                    '입력하신 월급을 기준으로 계산된 초당 수익이며,\n이 금액이 실시간으로 쌓여 "금월 누적 금액"이 됩니다.',
+                child: Icon(
+                  Icons.info_outline,
+                  size: context.width(0.04),
+                  color: Colors.blue,
+                ),
+              ),
+            ],
           ),
           Text(
             "금월 누적 금액",

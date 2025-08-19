@@ -170,7 +170,9 @@ class _SettingViewState extends ConsumerState<SettingView> {
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children: [
                                     Text(
-                                      userState.name,
+                                      userState.name.isEmpty
+                                          ? "로그인이 필요합니다."
+                                          : userState.name,
                                       style: TextStyle(
                                         color:
                                             Theme.of(context).brightness ==

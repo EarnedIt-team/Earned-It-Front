@@ -72,6 +72,18 @@ class _PuzzleViewState extends ConsumerState<PuzzleView> {
         ),
         centerTitle: false,
         actions: [
+          Tooltip(
+            showDuration: const Duration(seconds: 5),
+            triggerMode: TooltipTriggerMode.tap,
+            message:
+                '획득한 모든 퍼즐 조각의 가치를 합산한 점수입니다.\n*같은 조각을 여러 번 획득해도 점수는 한 번만 계산됩니다.',
+            child: Icon(
+              Icons.info_outline,
+              size: context.width(0.04),
+              color: Colors.blue,
+            ),
+          ),
+          SizedBox(width: context.width(0.01)),
           Text(
             '현재 가치 : ${currencyFormat.format(pieceState.totalAccumulatedValue)} 원',
             style: TextStyle(
@@ -216,12 +228,32 @@ class _PuzzleViewState extends ConsumerState<PuzzleView> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
-                  title,
-                  style: TextStyle(
-                    fontSize: context.width(0.035),
-                    color: Colors.grey,
-                  ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(width: context.width(0.03)),
+                    Text(
+                      title,
+                      style: TextStyle(
+                        fontSize: context.width(0.035),
+                        color: Colors.grey,
+                      ),
+                    ),
+                    Tooltip(
+                      showDuration: const Duration(seconds: 5),
+                      triggerMode: TooltipTriggerMode.tap,
+                      message:
+                          title == "테마"
+                              ? '각 테마의 퍼즐을 모두 획득하면\n완성한 테마로 기록됩니다.'
+                              : '출석체크와 같은 활동으로 획득한\n전체 퍼즐 조각의 수입니다.',
+                      child: Icon(
+                        Icons.info_outline,
+                        size: context.width(0.04),
+                        color: Colors.blue,
+                      ),
+                    ),
+                  ],
                 ),
                 Text(
                   '${(value * 100).toStringAsFixed(0)}%',
@@ -317,7 +349,11 @@ class _PuzzleViewState extends ConsumerState<PuzzleView> {
           borderRadius: BorderRadius.circular(12),
           side: BorderSide(
             color:
-                Theme.of(context).brightness == Brightness.dark
+                slot.isCollected
+                    ? Theme.of(context).brightness == Brightness.dark
+                        ? primaryGradientEnd
+                        : const Color.fromARGB(255, 255, 164, 176)
+                    : Theme.of(context).brightness == Brightness.dark
                     ? Colors.grey[700]!
                     : Colors.grey[300]!,
             width: 1.5,

@@ -211,15 +211,34 @@ class _WishViewState extends ConsumerState<WishView> {
                                             CrossAxisAlignment.baseline,
                                         textBaseline: TextBaseline.alphabetic,
                                         children: [
-                                          Text(
-                                            "Star",
-                                            style: TextStyle(
-                                              fontSize: context.width(0.07),
-                                              fontWeight: FontWeight.w500,
-                                              color: primaryColor,
-                                              height: 1.0,
-                                            ),
+                                          Row(
+                                            children: [
+                                              Text(
+                                                "Star",
+                                                style: TextStyle(
+                                                  fontSize: context.width(0.07),
+                                                  fontWeight: FontWeight.w500,
+                                                  color: primaryColor,
+                                                  height: 1.0,
+                                                ),
+                                              ),
+                                              Tooltip(
+                                                showDuration: const Duration(
+                                                  seconds: 7,
+                                                ),
+                                                triggerMode:
+                                                    TooltipTriggerMode.tap,
+                                                message:
+                                                    '메인 화면에 표시되는 최대 5개의 위시아이템입니다.\n\n• 등록된 순서대로 누적 금액이 적용되어 진행률이 계산됩니다.\n• 이전 목표를 달성하면, 누적 금액이 다음 목표에 적용됩니다.',
+                                                child: Icon(
+                                                  Icons.info_outline,
+                                                  size: context.width(0.04),
+                                                  color: Colors.blue,
+                                                ),
+                                              ),
+                                            ],
                                           ),
+                                          const SizedBox(width: 2),
                                           Text(
                                             " (${starWishList.length}/5)",
                                             style: TextStyle(

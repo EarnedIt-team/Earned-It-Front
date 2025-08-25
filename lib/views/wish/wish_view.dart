@@ -14,25 +14,63 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:showcaseview/showcaseview.dart';
 
-class WishView extends ConsumerStatefulWidget {
+// 1. (핵심 수정) ShowCaseWidget을 제공하는 새로운 최상위 위젯
+class WishView extends StatelessWidget {
   const WishView({super.key});
 
   @override
-  ConsumerState<WishView> createState() => _WishViewState();
+  Widget build(BuildContext context) {
+    // ShowCaseWidget이 _WishViewInternal의 조상이 되도록 감싸줍니다.
+    return ShowCaseWidget(
+      onFinish: () async {
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setBool('hasSeenWishViewShowcase', true);
+      },
+      builder: (context) => const _WishViewInternal(),
+    );
+  }
 }
 
-class _WishViewState extends ConsumerState<WishView> {
+// 2. 기존 WishView의 내용을 내부 위젯으로 변경
+class _WishViewInternal extends ConsumerStatefulWidget {
+  const _WishViewInternal();
+
+  @override
+  ConsumerState<_WishViewInternal> createState() => _WishViewState();
+}
+
+class _WishViewState extends ConsumerState<_WishViewInternal> {
   final ScrollController _scrollController = ScrollController();
+  final GlobalKey _one = GlobalKey();
+  final GlobalKey _two = GlobalKey();
+  final GlobalKey _three = GlobalKey();
+  final GlobalKey _four = GlobalKey();
 
   @override
   void initState() {
     super.initState();
-    // 👇 2. initState에서 로딩 상태를 제어하도록 수정
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await ref.read(wishViewModelProvider.notifier).loadStarWish();
       await ref.read(wishViewModelProvider.notifier).loadHighLightWish();
+      _checkAndShowShowcase();
     });
+  }
+
+  // 2. 쇼케이스를 보여줄지 확인하고 실행하는 함수
+  Future<void> _checkAndShowShowcase() async {
+    final prefs = await SharedPreferences.getInstance();
+    final hasSeen = prefs.getBool('hasSeenWishViewShowcase') ?? false;
+    final wishState = ref.read(wishViewModelProvider);
+
+    // 조건: 가이드를 본 적이 없고, 리스트 중 하나라도 비어있지 않을 때
+    if (!hasSeen &&
+        (wishState.starWishes.isNotEmpty || wishState.Wishes3.isNotEmpty) &&
+        mounted) {
+      ShowCaseWidget.of(context).startShowCase([_one, _two, _three]);
+    }
   }
 
   @override
@@ -67,19 +105,37 @@ class _WishViewState extends ConsumerState<WishView> {
               actions:
                   starWishList.isNotEmpty || HighLightWishList.isNotEmpty
                       ? <Widget>[
-                        IconButton(
-                          onPressed: () {
-                            ref
-                                .read(wishOrderViewModelProvider.notifier)
-                                .initialize(wishState.starWishes);
-                            // 4. 모달 띄우기
-                            ref.read(isOpenSwapList.notifier).state = true;
-                          },
-                          icon: const Icon(Icons.reorder),
-                        ),
-                        IconButton(
-                          onPressed: () => context.push('/addWish'),
-                          icon: const Icon(Icons.add),
+                        Showcase(
+                          targetBorderRadius: BorderRadius.all(
+                            Radius.circular(context.width(0.05)),
+                          ),
+                          overlayColor:
+                              Theme.of(context).brightness == Brightness.dark
+                                  ? const Color.fromARGB(255, 46, 46, 46)
+                                  : Colors.grey,
+                          key: _one,
+                          description:
+                              'Star 위시리스트 순서를 변경하거나,\n위시 아이템을 추가할 수 있습니다.',
+                          child: Row(
+                            children: [
+                              IconButton(
+                                onPressed: () {
+                                  ref
+                                      .read(wishOrderViewModelProvider.notifier)
+                                      .initialize(wishState.starWishes);
+                                  ref.read(isOpenSwapList.notifier).state =
+                                      true;
+                                },
+                                icon: const Icon(Icons.reorder),
+                              ),
+                              IconButton(
+                                onPressed: () {
+                                  context.push('/addWish');
+                                },
+                                icon: const Icon(Icons.add),
+                              ),
+                            ],
+                          ),
                         ),
                       ]
                       : null,
@@ -135,39 +191,55 @@ class _WishViewState extends ConsumerState<WishView> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          Padding(
-                            padding: EdgeInsets.only(
-                              left: context.middlePadding,
-                              right: context.middlePadding,
-                              bottom:
-                                  (starWishList.isNotEmpty ||
-                                          HighLightWishList.isNotEmpty)
-                                      ? context.middlePadding
-                                      : 0,
+                          Showcase(
+                            targetBorderRadius: BorderRadius.all(
+                              Radius.circular(context.width(0.05)),
                             ),
-                            child: InkWell(
-                              onTap: () => context.push('/wishSearch'),
-                              child: AbsorbPointer(
-                                child: TextField(
-                                  decoration: InputDecoration(
-                                    hintText: '브랜드, 이름 등',
-                                    prefixIcon: const Icon(Icons.search),
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        context.width(0.1),
+                            overlayColor:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? const Color.fromARGB(255, 46, 46, 46)
+                                    : Colors.grey,
+                            key: _two,
+                            description: '키워드를 입력해서, 등록된 위시아이템을 검색할 수 있습니다.',
+                            child: Padding(
+                              padding: EdgeInsets.only(
+                                top:
+                                    (starWishList.isNotEmpty ||
+                                            HighLightWishList.isNotEmpty)
+                                        ? context.middlePadding / 2
+                                        : 0,
+                                left: context.middlePadding,
+                                right: context.middlePadding,
+                                bottom:
+                                    (starWishList.isNotEmpty ||
+                                            HighLightWishList.isNotEmpty)
+                                        ? context.middlePadding / 2
+                                        : 0,
+                              ),
+                              child: InkWell(
+                                onTap: () => context.push('/wishSearch'),
+                                child: AbsorbPointer(
+                                  child: TextField(
+                                    decoration: InputDecoration(
+                                      hintText: '브랜드, 이름 등',
+                                      prefixIcon: const Icon(Icons.search),
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(
+                                          context.width(0.1),
+                                        ),
+                                        borderSide: const BorderSide(
+                                          width: 1,
+                                          color: Colors.grey,
+                                        ),
                                       ),
-                                      borderSide: const BorderSide(
-                                        width: 1,
-                                        color: Colors.grey,
-                                      ),
+                                      filled: true,
+                                      fillColor:
+                                          Theme.of(context).brightness ==
+                                                  Brightness.dark
+                                              ? Colors.transparent
+                                              : lightColor,
+                                      contentPadding: EdgeInsets.zero,
                                     ),
-                                    filled: true,
-                                    fillColor:
-                                        Theme.of(context).brightness ==
-                                                Brightness.dark
-                                            ? Colors.transparent
-                                            : lightColor,
-                                    contentPadding: EdgeInsets.zero,
                                   ),
                                 ),
                               ),
@@ -396,18 +468,32 @@ class _WishViewState extends ConsumerState<WishView> {
 
                           // --- All 위시리스트 목록 ---
                           if (HighLightWishList.isNotEmpty)
-                            ListView.builder(
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              itemCount: HighLightWishList.length,
-                              itemBuilder: (context, index) {
-                                final item = HighLightWishList[index];
-                                return _WishlistItem(
-                                  item: item,
-                                  itemIndex: index,
-                                  isStar: false,
-                                );
-                              },
+                            Showcase(
+                              targetBorderRadius: BorderRadius.all(
+                                Radius.circular(context.width(0.05)),
+                              ),
+                              overlayColor:
+                                  Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? const Color.fromARGB(255, 46, 46, 46)
+                                      : Colors.grey,
+                              key: _three,
+                              tooltipPosition: TooltipPosition.top,
+                              description:
+                                  '해당 아이템의 정보를 확인할 수 있습니다.\n\n• 스와이프: Star 여부, 구매 여부, 수정, 삭제\n  (스와이프는 ALL에서 동작하지 않습니다.)\n• 터치 시: 위시아이템 상세 정보',
+                              child: ListView.builder(
+                                shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
+                                itemCount: HighLightWishList.length,
+                                itemBuilder: (context, index) {
+                                  final item = HighLightWishList[index];
+                                  return _WishlistItem(
+                                    item: item,
+                                    itemIndex: index,
+                                    isStar: false,
+                                  );
+                                },
+                              ),
                             ),
                           SizedBox(height: context.height(0.05)),
                         ],

@@ -61,16 +61,22 @@ class WishDetailViewModel {
 
   /// 구매 링크를 엽니다.
   Future<void> launchURL(String url, String name) async {
+    // 1. 최종적으로 사용할 URL을 담을 변수 선언
     String targetUrl;
+
     if (url.isEmpty) {
+      // 2. url이 비어있으면, 검색어를 인코딩하여 구글 검색 URL을 만듭니다.
       final encodedName = Uri.encodeComponent(name);
-      targetUrl = "https://www.google.com/search?q=$encodedName";
+      targetUrl = "https://search.danawa.com/dsearch.php?k1=$encodedName";
     } else {
+      // 3. url이 있으면 그대로 사용합니다.
       targetUrl = url;
     }
+
+    // 4. 최종적으로 만들어진 targetUrl을 파싱하여 실행합니다.
     final uri = Uri.parse(targetUrl);
     if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
-      throw Exception('Could not launch $targetUrl');
+      throw Exception('해당 사이트를 열 수 없습니다.');
     }
   }
 }

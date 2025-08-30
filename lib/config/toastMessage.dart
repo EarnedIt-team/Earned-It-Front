@@ -18,8 +18,8 @@ void toastMessage(
   // 토스트 색상 및 아이콘 변경
   Color backgroundColor =
       (type == ToastmessageType.errorType)
-          ? const Color.fromARGB(220, 229, 115, 115)
-          : const Color.fromARGB(220, 129, 199, 132);
+          ? const Color.fromARGB(235, 229, 115, 115)
+          : const Color.fromARGB(235, 129, 199, 132);
 
   Icon icon =
       (type == ToastmessageType.errorType)
@@ -53,15 +53,15 @@ void toastMessage(
   // 지속 시간 및 위치 커스텀
   fToast.showToast(
     child: toast,
-    toastDuration: const Duration(seconds: 3),
+    toastDuration: const Duration(seconds: 2),
     positionedToastBuilder: (
       BuildContext context,
       Widget child,
       ToastGravity? gravity,
     ) {
       return Stack(
-        alignment: alignment,
-        children: <Widget>[Positioned(bottom: 100, child: child)],
+        alignment: Alignment.topCenter,
+        children: <Widget>[Positioned(top: 150, child: child)],
       );
     },
   );

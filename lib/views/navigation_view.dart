@@ -328,30 +328,39 @@ class NavigationView extends ConsumerWidget {
       children: [
         Scaffold(
           body: child,
-          bottomNavigationBar: BottomNavigationBar(
-            type: BottomNavigationBarType.fixed,
-            backgroundColor:
-                Theme.of(context).brightness == Brightness.dark
-                    ? Colors.black
-                    : lightColor,
-            fixedColor: primaryGradientEnd,
-            unselectedItemColor: Colors.grey,
-            elevation: 0,
-            items: const <BottomNavigationBarItem>[
-              BottomNavigationBarItem(icon: Icon(Icons.dashboard), label: ''),
-              BottomNavigationBarItem(icon: Icon(Icons.local_mall), label: ''),
-              BottomNavigationBarItem(icon: Icon(Icons.extension), label: ''),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.account_circle),
-                label: '',
-              ),
-            ],
-            selectedIconTheme: IconThemeData(size: context.height(0.04)),
-            unselectedIconTheme: IconThemeData(size: context.height(0.03)),
-            selectedLabelStyle: const TextStyle(fontSize: 0),
-            unselectedLabelStyle: const TextStyle(fontSize: 0),
-            currentIndex: _calculateSelectedIndex(context),
-            onTap: (index) => _onItemTapped(index, context),
+          bottomNavigationBar: ClipRRect(
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(30), // 왼쪽 상단 모서리 둥글게
+              topRight: Radius.circular(30), // 오른쪽 상단 모서리 둥글게
+            ),
+            child: BottomNavigationBar(
+              type: BottomNavigationBarType.fixed,
+              backgroundColor:
+                  Theme.of(context).brightness == Brightness.dark
+                      ? lightDarkColor
+                      : Colors.white,
+              fixedColor: primaryGradientEnd,
+              unselectedItemColor: Colors.grey,
+              elevation: 0,
+              items: const <BottomNavigationBarItem>[
+                BottomNavigationBarItem(icon: Icon(Icons.dashboard), label: ''),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.local_mall),
+                  label: '',
+                ),
+                BottomNavigationBarItem(icon: Icon(Icons.extension), label: ''),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.account_circle),
+                  label: '',
+                ),
+              ],
+              selectedIconTheme: IconThemeData(size: context.height(0.04)),
+              unselectedIconTheme: IconThemeData(size: context.height(0.03)),
+              selectedLabelStyle: const TextStyle(fontSize: 0),
+              unselectedLabelStyle: const TextStyle(fontSize: 0),
+              currentIndex: _calculateSelectedIndex(context),
+              onTap: (index) => _onItemTapped(index, context),
+            ),
           ),
         ),
         if (wishState.isLoading ||

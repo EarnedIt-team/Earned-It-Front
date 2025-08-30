@@ -76,6 +76,9 @@ const Color primaryGradientEnd = Color.fromRGBO(
 const Color primaryButtonColor = Color(0x99FF3C27);
 
 const Color lightColor = Color.fromRGBO(252, 253, 255, 1);
+const Color lightColor2 = Color.fromRGBO(244, 247, 253, 1);
+
+const Color lightDarkColor = const Color.fromARGB(255, 15, 15, 15);
 
 // 2. 앱 전체에서 재사용할 그라데이션 BoxDecoration 정의
 const BoxDecoration primaryGradient = BoxDecoration(

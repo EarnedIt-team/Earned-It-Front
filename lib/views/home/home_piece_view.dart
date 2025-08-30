@@ -55,9 +55,9 @@ class _HomePieceViewState extends ConsumerState<HomePieceView> {
                     ? Column(
                       children: [
                         Container(
-                          decoration: const BoxDecoration(
-                            color: primaryColor,
-                            borderRadius: BorderRadius.all(
+                          decoration: BoxDecoration(
+                            border: Border.all(width: 1, color: Colors.orange),
+                            borderRadius: const BorderRadius.all(
                               Radius.circular(18.0),
                             ),
                           ),
@@ -69,8 +69,8 @@ class _HomePieceViewState extends ConsumerState<HomePieceView> {
                           child: Text(
                             "x ${currencyFormat.format(buyablePieces)}",
                             style: TextStyle(
-                              fontSize: context.width(0.035),
-                              color: Colors.black,
+                              fontSize: context.width(0.05),
+                              color: Colors.orange,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -125,7 +125,13 @@ class _HomePieceViewState extends ConsumerState<HomePieceView> {
                         ),
                         Text(
                           pieceState.recentlyPiece!.vendor!,
-                          style: TextStyle(fontSize: context.width(0.04)),
+                          style: TextStyle(
+                            fontSize: context.width(0.04),
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? Colors.white
+                                    : Colors.black,
+                          ),
                         ),
                         Text(
                           pieceState.recentlyPiece!.name!,
@@ -133,13 +139,17 @@ class _HomePieceViewState extends ConsumerState<HomePieceView> {
                           style: TextStyle(
                             fontSize: context.width(0.05),
                             fontWeight: FontWeight.bold,
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? Colors.white
+                                    : Colors.black,
                           ),
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                         ),
                         SizedBox(height: context.height(0.02)),
                         Text(
-                          "25.06 기준 ${currencyFormat.format(pieceState.recentlyPiece!.price)}원",
+                          "25.08 기준 ${currencyFormat.format(pieceState.recentlyPiece!.price)}원",
                           style: TextStyle(
                             fontSize: context.width(0.04),
                             color: Colors.grey,
@@ -147,6 +157,13 @@ class _HomePieceViewState extends ConsumerState<HomePieceView> {
                         ),
                         SizedBox(height: context.height(0.02)),
                         ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blue,
+                            padding: EdgeInsets.symmetric(
+                              vertical: context.middlePadding,
+                              horizontal: context.middlePadding * 2,
+                            ),
+                          ),
                           onPressed: () {
                             if (userState.isCheckedIn == false) {
                               ref.read(isOpenCheckedIn.notifier).state = true;
@@ -158,7 +175,21 @@ class _HomePieceViewState extends ConsumerState<HomePieceView> {
                               );
                             }
                           },
-                          child: const Text("출석체크하고 보상받기"),
+                          child: Row(
+                            spacing: 5,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(Icons.today, color: Colors.white),
+                              Text(
+                                "출석체크하고 조각뽑기",
+                                style: TextStyle(
+                                  fontSize: context.width(0.045),
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                         SizedBox(height: context.height(0.005)),
                         const Text(

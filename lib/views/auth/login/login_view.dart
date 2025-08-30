@@ -55,10 +55,15 @@ class LoginView extends ConsumerWidget {
                               children: <Widget>[
                                 TextField(
                                   controller: loginNotifier.idTextController,
-                                  decoration: const InputDecoration(
+                                  decoration: InputDecoration(
                                     labelText: "이메일",
                                     labelStyle: TextStyle(
                                       fontWeight: FontWeight.bold,
+                                      color:
+                                          Theme.of(context).brightness ==
+                                                  Brightness.dark
+                                              ? Colors.white
+                                              : Colors.black,
                                     ),
                                   ),
                                 ),
@@ -68,8 +73,13 @@ class LoginView extends ConsumerWidget {
                                   obscureText: loginState.isObscurePassword,
                                   decoration: InputDecoration(
                                     labelText: "비밀번호",
-                                    labelStyle: const TextStyle(
+                                    labelStyle: TextStyle(
                                       fontWeight: FontWeight.bold,
+                                      color:
+                                          Theme.of(context).brightness ==
+                                                  Brightness.dark
+                                              ? Colors.white
+                                              : Colors.black,
                                     ),
                                     suffixIcon: IconButton(
                                       onPressed:
@@ -78,6 +88,11 @@ class LoginView extends ConsumerWidget {
                                         loginState.isObscurePassword
                                             ? Icons.visibility
                                             : Icons.visibility_off,
+                                        color:
+                                            Theme.of(context).brightness ==
+                                                    Brightness.dark
+                                                ? Colors.white
+                                                : Colors.black,
                                       ),
                                     ),
                                   ),
@@ -155,7 +170,15 @@ class LoginView extends ConsumerWidget {
                               children: <Widget>[
                                 Row(
                                   children: <Widget>[
-                                    const Expanded(child: Divider()),
+                                    Expanded(
+                                      child: Divider(
+                                        color:
+                                            Theme.of(context).brightness ==
+                                                    Brightness.dark
+                                                ? Colors.grey
+                                                : Colors.black,
+                                      ),
+                                    ),
                                     Padding(
                                       padding: const EdgeInsets.symmetric(
                                         horizontal: 10.0,
@@ -165,10 +188,23 @@ class LoginView extends ConsumerWidget {
                                         style: TextStyle(
                                           fontSize: context.width(0.035),
                                           fontWeight: FontWeight.bold,
+                                          color:
+                                              Theme.of(context).brightness ==
+                                                      Brightness.dark
+                                                  ? Colors.white
+                                                  : Colors.black,
                                         ),
                                       ),
                                     ),
-                                    const Expanded(child: Divider()),
+                                    Expanded(
+                                      child: Divider(
+                                        color:
+                                            Theme.of(context).brightness ==
+                                                    Brightness.dark
+                                                ? Colors.grey
+                                                : Colors.black,
+                                      ),
+                                    ),
                                   ],
                                 ),
                                 SizedBox(height: context.height(0.025)),

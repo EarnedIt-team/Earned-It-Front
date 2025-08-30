@@ -89,9 +89,15 @@ class _WishEditViewState extends ConsumerState<WishEditView> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    const Text(
+                    Text(
                       "이미지",
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color:
+                            Theme.of(context).brightness == Brightness.dark
+                                ? Colors.white
+                                : Colors.black,
+                      ),
                     ),
                     const SizedBox(height: 8),
                     GestureDetector(
@@ -160,6 +166,10 @@ class _WishEditViewState extends ConsumerState<WishEditView> {
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: context.width(0.04),
+                        color:
+                            Theme.of(context).brightness == Brightness.dark
+                                ? Colors.white
+                                : Colors.black,
                       ),
                     ),
                     TextField(
@@ -177,6 +187,10 @@ class _WishEditViewState extends ConsumerState<WishEditView> {
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: context.width(0.04),
+                        color:
+                            Theme.of(context).brightness == Brightness.dark
+                                ? Colors.white
+                                : Colors.black,
                       ),
                     ),
                     TextField(
@@ -214,6 +228,10 @@ class _WishEditViewState extends ConsumerState<WishEditView> {
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: context.width(0.04),
+                        color:
+                            Theme.of(context).brightness == Brightness.dark
+                                ? Colors.white
+                                : Colors.black,
                       ),
                     ),
                     TextField(
@@ -231,6 +249,10 @@ class _WishEditViewState extends ConsumerState<WishEditView> {
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: context.width(0.04),
+                        color:
+                            Theme.of(context).brightness == Brightness.dark
+                                ? Colors.white
+                                : Colors.black,
                       ),
                     ),
                     TextField(
@@ -255,11 +277,27 @@ class _WishEditViewState extends ConsumerState<WishEditView> {
                     (wishState.starWishes.length < 5) ||
                             (widget.wishItem.starred)
                         ? CheckboxListTile(
-                          title: const Text(
+                          title: Text(
                             "TOP5에 등록하기",
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color:
+                                  Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? Colors.white
+                                      : Colors.black,
+                            ),
                           ),
-                          subtitle: const Text("나의 대표 위시 아이템으로 등록합니다."),
+                          subtitle: Text(
+                            "나의 대표 위시 아이템으로 등록합니다.",
+                            style: TextStyle(
+                              color:
+                                  Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? Colors.white
+                                      : Colors.black,
+                            ),
+                          ),
                           value: wishEditState.isTop5,
                           onChanged: wishEditNotifier.toggleIsTop5,
                           activeColor: primaryGradientStart,

@@ -19,9 +19,15 @@ class ForgotPasswordView extends ConsumerWidget {
         children: [
           Scaffold(
             appBar: AppBar(
-              title: const Text(
+              title: Text(
                 "비밀번호 찾기",
-                style: TextStyle(fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color:
+                      Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white
+                          : Colors.black,
+                ),
               ),
               centerTitle: false,
             ),
@@ -266,6 +272,10 @@ class ForgotPasswordView extends ConsumerWidget {
           style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: context.width(0.04),
+            color:
+                Theme.of(context).brightness == Brightness.dark
+                    ? Colors.white
+                    : Colors.black,
           ),
         ),
         TextField(
@@ -275,6 +285,7 @@ class ForgotPasswordView extends ConsumerWidget {
           keyboardType: keyboardType,
           decoration: InputDecoration(
             hintText: hintText,
+            hintStyle: const TextStyle(color: Colors.grey),
             suffixIcon: suffixIcon,
             helper: helperWidget,
             errorText: errorText,

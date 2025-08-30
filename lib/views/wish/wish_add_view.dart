@@ -66,6 +66,10 @@ class WishAddView extends ConsumerWidget {
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: context.width(0.04),
+                        color:
+                            Theme.of(context).brightness == Brightness.dark
+                                ? Colors.white
+                                : Colors.black,
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -121,6 +125,10 @@ class WishAddView extends ConsumerWidget {
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: context.width(0.04),
+                        color:
+                            Theme.of(context).brightness == Brightness.dark
+                                ? Colors.white
+                                : Colors.black,
                       ),
                     ),
                     TextField(
@@ -138,6 +146,10 @@ class WishAddView extends ConsumerWidget {
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: context.width(0.04),
+                        color:
+                            Theme.of(context).brightness == Brightness.dark
+                                ? Colors.white
+                                : Colors.black,
                       ),
                     ),
                     TextField(
@@ -175,6 +187,10 @@ class WishAddView extends ConsumerWidget {
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: context.width(0.04),
+                        color:
+                            Theme.of(context).brightness == Brightness.dark
+                                ? Colors.white
+                                : Colors.black,
                       ),
                     ),
                     TextField(
@@ -192,6 +208,10 @@ class WishAddView extends ConsumerWidget {
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: context.width(0.04),
+                        color:
+                            Theme.of(context).brightness == Brightness.dark
+                                ? Colors.white
+                                : Colors.black,
                       ),
                     ),
                     TextField(
@@ -215,11 +235,27 @@ class WishAddView extends ConsumerWidget {
                     SizedBox(height: context.height(0.01)),
                     wishState.starWishes.length < 5
                         ? CheckboxListTile(
-                          title: const Text(
+                          title: Text(
                             "TOP5에 등록하기",
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color:
+                                  Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? Colors.white
+                                      : Colors.black,
+                            ),
                           ),
-                          subtitle: const Text("나의 대표 위시 아이템으로 등록합니다."),
+                          subtitle: Text(
+                            "나의 대표 위시 아이템으로 등록합니다.",
+                            style: TextStyle(
+                              color:
+                                  Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? Colors.white
+                                      : Colors.black,
+                            ),
+                          ),
                           value: wishAddState.isTop5,
                           onChanged: wishAddNotifier.toggleIsTop5,
                           activeColor: primaryGradientStart,

@@ -390,8 +390,8 @@ class _PuzzleViewState extends ConsumerState<_PuzzleViewInternal> {
       style: ElevatedButton.styleFrom(
         backgroundColor:
             Theme.of(context).brightness == Brightness.dark
-                ? Colors.grey[800]
-                : lightColor,
+                ? lightDarkColor
+                : Colors.white,
         padding: EdgeInsets.zero,
         elevation: 0,
         shape: RoundedRectangleBorder(
@@ -418,8 +418,8 @@ class _PuzzleViewState extends ConsumerState<_PuzzleViewInternal> {
                       borderRadius: BorderRadius.circular(10.5),
                       child: Image.network(
                         slot.image!,
-                        width: double.infinity,
-                        height: double.infinity,
+                        width: context.width(0.25),
+                        height: context.width(0.25),
                         fit: BoxFit.contain,
                         errorBuilder:
                             (context, error, stackTrace) => const Icon(
@@ -430,12 +430,16 @@ class _PuzzleViewState extends ConsumerState<_PuzzleViewInternal> {
                     ),
                     if (slot.mainPiece!)
                       Positioned(
-                        top: 5,
-                        left: 5,
+                        top: 0,
+                        left: 0,
                         child: Container(
                           padding: const EdgeInsets.all(5.0),
-                          decoration: const BoxDecoration(
-                            color: primaryGradientStart,
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              width: 1,
+                              color: const Color.fromARGB(255, 44, 102, 46),
+                            ),
+                            color: Colors.green,
                             shape: BoxShape.circle,
                           ),
                           child: Image.asset(

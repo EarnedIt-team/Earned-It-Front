@@ -171,7 +171,7 @@ class _HomeViewState extends ConsumerState<_HomeViewInternal> {
                     borderColor:
                         Theme.of(context).brightness == Brightness.dark
                             ? Colors.white
-                            : Colors.black,
+                            : const Color.fromARGB(255, 93, 93, 93),
                     indicatorColor: Colors.white,
                     backgroundColor:
                         value == 0 ? primaryGradientStart : primaryGradientEnd,
@@ -194,12 +194,12 @@ class _HomeViewState extends ConsumerState<_HomeViewInternal> {
                       value == 0
                           ? const Icon(
                             Icons.extension,
-                            color: Color.fromARGB(255, 202, 202, 202),
+                            color: Colors.white,
                             size: 20.0,
                           )
                           : const Icon(
                             Icons.local_mall,
-                            color: Color.fromARGB(255, 202, 202, 202),
+                            color: Colors.white,
                             size: 20.0,
                           ),
             ),

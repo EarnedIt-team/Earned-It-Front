@@ -21,9 +21,15 @@ class SignView extends ConsumerWidget {
             resizeToAvoidBottomInset: true,
             appBar: AppBar(
               centerTitle: false,
-              title: const Text(
+              title: Text(
                 "회원가입",
-                style: TextStyle(fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color:
+                      Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white
+                          : Colors.black,
+                ),
               ),
             ),
             body: Padding(
@@ -364,6 +370,10 @@ class SignView extends ConsumerWidget {
           style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: context.width(0.04),
+            color:
+                Theme.of(context).brightness == Brightness.dark
+                    ? Colors.white
+                    : Colors.black,
           ),
         ),
         TextField(

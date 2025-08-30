@@ -71,15 +71,30 @@ class _WishSearchViewState extends ConsumerState<WishSearchView> {
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
+        backgroundColor:
+            Theme.of(context).brightness == Brightness.dark
+                ? Colors.black
+                : lightColor2,
         appBar: AppBar(
+          backgroundColor:
+              Theme.of(context).brightness == Brightness.dark
+                  ? Colors.black
+                  : lightColor2,
           title: TextField(
             controller: _searchController,
             autofocus: true,
             decoration: InputDecoration(
               hintText: '위시리스트 검색...',
+              hintStyle: const TextStyle(color: Colors.grey),
               border: InputBorder.none,
               suffixIcon: IconButton(
-                icon: const Icon(Icons.search),
+                icon: Icon(
+                  Icons.search,
+                  color:
+                      Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white
+                          : Colors.black,
+                ),
                 onPressed: _performSearch,
               ),
             ),
@@ -243,126 +258,130 @@ class _AllWishlistItem extends ConsumerWidget {
     final currencyFormat = NumberFormat.decimalPattern('ko_KR');
     final wishState = ref.watch(wishViewModelProvider);
 
-    return Card(
-      color:
-          Theme.of(context).brightness == Brightness.dark
-              ? Colors.transparent
-              : lightColor,
-      margin: EdgeInsets.symmetric(vertical: context.height(0.005)),
-      elevation: 0,
-      child: ClipRRect(
-        child: Slidable(
-          key: ValueKey(item.wishId),
-          child: InkWell(
-            onTap: () {
-              context.push('/wishDetail', extra: item);
-            },
-            child: Container(
-              padding: EdgeInsets.only(
-                left: item.bought || item.starred ? 0 : context.middlePadding,
-                right: context.middlePadding,
-              ),
-              constraints: BoxConstraints(minHeight: context.height(0.1)),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  SizedBox(width: context.middlePadding / 4),
-                  Column(
-                    children: [
-                      if (item.starred)
-                        Icon(
-                          Icons.stars,
-                          size: context.width(0.04),
-                          color: Colors.amber,
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: context.middlePadding / 2),
+      child: Card(
+        color:
+            Theme.of(context).brightness == Brightness.dark
+                ? lightDarkColor
+                : Colors.white,
+        margin: EdgeInsets.symmetric(vertical: context.height(0.005)),
+        elevation: 0,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(8.0),
+          child: Slidable(
+            key: ValueKey(item.wishId),
+            child: InkWell(
+              onTap: () {
+                context.push('/wishDetail', extra: item);
+              },
+              child: Container(
+                padding: EdgeInsets.only(
+                  left: item.bought || item.starred ? 0 : context.middlePadding,
+                  right: context.middlePadding,
+                ),
+                constraints: BoxConstraints(minHeight: context.height(0.1)),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    SizedBox(width: context.middlePadding / 4),
+                    Column(
+                      children: [
+                        if (item.starred)
+                          Icon(
+                            Icons.stars,
+                            size: context.width(0.04),
+                            color: Colors.amber,
+                          ),
+                        if (item.bought && item.starred)
+                          SizedBox(height: context.height(0.01)),
+                        if (item.bought)
+                          Icon(
+                            Icons.check_circle,
+                            size: context.width(0.04),
+                            color: Colors.lightBlue,
+                          ),
+                      ],
+                    ),
+                    SizedBox(width: context.middlePadding / 4),
+                    SizedBox(
+                      width: context.height(0.08),
+                      height: context.height(0.08),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8.0),
+                          border: Border.all(width: 1, color: Colors.grey),
                         ),
-                      if (item.bought && item.starred)
-                        SizedBox(height: context.height(0.01)),
-                      if (item.bought)
-                        Icon(
-                          Icons.check_circle,
-                          size: context.width(0.04),
-                          color: Colors.lightBlue,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(8.0),
+                          child: Image.network(
+                            item.itemImage,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Container(
+                                color: Colors.grey.shade200,
+                                child: const Icon(
+                                  Icons.image_not_supported_outlined,
+                                  color: Colors.grey,
+                                ),
+                              );
+                            },
+                          ),
                         ),
-                    ],
-                  ),
-                  SizedBox(width: context.middlePadding / 4),
-                  SizedBox(
-                    width: context.height(0.08),
-                    height: context.height(0.08),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8.0),
-                        border: Border.all(width: 1, color: Colors.grey),
                       ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(8.0),
-                        child: Image.network(
-                          item.itemImage,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Container(
-                              color: Colors.grey.shade200,
-                              child: const Icon(
-                                Icons.image_not_supported_outlined,
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Padding(
+                        padding: EdgeInsets.only(right: context.width(0.05)),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Row(
+                              children: [
+                                Text(
+                                  item.vendor,
+                                  style: TextStyle(
+                                    color: Colors.grey,
+                                    fontSize: context.width(0.032),
+                                    height: 1,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ],
+                            ),
+
+                            Text(
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              item.name,
+                              style: TextStyle(
+                                color:
+                                    Theme.of(context).brightness ==
+                                            Brightness.dark
+                                        ? Colors.white
+                                        : const Color.fromARGB(255, 44, 44, 44),
+                                fontWeight: FontWeight.w600,
+                                fontSize: context.width(0.04),
+                                height: 1.5,
+                              ),
+                            ),
+                            const SizedBox(height: 5),
+                            Text(
+                              '${currencyFormat.format(item.price)} 원',
+                              style: TextStyle(
+                                fontSize: context.width(0.04),
                                 color: Colors.grey,
                               ),
-                            );
-                          },
+                            ),
+                          ],
                         ),
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Padding(
-                      padding: EdgeInsets.only(right: context.width(0.05)),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Row(
-                            children: [
-                              Text(
-                                item.vendor,
-                                style: TextStyle(
-                                  color: Colors.grey,
-                                  fontSize: context.width(0.032),
-                                  height: 1,
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ],
-                          ),
-
-                          Text(
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            item.name,
-                            style: TextStyle(
-                              color:
-                                  Theme.of(context).brightness ==
-                                          Brightness.dark
-                                      ? Colors.white
-                                      : const Color.fromARGB(255, 44, 44, 44),
-                              fontWeight: FontWeight.w600,
-                              fontSize: context.width(0.04),
-                              height: 1.5,
-                            ),
-                          ),
-                          const SizedBox(height: 5),
-                          Text(
-                            '${currencyFormat.format(item.price)} 원',
-                            style: TextStyle(
-                              fontSize: context.width(0.04),
-                              color: Colors.grey,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),

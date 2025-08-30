@@ -58,6 +58,10 @@ class _SettingViewState extends ConsumerState<SettingView> {
               width: double.infinity,
               height: context.height(0.2),
               decoration: BoxDecoration(
+                color:
+                    Theme.of(context).brightness == Brightness.dark
+                        ? lightDarkColor
+                        : Colors.white,
                 border: Border.all(width: 1, color: primaryGradientStart),
                 borderRadius: BorderRadius.circular(context.width(0.03)),
               ),

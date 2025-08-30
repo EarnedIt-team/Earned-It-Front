@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:earned_it/config/exception.dart';
 import 'package:earned_it/config/toastMessage.dart';
 import 'package:earned_it/models/piece/piece_info_model.dart';
 import 'package:earned_it/models/piece/piece_state.dart';
@@ -148,9 +149,8 @@ class PieceNotifier extends Notifier<PieceState> {
       // 1. PieceService를 통해 API 호출
       await _pieceService.keepPiece(accessToken: accessToken, pieceId: pieceId);
 
-      // 2. 성공 후, 전체 유저 정보를 다시 불러와 메인 조각을 갱신
-      //    (loadUser가 recentlyPiece도 업데이트한다고 가정)
-      // await ref.read(userProvider.notifier).loadUser();
+      // 로컬 데이터 수정
+      updateMainPieceLocally(pieceId);
 
       if (context.mounted) {
         toastMessage(context, '메인 조각으로 고정되었습니다.');
@@ -161,6 +161,44 @@ class PieceNotifier extends Notifier<PieceState> {
     } catch (e) {
       if (context.mounted) _handleGeneralError(context, e);
     }
+  }
+
+  /// 로컬 상태에서 메인 조각을 즉시 업데이트합니다.
+  void updateMainPieceLocally(int newMainPieceId) {
+    PieceInfoModel? newMainPieceInfo;
+
+    // 1. 모든 테마를 순회하며 새로운 상태 리스트를 만듭니다.
+    final newThemes =
+        state.pieces.map((theme) {
+          final newSlots =
+              theme.slots.map((slot) {
+                // 새로 고정할 조각을 찾습니다.
+                if (slot.pieceId == newMainPieceId) {
+                  // recentlyPiece로 설정하기 위해 PieceInfoModel 형태로 변환하여 저장
+                  newMainPieceInfo = PieceInfoModel(
+                    pieceId: slot.pieceId,
+                    image: slot.image,
+                    name: slot.itemName,
+                    price: slot.value,
+                    mainPiece: true,
+                  );
+                  return slot.copyWith(mainPiece: true);
+                }
+                // 이전에 고정되어 있던 조각이 있다면 고정을 해제합니다.
+                if (slot.mainPiece == true) {
+                  return slot.copyWith(mainPiece: false);
+                }
+                // 그 외에는 그대로 둡니다.
+                return slot;
+              }).toList();
+          return theme.copyWith(slots: newSlots);
+        }).toList();
+
+    // 2. PieceProvider의 상태를 업데이트합니다.
+    state = state.copyWith(
+      pieces: newThemes,
+      recentlyPiece: newMainPieceInfo, // recentlyPiece를 새로운 메인 조각으로 업데이트
+    );
   }
 
   /// 상태를 초기화하는 메소드
@@ -174,12 +212,16 @@ class PieceNotifier extends Notifier<PieceState> {
     if (e.response?.data['code'] == "AUTH_REQUIRED") {
       // ... (토큰 재발급 로직)
     } else {
-      _handleGeneralError(context, e);
+      _handleGeneralError(context, e.toDisplayString());
     }
   }
 
   void _handleGeneralError(BuildContext context, Object e) {
     state = state.copyWith(isLoading: false);
-    toastMessage(context, e.toString(), type: ToastmessageType.errorType);
+    toastMessage(
+      context,
+      e.toDisplayString(),
+      type: ToastmessageType.errorType,
+    );
   }
 }

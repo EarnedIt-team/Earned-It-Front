@@ -8,17 +8,40 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:showcaseview/showcaseview.dart';
 
-class PuzzleView extends ConsumerStatefulWidget {
+// 1. (핵심 수정) ShowCaseWidget을 제공하는 새로운 최상위 위젯
+class PuzzleView extends StatelessWidget {
   const PuzzleView({super.key});
 
   @override
-  ConsumerState<PuzzleView> createState() => _PuzzleViewState();
+  Widget build(BuildContext context) {
+    // ShowCaseWidget이 _PuzzleViewInternal의 조상이 되도록 감싸줍니다.
+    return ShowCaseWidget(
+      onFinish: () async {
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setBool('hasSeenPuzzleShowcase', true);
+      },
+      builder: (context) => const _PuzzleViewInternal(),
+    );
+  }
 }
 
-class _PuzzleViewState extends ConsumerState<PuzzleView> {
+// 2. 기존 PuzzleView의 내용을 내부 위젯으로 변경
+class _PuzzleViewInternal extends ConsumerStatefulWidget {
+  const _PuzzleViewInternal();
+
+  @override
+  ConsumerState<_PuzzleViewInternal> createState() => _PuzzleViewState();
+}
+
+class _PuzzleViewState extends ConsumerState<_PuzzleViewInternal> {
   late final ScrollController _scrollController;
   bool _showFab = false;
+
+  final GlobalKey _one = GlobalKey();
+  final GlobalKey _two = GlobalKey();
 
   @override
   void initState() {
@@ -27,8 +50,20 @@ class _PuzzleViewState extends ConsumerState<PuzzleView> {
     _scrollController.addListener(_scrollListener);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(pieceProvider.notifier).loadPuzzle(context);
+      ref.read(pieceProvider.notifier).loadPuzzle(context).then((_) {
+        _checkAndShowShowcase(); // 최초 가이드라인 실행
+      });
     });
+  }
+
+  Future<void> _checkAndShowShowcase() async {
+    final prefs = await SharedPreferences.getInstance();
+    // 'hasSeenPuzzleShowcase' 값이 false이거나 없을 때만 쇼케이스를 시작합니다.
+    final hasSeen = prefs.getBool('hasSeenPuzzleShowcase') ?? false;
+
+    if (!hasSeen && mounted) {
+      ShowCaseWidget.of(context).startShowCase([_one, _two]);
+    }
   }
 
   @override
@@ -58,30 +93,9 @@ class _PuzzleViewState extends ConsumerState<PuzzleView> {
   Widget build(BuildContext context) {
     final pieceState = ref.watch(pieceProvider);
     final themes = pieceState.pieces;
-    final currencyFormat = NumberFormat.decimalPattern('ko_KR');
 
     return Scaffold(
-      appBar: AppBar(
-        scrolledUnderElevation: 0,
-        title: const Row(
-          children: <Widget>[
-            Icon(Icons.extension),
-            SizedBox(width: 10),
-            Text("퍼즐", style: TextStyle(fontWeight: FontWeight.bold)),
-          ],
-        ),
-        centerTitle: false,
-        actions: [
-          Text(
-            '현재 가치 : ${currencyFormat.format(pieceState.totalAccumulatedValue)} 원',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: context.width(0.04),
-            ),
-          ),
-        ],
-        actionsPadding: EdgeInsets.symmetric(horizontal: context.middlePadding),
-      ),
+      appBar: _buildAppBar(context, ref),
       floatingActionButton: AnimatedOpacity(
         opacity: _showFab ? 1.0 : 0.0,
         duration: const Duration(milliseconds: 300),
@@ -98,15 +112,50 @@ class _PuzzleViewState extends ConsumerState<PuzzleView> {
     );
   }
 
-  // --- 1. 퍼즐 데이터가 있을 때의 전체 UI ---
+  AppBar _buildAppBar(BuildContext context, WidgetRef ref) {
+    final pieceState = ref.watch(pieceProvider);
+    final currencyFormat = NumberFormat.decimalPattern('ko_KR');
+    return AppBar(
+      scrolledUnderElevation: 0,
+      title: const Row(
+        children: <Widget>[
+          Icon(Icons.extension),
+          SizedBox(width: 10),
+          Text("퍼즐", style: TextStyle(fontWeight: FontWeight.bold)),
+        ],
+      ),
+      centerTitle: false,
+      actions: [
+        Tooltip(
+          showDuration: const Duration(seconds: 5),
+          triggerMode: TooltipTriggerMode.tap,
+          message:
+              '획득한 모든 퍼즐 조각의 가치를 합산한 점수입니다.\n*같은 조각을 여러 번 획득해도 점수는 한 번만 계산됩니다.',
+          child: Icon(
+            Icons.info_outline,
+            size: context.width(0.04),
+            color: Colors.blue,
+          ),
+        ),
+        SizedBox(width: context.width(0.01)),
+        Text(
+          '현재 가치 : ${currencyFormat.format(pieceState.totalAccumulatedValue)} 원',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: context.width(0.04),
+          ),
+        ),
+      ],
+      actionsPadding: EdgeInsets.symmetric(horizontal: context.middlePadding),
+    );
+  }
+
   Widget _buildPuzzleContent(
     BuildContext context,
     WidgetRef ref,
     List<ThemeModel> themes,
   ) {
     final pieceState = ref.watch(pieceProvider);
-
-    // --- 진행률 계산 ---
     final double themeProgress =
         (pieceState.themeCount > 0)
             ? pieceState.completedThemeCount / pieceState.themeCount
@@ -125,52 +174,81 @@ class _PuzzleViewState extends ConsumerState<PuzzleView> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // 👇 (핵심 수정) 기존 Text 위젯들을 원형 진행바로 교체
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              Column(
-                spacing: 10,
-                children: <Widget>[
-                  _buildProgressCircle(
-                    context: context,
-                    title: "테마",
-                    value: themeProgress,
-                  ),
-                  Text(
-                    "${pieceState.completedThemeCount} / ${pieceState.themeCount}",
-                    style: TextStyle(
-                      color: Colors.grey,
-                      fontSize: context.width(0.04),
+          SizedBox(height: context.height(0.01)),
+          Showcase(
+            targetBorderRadius: BorderRadius.all(
+              Radius.circular(context.width(0.05)),
+            ),
+            overlayColor:
+                Theme.of(context).brightness == Brightness.dark
+                    ? const Color.fromARGB(255, 46, 46, 46)
+                    : Colors.grey,
+            targetPadding: EdgeInsets.all(context.middlePadding / 2),
+            key: _one,
+            description: '테마와 조각의 전체 진행률을 확인할 수 있습니다.',
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Column(
+                  children: <Widget>[
+                    _buildProgressCircle(
+                      context: context,
+                      title: "테마",
+                      value: themeProgress,
                     ),
-                  ),
-                ],
-              ),
-              Column(
-                spacing: 10,
-                children: [
-                  _buildProgressCircle(
-                    context: context,
-                    title: "조각",
-                    value: pieceProgress,
-                  ),
-                  Text(
-                    "${pieceState.completedPieceCount} / ${pieceState.totalPieceCount}",
-                    style: TextStyle(
-                      color: Colors.grey,
-                      fontSize: context.width(0.04),
+                    const SizedBox(height: 10),
+                    Text(
+                      "${pieceState.completedThemeCount} / ${pieceState.themeCount}",
+                      style: TextStyle(
+                        color: Colors.grey,
+                        fontSize: context.width(0.04),
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            ],
+                  ],
+                ),
+                Column(
+                  children: [
+                    _buildProgressCircle(
+                      context: context,
+                      title: "조각",
+                      value: pieceProgress,
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      "${pieceState.completedPieceCount} / ${pieceState.totalPieceCount}",
+                      style: TextStyle(
+                        color: Colors.grey,
+                        fontSize: context.width(0.04),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
+          SizedBox(height: context.height(0.03)),
           ListView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             itemCount: themes.length,
             itemBuilder: (context, index) {
               final theme = themes[index];
+              if (index == 0) {
+                return Showcase(
+                  targetBorderRadius: BorderRadius.all(
+                    Radius.circular(context.width(0.05)),
+                  ),
+                  tooltipPosition: TooltipPosition.top,
+                  overlayColor:
+                      Theme.of(context).brightness == Brightness.dark
+                          ? const Color.fromARGB(255, 46, 46, 46)
+                          : Colors.grey,
+                  targetPadding: EdgeInsets.all(context.middlePadding / 2),
+                  key: _two,
+                  description: '각 테마마다 조각이 존재하며,\n획득한 조각은 클릭하면 상세정보로 이동합니다.',
+                  child: _buildThemeSection(context, theme),
+                );
+              }
               return _buildThemeSection(context, theme);
             },
           ),
@@ -180,11 +258,10 @@ class _PuzzleViewState extends ConsumerState<PuzzleView> {
     );
   }
 
-  // --- 2. 원형 진행바 위젯 (신규 추가) ---
   Widget _buildProgressCircle({
     required BuildContext context,
     required String title,
-    required double value, // 0.0 ~ 1.0
+    required double value,
   }) {
     return SizedBox(
       width: context.width(0.25),
@@ -192,7 +269,6 @@ class _PuzzleViewState extends ConsumerState<PuzzleView> {
       child: Stack(
         fit: StackFit.expand,
         children: [
-          // 배경 트랙
           CircularProgressIndicator(
             value: 1.0,
             strokeWidth: context.width(0.01),
@@ -202,102 +278,107 @@ class _PuzzleViewState extends ConsumerState<PuzzleView> {
                     : Colors.grey[200],
             color: Colors.transparent,
           ),
-          // 실제 진행률
           CircularProgressIndicator(
             value: value,
             strokeWidth: context.width(0.02),
             valueColor: const AlwaysStoppedAnimation<Color>(
               primaryGradientStart,
             ),
-            strokeCap: StrokeCap.round, // 끝을 둥글게
+            strokeCap: StrokeCap.round,
           ),
-          // 중앙 텍스트
-          Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  title,
-                  style: TextStyle(
-                    fontSize: context.width(0.035),
-                    color: Colors.grey,
-                  ),
-                ),
-                Text(
-                  '${(value * 100).toStringAsFixed(0)}%',
-                  style: TextStyle(
-                    fontSize: context.width(0.065),
-                    fontWeight: FontWeight.bold,
-                    color:
-                        Theme.of(context).brightness == Brightness.dark
-                            ? Colors.white
-                            : Colors.black,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // --- 3. 각 테마 섹션 (헤더 + 그리드) ---
-  Widget _buildThemeSection(BuildContext context, ThemeModel theme) {
-    final currencyFormat = NumberFormat.decimalPattern('ko_KR');
-    return Padding(
-      padding: const EdgeInsets.only(top: 32.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.baseline,
-            textBaseline: TextBaseline.alphabetic,
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(
-                theme.themeName,
-                style: TextStyle(
-                  fontSize: context.width(0.045),
-                  fontWeight: FontWeight.bold,
-                  color:
-                      Theme.of(context).brightness == Brightness.dark
-                          ? Colors.white
-                          : Colors.black,
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(width: context.width(0.025)),
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: context.width(0.035),
+                      color: Colors.grey,
+                    ),
+                  ),
+                  Tooltip(
+                    showDuration: const Duration(seconds: 5),
+                    triggerMode: TooltipTriggerMode.tap,
+                    message:
+                        title == "테마"
+                            ? '각 테마의 퍼즐을 모두 획득하면\n완성한 테마로 기록됩니다.'
+                            : '출석체크와 같은 활동으로 획득한\n전체 퍼즐 조각의 수입니다.',
+                    child: Icon(
+                      Icons.info_outline,
+                      size: context.width(0.04),
+                      color: Colors.blue,
+                    ),
+                  ),
+                ],
               ),
               Text(
-                theme.totalValue == 0
-                    ? "??? 원"
-                    : "${currencyFormat.format(theme.totalValue)} 원",
+                '${(value * 100).toStringAsFixed(0)}%',
                 style: TextStyle(
-                  fontSize: context.height(0.018),
-                  color: Colors.grey,
+                  fontSize: context.width(0.055),
+                  fontWeight: FontWeight.bold,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 16),
-          GridView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: theme.slots.length,
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3,
-              crossAxisSpacing: 10,
-              mainAxisSpacing: 10,
-            ),
-            itemBuilder: (context, index) {
-              final slot = theme.slots[index];
-              return _buildPuzzlePiece(context, slot);
-            },
-          ),
         ],
       ),
     );
   }
 
-  // --- 4. 각 퍼즐 조각 아이템 ---
+  Widget _buildThemeSection(BuildContext context, ThemeModel theme) {
+    final currencyFormat = NumberFormat.decimalPattern('ko_KR');
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(height: context.height(0.025)),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.baseline,
+          textBaseline: TextBaseline.alphabetic,
+          children: [
+            Text(
+              theme.themeName,
+              style: TextStyle(
+                fontSize: context.height(0.02),
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Text(
+              theme.totalValue == 0
+                  ? "??? 원"
+                  : "${currencyFormat.format(theme.totalValue)} 원",
+              style: TextStyle(
+                fontSize: context.height(0.018),
+                color: Colors.grey,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        GridView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: theme.slots.length,
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 3,
+            crossAxisSpacing: 10,
+            mainAxisSpacing: 10,
+          ),
+          itemBuilder: (context, index) {
+            final slot = theme.slots[index];
+            return _buildPuzzlePiece(context, slot);
+          },
+        ),
+        SizedBox(height: context.height(0.025)),
+      ],
+    );
+  }
+
   Widget _buildPuzzlePiece(BuildContext context, SlotModel slot) {
     return ElevatedButton(
       onPressed:
@@ -317,9 +398,13 @@ class _PuzzleViewState extends ConsumerState<PuzzleView> {
           borderRadius: BorderRadius.circular(12),
           side: BorderSide(
             color:
-                Theme.of(context).brightness == Brightness.dark
-                    ? Colors.grey[700]!
-                    : Colors.grey[300]!,
+                slot.isCollected
+                    ? (Theme.of(context).brightness == Brightness.dark
+                        ? primaryGradientEnd
+                        : const Color.fromARGB(255, 255, 164, 176))
+                    : (Theme.of(context).brightness == Brightness.dark
+                        ? Colors.grey[700]!
+                        : Colors.grey[300]!),
             width: 1.5,
           ),
         ),
@@ -348,15 +433,15 @@ class _PuzzleViewState extends ConsumerState<PuzzleView> {
                         top: 5,
                         left: 5,
                         child: Container(
-                          padding: const EdgeInsets.all(5.0), // 원 안의 이미지 여백
+                          padding: const EdgeInsets.all(5.0),
                           decoration: const BoxDecoration(
-                            color: primaryGradientStart, // 원형 배경색
-                            shape: BoxShape.circle, // 모양을 원으로 지정
+                            color: primaryGradientStart,
+                            shape: BoxShape.circle,
                           ),
                           child: Image.asset(
                             'assets/images/keep_icon.png',
                             color: Colors.black,
-                            width: context.width(0.04), // 아이콘 이미지 크기
+                            width: context.width(0.04),
                             height: context.width(0.04),
                           ),
                         ),
@@ -375,7 +460,6 @@ class _PuzzleViewState extends ConsumerState<PuzzleView> {
     );
   }
 
-  // --- 5. 퍼즐 데이터가 없을 때의 UI ---
   Widget _buildEmptyState(BuildContext context, WidgetRef ref) {
     final userState = ref.watch(userProvider);
     return Center(
@@ -418,8 +502,8 @@ class _PuzzleViewState extends ConsumerState<PuzzleView> {
             Text(
               "- 로그인이 필요한 서비스 입니다 -",
               style: TextStyle(
-                color: Colors.grey,
                 fontSize: context.width(0.035),
+                color: Colors.grey,
                 fontWeight: FontWeight.bold,
               ),
             ),

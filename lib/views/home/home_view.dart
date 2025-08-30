@@ -12,6 +12,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:showcaseview/showcaseview.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 final carouselIndexProvider = StateProvider.autoDispose<int>((ref) => 0);
@@ -27,14 +29,34 @@ final isHomeReadyProvider = Provider.autoDispose<bool>((ref) {
   return userReady && homeReady;
 });
 
-class HomeView extends ConsumerStatefulWidget {
+class HomeView extends StatelessWidget {
   const HomeView({super.key});
 
   @override
-  ConsumerState<HomeView> createState() => _HomeViewState();
+  Widget build(BuildContext context) {
+    // ShowCaseWidget이 _WishViewInternal의 조상이 되도록 감싸줍니다.
+    return ShowCaseWidget(
+      onFinish: () async {
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setBool('hasSeenHomeViewShowcase', true);
+      },
+      builder: (context) => const _HomeViewInternal(),
+    );
+  }
 }
 
-class _HomeViewState extends ConsumerState<HomeView> {
+class _HomeViewInternal extends ConsumerStatefulWidget {
+  const _HomeViewInternal();
+
+  @override
+  ConsumerState<_HomeViewInternal> createState() => _HomeViewState();
+}
+
+class _HomeViewState extends ConsumerState<_HomeViewInternal> {
+  final GlobalKey _one = GlobalKey();
+  final GlobalKey _two = GlobalKey();
+  final GlobalKey _three = GlobalKey();
+
   @override
   void initState() {
     super.initState();
@@ -45,6 +67,8 @@ class _HomeViewState extends ConsumerState<HomeView> {
       final storage = ref.read(secureStorageProvider);
       String? token = await storage.read(key: 'refreshToken');
 
+      _checkAndShowShowcase();
+
       if (token != null && token.isNotEmpty) {
         if (ref.read(userProvider.notifier).state.isearningsPerSecond ==
             false) {
@@ -54,6 +78,17 @@ class _HomeViewState extends ConsumerState<HomeView> {
         context.go("/home");
       }
     });
+  }
+
+  Future<void> _checkAndShowShowcase() async {
+    final prefs = await SharedPreferences.getInstance();
+    final hasSeen = prefs.getBool('hasSeenHomeViewShowcase') ?? false;
+    final wishState = ref.read(wishViewModelProvider);
+
+    // 조건: 가이드를 본 적이 없고, 리스트 중 하나라도 비어있지 않을 때
+    if (!hasSeen && wishState.starWishes.isNotEmpty && mounted) {
+      ShowCaseWidget.of(context).startShowCase([_one, _two, _three]);
+    }
   }
 
   @override
@@ -113,49 +148,61 @@ class _HomeViewState extends ConsumerState<HomeView> {
         centerTitle: false,
         actionsPadding: EdgeInsets.symmetric(horizontal: context.middlePadding),
         actions: [
-          AnimatedToggleSwitch.dual(
-            current: homeState.toggleIndex,
-            first: 0,
-            second: 1,
-            onChanged: (value) => homeProvider.updateToggleIndex(value),
-            spacing: 0,
-            height: 40,
-            styleBuilder:
-                (value) => ToggleStyle(
-                  borderColor:
-                      Theme.of(context).brightness == Brightness.dark
-                          ? Colors.white
-                          : Colors.black,
-                  indicatorColor: Colors.white,
-                  backgroundColor:
-                      value == 0 ? primaryGradientStart : primaryGradientEnd,
-                ),
-            iconBuilder:
-                (value) =>
-                    value == 0
-                        ? Icon(
-                          Icons.local_mall,
-                          color: primaryGradientStart,
-                          size: context.width(0.06),
-                        )
-                        : Icon(
-                          Icons.extension,
-                          color: primaryGradientEnd,
-                          size: context.width(0.06),
-                        ),
-            textBuilder:
-                (value) =>
-                    value == 0
-                        ? const Icon(
-                          Icons.extension,
-                          color: Color.fromARGB(255, 202, 202, 202),
-                          size: 20.0,
-                        )
-                        : const Icon(
-                          Icons.local_mall,
-                          color: Color.fromARGB(255, 202, 202, 202),
-                          size: 20.0,
-                        ),
+          Showcase(
+            targetBorderRadius: BorderRadius.all(
+              Radius.circular(context.width(0.05)),
+            ),
+            overlayColor:
+                Theme.of(context).brightness == Brightness.dark
+                    ? const Color.fromARGB(255, 46, 46, 46)
+                    : Colors.grey,
+            key: _one,
+            description:
+                '토클 버튼을 통해서 메인화면을 변경할 수 있습니다.\n\n• Star 위시리스트: 진행률 및 구매하기\n• 퍼즐: 고정된 조각 정보 및 출석체크',
+            child: AnimatedToggleSwitch.dual(
+              current: homeState.toggleIndex,
+              first: 0,
+              second: 1,
+              onChanged: (value) => homeProvider.updateToggleIndex(value),
+              spacing: 0,
+              height: 40,
+              styleBuilder:
+                  (value) => ToggleStyle(
+                    borderColor:
+                        Theme.of(context).brightness == Brightness.dark
+                            ? Colors.white
+                            : Colors.black,
+                    indicatorColor: Colors.white,
+                    backgroundColor:
+                        value == 0 ? primaryGradientStart : primaryGradientEnd,
+                  ),
+              iconBuilder:
+                  (value) =>
+                      value == 0
+                          ? Icon(
+                            Icons.local_mall,
+                            color: primaryGradientStart,
+                            size: context.width(0.06),
+                          )
+                          : Icon(
+                            Icons.extension,
+                            color: primaryGradientEnd,
+                            size: context.width(0.06),
+                          ),
+              textBuilder:
+                  (value) =>
+                      value == 0
+                          ? const Icon(
+                            Icons.extension,
+                            color: Color.fromARGB(255, 202, 202, 202),
+                            size: 20.0,
+                          )
+                          : const Icon(
+                            Icons.local_mall,
+                            color: Color.fromARGB(255, 202, 202, 202),
+                            size: 20.0,
+                          ),
+            ),
           ),
         ],
       ),
@@ -180,107 +227,137 @@ class _HomeViewState extends ConsumerState<HomeView> {
     final homeState = ref.watch(homeViewModelProvider);
     final decimalFormat = NumberFormat('#,##0.00', 'ko_KR');
 
-    return Padding(
-      padding: EdgeInsets.only(
-        top: context.height(0.015),
-        left: context.middlePadding,
-        right: context.middlePadding,
+    return Showcase(
+      targetBorderRadius: BorderRadius.all(
+        Radius.circular(context.width(0.05)),
       ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Text.rich(
-            TextSpan(
+      overlayColor:
+          Theme.of(context).brightness == Brightness.dark
+              ? const Color.fromARGB(255, 46, 46, 46)
+              : Colors.grey,
+      key: _two,
+      description:
+          '사용자가 설정한 월 수익에 기반하여 실시간으로 측정됩니다.\n*금액은 매 달 급여 날짜에 맞춰 초기화 됩니다.',
+      child: Padding(
+        padding: EdgeInsets.only(
+          top: context.height(0.015),
+          left: context.middlePadding,
+          right: context.middlePadding,
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(width: context.width(0.035)),
+                Text.rich(
+                  TextSpan(
+                    style: TextStyle(
+                      fontSize: context.height(0.02),
+                      fontWeight: FontWeight.bold,
+                    ),
+                    children: [
+                      if (userState.isearningsPerSecond) ...<InlineSpan>[
+                        TextSpan(
+                          text:
+                              '+ ${decimalFormat.format(userState.earningsPerSecond)}',
+                          style: TextStyle(
+                            fontSize: context.height(0.018),
+                            fontWeight: FontWeight.w100,
+                            color: Colors.grey,
+                          ),
+                        ),
+                        TextSpan(
+                          text: '₩ /sec',
+                          style: TextStyle(
+                            fontSize: context.height(0.015),
+                            fontWeight: FontWeight.w100,
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+                Tooltip(
+                  showDuration: const Duration(seconds: 5),
+                  triggerMode: TooltipTriggerMode.tap,
+                  message:
+                      '입력하신 월급을 기준으로 계산된 초당 수익이며,\n이 금액이 실시간으로 쌓여 "금월 누적 금액"이 됩니다.',
+                  child: Icon(
+                    Icons.info_outline,
+                    size: context.width(0.04),
+                    color: Colors.blue,
+                  ),
+                ),
+              ],
+            ),
+            Text(
+              "금월 누적 금액",
               style: TextStyle(
                 fontSize: context.height(0.02),
                 fontWeight: FontWeight.bold,
+                color:
+                    Theme.of(context).brightness == Brightness.dark
+                        ? Colors.white
+                        : Colors.black,
               ),
-              children: [
-                if (userState.isearningsPerSecond) ...<InlineSpan>[
-                  TextSpan(
-                    text:
-                        '+ ${decimalFormat.format(userState.earningsPerSecond)}',
-                    style: TextStyle(
-                      fontSize: context.height(0.018),
-                      fontWeight: FontWeight.w100,
-                      color: Colors.grey,
-                    ),
-                  ),
-                  TextSpan(
-                    text: '₩ /sec',
-                    style: TextStyle(
-                      fontSize: context.height(0.015),
-                      fontWeight: FontWeight.w100,
-                      color: Colors.grey,
-                    ),
-                  ),
-                ],
-              ],
             ),
-          ),
-          Text(
-            "금월 누적 금액",
-            style: TextStyle(
-              fontSize: context.height(0.02),
-              fontWeight: FontWeight.bold,
-              color:
-                  Theme.of(context).brightness == Brightness.dark
-                      ? Colors.white
-                      : Colors.black,
-            ),
-          ),
-          SizedBox(height: context.height(0.005)),
-          userState.isearningsPerSecond
-              ? Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.baseline,
-                textBaseline: TextBaseline.alphabetic,
-                children: <Widget>[
-                  AnimatedDigitWidget(
-                    value: homeState.currentEarnedAmount.toInt(),
-                    textStyle: TextStyle(
-                      fontSize: context.height(0.035),
-                      fontWeight: FontWeight.bold,
-                      color:
-                          Theme.of(context).brightness == Brightness.dark
-                              ? Colors.white
-                              : Colors.black,
+            SizedBox(height: context.height(0.005)),
+            userState.isearningsPerSecond
+                ? Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.baseline,
+                  textBaseline: TextBaseline.alphabetic,
+                  children: <Widget>[
+                    AnimatedDigitWidget(
+                      value: homeState.currentEarnedAmount.toInt(),
+                      textStyle: TextStyle(
+                        fontSize: context.height(0.035),
+                        fontWeight: FontWeight.bold,
+                        color:
+                            Theme.of(context).brightness == Brightness.dark
+                                ? Colors.white
+                                : Colors.black,
+                      ),
+                      enableSeparator: true,
                     ),
-                    enableSeparator: true,
-                  ),
-                  Text(
-                    " 원",
-                    style: TextStyle(
-                      fontSize: context.height(0.02),
-                      color:
-                          Theme.of(context).brightness == Brightness.dark
-                              ? Colors.white
-                              : Colors.black,
+                    Text(
+                      " 원",
+                      style: TextStyle(
+                        fontSize: context.height(0.02),
+                        color:
+                            Theme.of(context).brightness == Brightness.dark
+                                ? Colors.white
+                                : Colors.black,
+                      ),
                     ),
+                  ],
+                )
+                : Text(
+                  "설정된 금액이 없습니다.",
+                  style: TextStyle(
+                    fontSize: context.height(0.018),
+                    color: Colors.grey,
                   ),
-                ],
-              )
-              : Text(
-                "설정된 금액이 없습니다.",
-                style: TextStyle(
-                  fontSize: context.height(0.018),
-                  color: Colors.grey,
                 ),
-              ),
-        ],
+          ],
+        ),
+        // child: Row(
+        //   mainAxisAlignment: MainAxisAlignment.center,
+        //   children: [
+        //     userState.isearningsPerSecond
+        //         ? _buildAmountImage(context, homeState.currentEarnedAmount)
+        //         : ElevatedButton(
+        //           onPressed: () => context.push('/setSalary'),
+        //           child: const Text("월 수익 설정하기"),
+        //         ),
+        //   ],
+        // ),
       ),
-      // child: Row(
-      //   mainAxisAlignment: MainAxisAlignment.center,
-      //   children: [
-      //     userState.isearningsPerSecond
-      //         ? _buildAmountImage(context, homeState.currentEarnedAmount)
-      //         : ElevatedButton(
-      //           onPressed: () => context.push('/setSalary'),
-      //           child: const Text("월 수익 설정하기"),
-      //         ),
-      //   ],
-      // ),
     );
   }
 
@@ -321,34 +398,219 @@ class _HomeViewState extends ConsumerState<HomeView> {
     final item = wishList[carouselIndex];
     final progressColor = _getProgressColor(displayInfo.progress);
 
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: <Widget>[
-        SizedBox(height: context.height(0.03)),
-        if (item.bought)
-          SizedBox(
-            width: context.width(0.3),
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.transparent,
-                border: Border.all(width: 2, color: primaryGradientEnd),
-                borderRadius: BorderRadius.circular(12.0),
+    return Showcase(
+      targetBorderRadius: BorderRadius.all(
+        Radius.circular(context.width(0.05)),
+      ),
+      overlayColor:
+          Theme.of(context).brightness == Brightness.dark
+              ? const Color.fromARGB(255, 46, 46, 46)
+              : Colors.grey,
+      key: _three,
+      tooltipPosition: TooltipPosition.top,
+      description:
+          '좌우 스와이프를 통해, 각 아이템 진행 상황을 볼 수 있습니다.\n진행률이 100%가 되면 구매하기가 활성화됩니다.',
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: <Widget>[
+          SizedBox(height: context.height(0.03)),
+          if (item.bought)
+            SizedBox(
+              width: context.width(0.3),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.transparent,
+                  border: Border.all(width: 2, color: primaryGradientEnd),
+                  borderRadius: BorderRadius.circular(12.0),
+                ),
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.check,
+                      color: primaryGradientStart,
+                      size: context.width(0.04),
+                    ),
+                    const SizedBox(width: 5),
+                    Text(
+                      "구매 완료",
+                      style: TextStyle(
+                        color: primaryGradientStart,
+                        fontSize: context.width(0.035),
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              padding: const EdgeInsets.symmetric(vertical: 8.0),
+            ),
+          Expanded(
+            child: CarouselSlider.builder(
+              carouselController: homeProvider.carouselController,
+              itemCount: wishList.length,
+              itemBuilder: (context, index, realIndex) {
+                final currentItem = wishList[index];
+                return ClipRRect(
+                  borderRadius: BorderRadius.circular(context.height(0.01)),
+                  child: Opacity(
+                    opacity: index != carouselIndex ? 0.5 : 1.0,
+                    child: Image.network(
+                      currentItem.itemImage,
+                      width: context.height(0.25),
+                      height: context.height(0.25),
+                      fit: BoxFit.cover,
+                      loadingBuilder: (context, child, loadingProgress) {
+                        if (loadingProgress == null) return child;
+                        return Center(
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            value:
+                                loadingProgress.expectedTotalBytes != null
+                                    ? loadingProgress.cumulativeBytesLoaded /
+                                        loadingProgress.expectedTotalBytes!
+                                    : null,
+                          ),
+                        );
+                      },
+                      errorBuilder:
+                          (context, error, stackTrace) => const Icon(
+                            Icons.image_not_supported,
+                            size: 50,
+                            color: Colors.grey,
+                          ),
+                    ),
+                  ),
+                );
+              },
+              options: CarouselOptions(
+                initialPage: ref.read(carouselIndexProvider),
+                aspectRatio: 16 / 9,
+                height: MediaQuery.of(context).size.height * 0.333,
+                viewportFraction: 0.65,
+                enableInfiniteScroll: false,
+                enlargeCenterPage: true,
+                enlargeFactor: 0.55,
+                enlargeStrategy: CenterPageEnlargeStrategy.zoom,
+                onPageChanged:
+                    (index, reason) =>
+                        ref.read(carouselIndexProvider.notifier).state = index,
+              ),
+            ),
+          ),
+          ConstrainedBox(
+            constraints: BoxConstraints(maxWidth: context.width(0.8)),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  item.vendor,
+                  style: TextStyle(
+                    color: Colors.grey,
+                    fontSize: MediaQuery.of(context).size.width * 0.04,
+                  ),
+                ),
+                Text(
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  item.name,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color:
+                        Theme.of(context).brightness == Brightness.dark
+                            ? Colors.white
+                            : Colors.black,
+                    fontSize: MediaQuery.of(context).size.width * 0.05,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(height: context.height(0.03)),
+          ConstrainedBox(
+            constraints: BoxConstraints(maxWidth: context.width(0.8)),
+            child: Column(
+              children: [
+                LinearProgressIndicator(
+                  minHeight: context.height(0.015),
+                  borderRadius: const BorderRadius.all(Radius.circular(16)),
+                  backgroundColor:
+                      Theme.of(context).brightness == Brightness.dark
+                          ? const Color.fromARGB(97, 75, 75, 75)
+                          : const Color.fromARGB(255, 234, 234, 234),
+                  color: progressColor,
+                  value: displayInfo.progress,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      '${currencyFormat.format(item.price)}원',
+                      style: const TextStyle(color: Colors.grey),
+                    ),
+                    Text(
+                      '${(displayInfo.progress * 100).toStringAsFixed(2)}%',
+                      style: const TextStyle(color: Colors.grey),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          SizedBox(height: context.height(0.02)),
+          ConstrainedBox(
+            constraints: BoxConstraints(
+              maxWidth: context.width(0.6),
+              minHeight: context.height(0.06),
+            ),
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                side: BorderSide(
+                  color:
+                      displayInfo.progress >= 1.0
+                          ? progressColor
+                          : Colors.transparent,
+                  width: 2,
+                ),
+                disabledBackgroundColor:
+                    Theme.of(context).brightness == Brightness.dark
+                        ? const Color.fromARGB(97, 75, 75, 75)
+                        : const Color.fromARGB(255, 234, 234, 234),
+                backgroundColor: const Color.fromARGB(255, 242, 254, 242),
+                shadowColor: Colors.transparent,
+                elevation: 0,
+              ),
+              onPressed:
+                  displayInfo.progress >= 1.0
+                      ? () => _launchURL(item.url, item.name)
+                      : null,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(
-                    Icons.check,
-                    color: primaryGradientStart,
+                    displayInfo.progress >= 1.0
+                        ? Icons.shopping_bag
+                        : Icons.timer_outlined,
+                    color:
+                        displayInfo.progress >= 1.0
+                            ? const Color.fromARGB(255, 62, 62, 62)
+                            : Colors.grey,
                     size: context.width(0.04),
                   ),
-                  const SizedBox(width: 5),
+                  const SizedBox(width: 8),
                   Text(
-                    "구매 완료",
+                    item.url.isEmpty && displayInfo.progress >= 1.0
+                        ? '${displayInfo.timeText} ( 다나와 )'
+                        : displayInfo.timeText,
                     style: TextStyle(
-                      color: primaryGradientStart,
-                      fontSize: context.width(0.035),
+                      color:
+                          displayInfo.progress >= 1.0
+                              ? Colors.black
+                              : Colors.grey,
+                      fontSize: context.width(0.037),
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -356,181 +618,9 @@ class _HomeViewState extends ConsumerState<HomeView> {
               ),
             ),
           ),
-        Expanded(
-          child: CarouselSlider.builder(
-            carouselController: homeProvider.carouselController,
-            itemCount: wishList.length,
-            itemBuilder: (context, index, realIndex) {
-              final currentItem = wishList[index];
-              return ClipRRect(
-                borderRadius: BorderRadius.circular(context.height(0.01)),
-                child: Opacity(
-                  opacity: index != carouselIndex ? 0.5 : 1.0,
-                  child: Image.network(
-                    currentItem.itemImage,
-                    width: context.height(0.25),
-                    height: context.height(0.25),
-                    fit: BoxFit.cover,
-                    loadingBuilder: (context, child, loadingProgress) {
-                      if (loadingProgress == null) return child;
-                      return Center(
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          value:
-                              loadingProgress.expectedTotalBytes != null
-                                  ? loadingProgress.cumulativeBytesLoaded /
-                                      loadingProgress.expectedTotalBytes!
-                                  : null,
-                        ),
-                      );
-                    },
-                    errorBuilder:
-                        (context, error, stackTrace) => const Icon(
-                          Icons.image_not_supported,
-                          size: 50,
-                          color: Colors.grey,
-                        ),
-                  ),
-                ),
-              );
-            },
-            options: CarouselOptions(
-              initialPage: ref.read(carouselIndexProvider),
-              aspectRatio: 16 / 9,
-              height: MediaQuery.of(context).size.height * 0.333,
-              viewportFraction: 0.65,
-              enableInfiniteScroll: false,
-              enlargeCenterPage: true,
-              enlargeFactor: 0.55,
-              enlargeStrategy: CenterPageEnlargeStrategy.zoom,
-              onPageChanged:
-                  (index, reason) =>
-                      ref.read(carouselIndexProvider.notifier).state = index,
-            ),
-          ),
-        ),
-        ConstrainedBox(
-          constraints: BoxConstraints(maxWidth: context.width(0.8)),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Text(
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                item.vendor,
-                style: TextStyle(
-                  color: Colors.grey,
-                  fontSize: MediaQuery.of(context).size.width * 0.04,
-                ),
-              ),
-              Text(
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                item.name,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color:
-                      Theme.of(context).brightness == Brightness.dark
-                          ? Colors.white
-                          : Colors.black,
-                  fontSize: MediaQuery.of(context).size.width * 0.05,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-        ),
-        SizedBox(height: context.height(0.03)),
-        ConstrainedBox(
-          constraints: BoxConstraints(maxWidth: context.width(0.8)),
-          child: Column(
-            children: [
-              LinearProgressIndicator(
-                minHeight: context.height(0.015),
-                borderRadius: const BorderRadius.all(Radius.circular(16)),
-                backgroundColor:
-                    Theme.of(context).brightness == Brightness.dark
-                        ? const Color.fromARGB(97, 75, 75, 75)
-                        : const Color.fromARGB(255, 234, 234, 234),
-                color: progressColor,
-                value: displayInfo.progress,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    '${currencyFormat.format(item.price)}원',
-                    style: const TextStyle(color: Colors.grey),
-                  ),
-                  Text(
-                    '${(displayInfo.progress * 100).toStringAsFixed(2)}%',
-                    style: const TextStyle(color: Colors.grey),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-        SizedBox(height: context.height(0.02)),
-        ConstrainedBox(
-          constraints: BoxConstraints(
-            maxWidth: context.width(0.6),
-            minHeight: context.height(0.06),
-          ),
-          child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              side: BorderSide(
-                color:
-                    displayInfo.progress >= 1.0
-                        ? progressColor
-                        : Colors.transparent,
-                width: 2,
-              ),
-              disabledBackgroundColor:
-                  Theme.of(context).brightness == Brightness.dark
-                      ? const Color.fromARGB(97, 75, 75, 75)
-                      : const Color.fromARGB(255, 234, 234, 234),
-              backgroundColor: const Color.fromARGB(255, 242, 254, 242),
-              shadowColor: Colors.transparent,
-              elevation: 0,
-            ),
-            onPressed:
-                displayInfo.progress >= 1.0
-                    ? () => _launchURL(item.url, item.name)
-                    : null,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  displayInfo.progress >= 1.0
-                      ? Icons.shopping_bag
-                      : Icons.timer_outlined,
-                  color:
-                      displayInfo.progress >= 1.0
-                          ? const Color.fromARGB(255, 62, 62, 62)
-                          : Colors.grey,
-                  size: context.width(0.04),
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  item.url.isEmpty && displayInfo.progress >= 1.0
-                      ? '${displayInfo.timeText} ( 다나와 )'
-                      : displayInfo.timeText,
-                  style: TextStyle(
-                    color:
-                        displayInfo.progress >= 1.0
-                            ? Colors.black
-                            : Colors.grey,
-                    fontSize: context.width(0.037),
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-        SizedBox(height: context.height(0.03)),
-      ],
+          SizedBox(height: context.height(0.03)),
+        ],
+      ),
     );
   }
 

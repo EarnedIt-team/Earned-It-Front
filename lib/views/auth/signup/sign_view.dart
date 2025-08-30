@@ -158,126 +158,139 @@ class SignView extends ConsumerWidget {
                     ),
 
                     // 비밀번호 입력 필드
-                    _buildSignTextField(
-                      context,
-                      "비밀번호",
-                      controller:
-                          signUpNotifier
-                              .passwordController, // Notifier의 컨트롤러 사용
-                      onChanged: signUpNotifier.onPasswordChanged,
-                      obscureText: signUpState.isObscurePassword,
-                      suffixIcon: IconButton(
-                        onPressed: signUpNotifier.toggleObscurePassword,
-                        icon: Icon(
-                          signUpState.isObscurePassword
-                              ? Icons.visibility_off
-                              : Icons.visibility,
-                        ),
-                      ),
-                      hintText: "영문 대문자, 특수문자, 숫자 포함 8~12자",
-                      helperWidget:
-                          signUpState.isAvailablePassword
-                              ? Row(
-                                children: <Widget>[
-                                  Icon(
-                                    Icons.check,
-                                    color: context.successColor,
-                                  ),
-                                  Text(
-                                    "사용가능한 비밀번호입니다.",
-                                    style: TextStyle(
-                                      color: context.successColor,
-                                    ),
-                                  ),
-                                ],
-                              )
-                              : null,
-                      errorText:
-                          signUpNotifier.passwordController.text.isNotEmpty &&
-                                  !signUpState.isAvailablePassword
-                              ? '사용할 수 없는 비밀번호 입니다.'
-                              : null,
-                    ),
+                    signUpState.isSuccessfulCode
+                        ? _buildSignTextField(
+                          context,
+                          "비밀번호",
+                          controller:
+                              signUpNotifier
+                                  .passwordController, // Notifier의 컨트롤러 사용
+                          onChanged: signUpNotifier.onPasswordChanged,
+                          obscureText: signUpState.isObscurePassword,
+                          suffixIcon: IconButton(
+                            onPressed: signUpNotifier.toggleObscurePassword,
+                            icon: Icon(
+                              signUpState.isObscurePassword
+                                  ? Icons.visibility_off
+                                  : Icons.visibility,
+                            ),
+                          ),
+                          hintText: "영문 대문자, 특수문자, 숫자 포함 8~12자",
+                          helperWidget:
+                              signUpState.isAvailablePassword
+                                  ? Row(
+                                    children: <Widget>[
+                                      Icon(
+                                        Icons.check,
+                                        color: context.successColor,
+                                      ),
+                                      Text(
+                                        "사용가능한 비밀번호입니다.",
+                                        style: TextStyle(
+                                          color: context.successColor,
+                                        ),
+                                      ),
+                                    ],
+                                  )
+                                  : null,
+                          errorText:
+                              signUpNotifier
+                                          .passwordController
+                                          .text
+                                          .isNotEmpty &&
+                                      !signUpState.isAvailablePassword
+                                  ? '사용할 수 없는 비밀번호 입니다.'
+                                  : null,
+                        )
+                        : const SizedBox.shrink(),
                     SizedBox(height: context.height(0.03)),
 
                     // 비밀번호 재확인 입력 필드
-                    _buildSignTextField(
-                      context,
-                      "비밀번호 재확인",
-                      controller:
-                          signUpNotifier
-                              .checkPasswordController, // Notifier의 컨트롤러 사용
-                      onChanged: signUpNotifier.onCheckPasswordChanged,
-                      obscureText: signUpState.isObscurePasswordCheck,
-                      suffixIcon: IconButton(
-                        onPressed: signUpNotifier.toggleObscurePasswordCheck,
-                        icon: Icon(
-                          signUpState.isObscurePasswordCheck
-                              ? Icons.visibility_off
-                              : Icons.visibility,
-                        ),
-                      ),
-                      hintText: "영문 대문자, 특수문자, 숫자 포함 8~12자",
-                      helperWidget:
-                          signUpNotifier.passwordController.text.isNotEmpty &&
-                                  signUpState.isCheckPassword
-                              ? Row(
-                                children: <Widget>[
-                                  Icon(
-                                    Icons.check,
-                                    color: context.successColor,
-                                  ),
-                                  Text(
-                                    "비밀번호가 일치합니다.",
-                                    style: TextStyle(
-                                      color: context.successColor,
-                                    ),
-                                  ),
-                                ],
-                              )
-                              : null,
-                      errorText:
-                          signUpNotifier
-                                      .checkPasswordController
-                                      .text
-                                      .isNotEmpty &&
-                                  !signUpState.isCheckPassword
-                              ? "8~12자 이내로, 영문 대문자, 특수문자, 숫자를 포함해야 합니다."
-                              : null,
-                    ),
+                    signUpState.isSuccessfulCode
+                        ? _buildSignTextField(
+                          context,
+                          "비밀번호 재확인",
+                          controller:
+                              signUpNotifier
+                                  .checkPasswordController, // Notifier의 컨트롤러 사용
+                          onChanged: signUpNotifier.onCheckPasswordChanged,
+                          obscureText: signUpState.isObscurePasswordCheck,
+                          suffixIcon: IconButton(
+                            onPressed:
+                                signUpNotifier.toggleObscurePasswordCheck,
+                            icon: Icon(
+                              signUpState.isObscurePasswordCheck
+                                  ? Icons.visibility_off
+                                  : Icons.visibility,
+                            ),
+                          ),
+                          hintText: "영문 대문자, 특수문자, 숫자 포함 8~12자",
+                          helperWidget:
+                              signUpNotifier
+                                          .passwordController
+                                          .text
+                                          .isNotEmpty &&
+                                      signUpState.isCheckPassword
+                                  ? Row(
+                                    children: <Widget>[
+                                      Icon(
+                                        Icons.check,
+                                        color: context.successColor,
+                                      ),
+                                      Text(
+                                        "비밀번호가 일치합니다.",
+                                        style: TextStyle(
+                                          color: context.successColor,
+                                        ),
+                                      ),
+                                    ],
+                                  )
+                                  : null,
+                          errorText:
+                              signUpNotifier
+                                          .checkPasswordController
+                                          .text
+                                          .isNotEmpty &&
+                                      !signUpState.isCheckPassword
+                                  ? "8~12자 이내로, 영문 대문자, 특수문자, 숫자를 포함해야 합니다."
+                                  : null,
+                        )
+                        : const SizedBox.shrink(),
                     SizedBox(height: context.height(0.03)),
 
                     // 서비스 이용 약관 동의 체크박스
-                    Row(
-                      children: <Widget>[
-                        Checkbox(
-                          value: signUpState.isAgreedToTerms,
-                          onChanged: signUpNotifier.onAgreedToTermsChanged,
-                        ),
-                        Text.rich(
-                          TextSpan(
-                            children: <InlineSpan>[
+                    signUpState.isSuccessfulCode
+                        ? Row(
+                          children: <Widget>[
+                            Checkbox(
+                              value: signUpState.isAgreedToTerms,
+                              onChanged: signUpNotifier.onAgreedToTermsChanged,
+                            ),
+                            Text.rich(
                               TextSpan(
-                                text: "서비스 이용 약관",
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
+                                children: <InlineSpan>[
+                                  TextSpan(
+                                    text: "서비스 이용 약관",
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
 
-                                  decoration: TextDecoration.underline,
-                                  decorationColor: Colors.grey,
-                                  height: 1.5,
-                                ),
-                                recognizer:
-                                    TapGestureRecognizer()
-                                      ..onTap = () {
-                                        signUpNotifier.launchTermsUrl();
-                                      },
+                                      decoration: TextDecoration.underline,
+                                      decorationColor: Colors.grey,
+                                      height: 1.5,
+                                    ),
+                                    recognizer:
+                                        TapGestureRecognizer()
+                                          ..onTap = () {
+                                            signUpNotifier.launchTermsUrl();
+                                          },
+                                  ),
+                                  const TextSpan(text: "에 동의합니다."),
+                                ],
                               ),
-                              const TextSpan(text: "에 동의합니다."),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
+                            ),
+                          ],
+                        )
+                        : const SizedBox.shrink(),
                   ],
                 ),
               ),

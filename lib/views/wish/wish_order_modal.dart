@@ -28,10 +28,25 @@ class WishOrderModal extends ConsumerWidget {
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
-            const Text(
+            Text(
               textAlign: TextAlign.center,
               "아이템을 길게 눌러 순서를 변경하세요.",
-              style: TextStyle(color: Colors.grey),
+              style: TextStyle(
+                color:
+                    Theme.of(context).brightness == Brightness.dark
+                        ? Colors.grey
+                        : Colors.black,
+                fontSize: context.width(0.035),
+              ),
+            ),
+            Text(
+              textAlign: TextAlign.center,
+              "*2개 이상의 아이템이 존재해야 변경이 가능합니다.",
+              style: TextStyle(
+                color: Colors.orange,
+                fontWeight: FontWeight.bold,
+                fontSize: context.width(0.032),
+              ),
             ),
             const SizedBox(height: 16),
 
@@ -71,7 +86,10 @@ class WishOrderModal extends ConsumerWidget {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      trailing: Text('${currencyFormat.format(item.price)}원'),
+                      trailing: Text(
+                        '${currencyFormat.format(item.price)}원',
+                        style: TextStyle(fontSize: context.width(0.035)),
+                      ),
                     ),
                   );
                 },

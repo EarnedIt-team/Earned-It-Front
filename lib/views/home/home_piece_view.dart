@@ -148,7 +148,7 @@ class _HomePieceViewState extends ConsumerState<HomePieceView> {
                         SizedBox(height: context.height(0.02)),
                         ElevatedButton(
                           onPressed: () {
-                            if (!userState.isCheckedIn) {
+                            if (userState.isCheckedIn == false) {
                               ref.read(isOpenCheckedIn.notifier).state = true;
                             } else {
                               toastMessage(
@@ -201,7 +201,15 @@ class _HomePieceViewState extends ConsumerState<HomePieceView> {
                         if (userState.isLogin == true)
                           ElevatedButton(
                             onPressed: () {
-                              ref.read(isOpenCheckedIn.notifier).state = true;
+                              if (userState.isCheckedIn == false) {
+                                ref.read(isOpenCheckedIn.notifier).state = true;
+                              } else {
+                                toastMessage(
+                                  context,
+                                  '출석 체크는 하루에 한번 가능합니다.',
+                                  type: ToastmessageType.errorType,
+                                );
+                              }
                             },
                             child: const Text("출석체크하기"),
                           )

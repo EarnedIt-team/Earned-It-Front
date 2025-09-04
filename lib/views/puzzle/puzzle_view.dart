@@ -114,7 +114,6 @@ class _PuzzleViewState extends ConsumerState<_PuzzleViewInternal> {
 
   AppBar _buildAppBar(BuildContext context, WidgetRef ref) {
     final pieceState = ref.watch(pieceProvider);
-    final currencyFormat = NumberFormat.decimalPattern('ko_KR');
     return AppBar(
       scrolledUnderElevation: 0,
       title: const Row(
@@ -125,26 +124,8 @@ class _PuzzleViewState extends ConsumerState<_PuzzleViewInternal> {
         ],
       ),
       centerTitle: false,
-      actions: [
-        Tooltip(
-          showDuration: const Duration(seconds: 5),
-          triggerMode: TooltipTriggerMode.tap,
-          message:
-              '획득한 모든 퍼즐 조각의 가치를 합산한 점수입니다.\n*같은 조각을 여러 번 획득해도 점수는 한 번만 계산됩니다.',
-          child: Icon(
-            Icons.info_outline,
-            size: context.width(0.04),
-            color: Colors.blue,
-          ),
-        ),
-        SizedBox(width: context.width(0.01)),
-        Text(
-          '현재 가치 : ${currencyFormat.format(pieceState.totalAccumulatedValue)} 원',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: context.width(0.04),
-          ),
-        ),
+      actions: <Widget>[
+        ElevatedButton(onPressed: () {}, child: const Text("랭킹")),
       ],
       actionsPadding: EdgeInsets.symmetric(horizontal: context.middlePadding),
     );
@@ -156,6 +137,7 @@ class _PuzzleViewState extends ConsumerState<_PuzzleViewInternal> {
     List<ThemeModel> themes,
   ) {
     final pieceState = ref.watch(pieceProvider);
+    final currencyFormat = NumberFormat.decimalPattern('ko_KR');
     final double themeProgress =
         (pieceState.themeCount > 0)
             ? pieceState.completedThemeCount / pieceState.themeCount
@@ -174,7 +156,46 @@ class _PuzzleViewState extends ConsumerState<_PuzzleViewInternal> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(height: context.height(0.01)),
+          Row(
+            children: [
+              Text(
+                '현재 가치',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: context.height(0.02),
+                  color:
+                      Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white
+                          : Colors.black,
+                ),
+              ),
+              const SizedBox(width: 3),
+              Tooltip(
+                showDuration: const Duration(seconds: 5),
+                triggerMode: TooltipTriggerMode.tap,
+                message:
+                    '획득한 모든 퍼즐 조각의 가치를 합산한 점수입니다.\n*같은 조각을 여러 번 획득해도 금액은 한 번만 계산됩니다.',
+                child: Icon(
+                  Icons.info_outline,
+                  size: context.width(0.04),
+                  color: Colors.blue,
+                ),
+              ),
+              const Spacer(),
+              Text(
+                '${currencyFormat.format(pieceState.totalAccumulatedValue)} 원',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: context.height(0.02),
+                  color:
+                      Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white
+                          : Colors.black,
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: context.height(0.03)),
           Showcase(
             targetBorderRadius: BorderRadius.all(
               Radius.circular(context.width(0.05)),
@@ -188,7 +209,25 @@ class _PuzzleViewState extends ConsumerState<_PuzzleViewInternal> {
             description: '테마와 조각의 전체 진행률을 확인할 수 있습니다.',
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              spacing: context.width(0.03),
               children: [
+                Column(
+                  children: <Widget>[
+                    _buildProgressCircle(
+                      context: context,
+                      title: "순위",
+                      value: 1,
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      "상위 0.01%",
+                      style: TextStyle(
+                        color: Colors.grey,
+                        fontSize: context.width(0.04),
+                      ),
+                    ),
+                  ],
+                ),
                 Column(
                   children: <Widget>[
                     _buildProgressCircle(
@@ -305,7 +344,9 @@ class _PuzzleViewState extends ConsumerState<_PuzzleViewInternal> {
                     showDuration: const Duration(seconds: 5),
                     triggerMode: TooltipTriggerMode.tap,
                     message:
-                        title == "테마"
+                        title == "순위"
+                            ? '테마 + 조각 + 현재 가치의 점수를 종합하여\n결정된 순위입니다.\n\n*매 정각마다 갱신됩니다.'
+                            : title == "테마"
                             ? '각 테마의 퍼즐을 모두 획득하면\n완성한 테마로 기록됩니다.'
                             : '출석체크와 같은 활동으로 획득한\n전체 퍼즐 조각의 수입니다.',
                     child: Icon(
@@ -317,10 +358,14 @@ class _PuzzleViewState extends ConsumerState<_PuzzleViewInternal> {
                 ],
               ),
               Text(
-                '${(value * 100).toStringAsFixed(0)}%',
+                title == "순위" ? '1등' : '${(value * 100).toStringAsFixed(0)}%',
                 style: TextStyle(
                   fontSize: context.width(0.055),
                   fontWeight: FontWeight.bold,
+                  color:
+                      Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white
+                          : Colors.black,
                 ),
               ),
             ],
@@ -346,6 +391,10 @@ class _PuzzleViewState extends ConsumerState<_PuzzleViewInternal> {
               style: TextStyle(
                 fontSize: context.height(0.02),
                 fontWeight: FontWeight.bold,
+                color:
+                    Theme.of(context).brightness == Brightness.dark
+                        ? Colors.white
+                        : Colors.black,
               ),
             ),
             Text(

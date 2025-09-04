@@ -324,9 +324,17 @@ class NavigationView extends ConsumerWidget {
       }
     });
 
+    final String location = GoRouterState.of(context).uri.toString();
+
     return Stack(
       children: [
         Scaffold(
+          backgroundColor:
+              location.startsWith('/wish')
+                  ? Theme.of(context).brightness == Brightness.dark
+                      ? Colors.black
+                      : lightColor2
+                  : null,
           body: child,
           bottomNavigationBar: ClipRRect(
             borderRadius: const BorderRadius.only(

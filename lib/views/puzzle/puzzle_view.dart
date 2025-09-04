@@ -6,6 +6,7 @@ import 'package:earned_it/view_models/user_provider.dart';
 import 'package:earned_it/views/navigation_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -42,6 +43,7 @@ class _PuzzleViewState extends ConsumerState<_PuzzleViewInternal> {
 
   final GlobalKey _one = GlobalKey();
   final GlobalKey _two = GlobalKey();
+  final GlobalKey _three = GlobalKey();
 
   @override
   void initState() {
@@ -62,7 +64,7 @@ class _PuzzleViewState extends ConsumerState<_PuzzleViewInternal> {
     final hasSeen = prefs.getBool('hasSeenPuzzleShowcase') ?? false;
 
     if (!hasSeen && mounted) {
-      ShowCaseWidget.of(context).startShowCase([_one, _two]);
+      ShowCaseWidget.of(context).startShowCase([_one, _two, _three]);
     }
   }
 
@@ -125,7 +127,51 @@ class _PuzzleViewState extends ConsumerState<_PuzzleViewInternal> {
       ),
       centerTitle: false,
       actions: <Widget>[
-        ElevatedButton(onPressed: () {}, child: const Text("랭킹")),
+        Showcase(
+          targetBorderRadius: BorderRadius.all(
+            Radius.circular(context.width(0.05)),
+          ),
+          tooltipPosition: TooltipPosition.bottom,
+          overlayColor:
+              Theme.of(context).brightness == Brightness.dark
+                  ? const Color.fromARGB(255, 46, 46, 46)
+                  : Colors.grey,
+          targetPadding: EdgeInsets.all(context.middlePadding / 2),
+          key: _three,
+          description: '기준에 따라 획득한 점수로 등수를 매깁니다.\n해당 페이지에서, 다른 사람들과 비교해보세요!',
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              padding: EdgeInsets.symmetric(horizontal: context.middlePadding),
+              shadowColor: Colors.transparent,
+              elevation: 0,
+              backgroundColor:
+                  Theme.of(context).brightness == Brightness.dark
+                      ? Colors.black
+                      : Colors.white,
+              side: const BorderSide(width: 1, color: primaryGradientStart),
+            ),
+            onPressed: () {
+              context.push('/rank');
+            },
+            child: Row(
+              spacing: 5,
+              children: [
+                Icon(
+                  Icons.leaderboard,
+                  size: context.width(0.04),
+                  color: primaryGradientStart,
+                ),
+                Text(
+                  "랭킹",
+                  style: TextStyle(
+                    fontSize: context.width(0.035),
+                    color: primaryGradientStart,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       ],
       actionsPadding: EdgeInsets.symmetric(horizontal: context.middlePadding),
     );

@@ -95,6 +95,7 @@ class PieceNotifier extends Notifier<PieceState> {
   Future<void> loadPieceInfo(BuildContext context, int pieceId) async {
     // 상세 정보 로딩은 전체 화면 로딩과 별개로 처리
     try {
+      state = state.copyWith(isLoading: true);
       final accessToken = await _storage.read(key: 'accessToken');
       if (accessToken == null) throw Exception("로그인이 필요합니다.");
 
@@ -116,6 +117,10 @@ class PieceNotifier extends Notifier<PieceState> {
       if (context.mounted) _handleApiError(context, e);
     } catch (e) {
       if (context.mounted) _handleGeneralError(context, e);
+    } finally {
+      if (ref.exists(pieceServiceProvider)) {
+        state = state.copyWith(isLoading: false);
+      }
     }
   }
 

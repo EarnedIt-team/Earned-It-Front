@@ -1,4 +1,5 @@
 import 'package:earned_it/models/wish/wish_model.dart';
+import 'package:earned_it/views/Rank/rank_view.dart';
 import 'package:earned_it/views/home/home_view.dart';
 import 'package:earned_it/views/auth/login/forgot_password_view.dart';
 import 'package:earned_it/views/auth/login/login_view.dart';
@@ -101,6 +102,10 @@ final GoRouter routes = GoRouter(
         final wishItem = state.extra as WishModel;
         return WishDetailView(initialWishItem: wishItem);
       },
+    ),
+    GoRoute(
+      path: '/rank',
+      builder: (BuildContext context, GoRouterState state) => const RankView(),
     ),
     // =================================================
     // 셸(Shell) 경로: 하단 네비게이션 바가 유지되는 화면들

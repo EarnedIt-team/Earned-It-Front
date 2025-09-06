@@ -98,6 +98,10 @@ abstract class RestClient {
     @Body() Map<String, dynamic> body,
   );
 
+  /// 랭킹 정보 불러오기 API
+  @GET("/api/rank")
+  Future<ApiResponse> loadRankInfo(@Header("Authorization") String accessToken);
+
   /// 월 수익 설정 API
   @POST("/api/profile/salary")
   Future<ApiResponse> setSalary(

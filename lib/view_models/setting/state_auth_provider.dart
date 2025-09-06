@@ -4,8 +4,10 @@ import 'package:earned_it/config/toastMessage.dart';
 import 'package:earned_it/services/auth/login_service.dart';
 import 'package:earned_it/services/auth/logout_service.dart';
 import 'package:earned_it/services/auth/resign_service.dart';
+import 'package:earned_it/services/rank_service.dart';
 import 'package:earned_it/view_models/home_provider.dart';
 import 'package:earned_it/view_models/piece_provider.dart';
+import 'package:earned_it/view_models/rank_provider.dart';
 import 'package:earned_it/view_models/user_provider.dart';
 import 'package:earned_it/view_models/wish/wish_provider.dart';
 import 'package:flutter/material.dart';
@@ -106,6 +108,7 @@ class StateAuthViewModel {
     _ref.invalidate(wishViewModelProvider);
     _ref.invalidate(pieceProvider);
     _ref.invalidate(homeViewModelProvider);
+    _ref.invalidate(rankViewModelProvider);
     // ... 다른 non-autoDispose Provider들도 여기에 추가 ...
   }
 

@@ -1,7 +1,10 @@
 import 'dart:async';
 import 'package:earned_it/config/design.dart';
+import 'package:earned_it/models/rank/rank_model.dart';
+import 'package:earned_it/view_models/rank_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 
 // 다음 정각까지 남은 시간을 1초마다 제공하는 StreamProvider
 final timerProvider = StreamProvider<String>((ref) {
@@ -33,12 +36,58 @@ class RankView extends ConsumerStatefulWidget {
 
 class _RankViewState extends ConsumerState<RankView> {
   @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // view model의 현재 상태를 읽어옵니다.
+      final rankState = ref.read(rankViewModelProvider);
+      final lastUpdated = rankState.lastUpdated;
+      final now = DateTime.now();
+
+      // 마지막 업데이트 시간이 null(최초 로드)이거나,
+      // 마지막 업데이트 날짜와 현재 날짜가 다를 경우에만 데이터를 새로 불러옵니다.
+      print("마지막 업데이트 : $lastUpdated");
+      if (lastUpdated == null ||
+          lastUpdated.year != now.year ||
+          lastUpdated.month != now.month ||
+          lastUpdated.day != now.day) {
+        ref.read(rankViewModelProvider.notifier).loadRankData(context);
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final backgroundColor = isDarkMode ? Colors.black : lightColor2;
-    final mediaQuery = MediaQuery.of(context);
-    // timerProvider를 감시하여 실시간으로 시간 데이터를 받아옵니다.
     final remainingTime = ref.watch(timerProvider);
+
+    // RankViewModel의 상태를 watch
+    final rankState = ref.watch(rankViewModelProvider);
+    final myRank = rankState.myRank;
+    final top10 = rankState.top10;
+
+    // 로딩 중일 때 표시할 UI (데이터가 비어있을 때만 전체 화면 로딩)
+    if (rankState.isLoading && top10.isEmpty) {
+      return Scaffold(
+        backgroundColor: backgroundColor,
+        appBar: AppBar(
+          scrolledUnderElevation: 0,
+          backgroundColor: backgroundColor,
+          elevation: 0,
+          title: const Row(
+            children: [
+              Icon(Icons.leaderboard),
+              SizedBox(width: 10),
+              Text("랭킹", style: TextStyle(fontWeight: FontWeight.bold)),
+            ],
+          ),
+          centerTitle: false,
+        ),
+        body: const Center(child: CircularProgressIndicator()),
+      );
+    }
 
     return Scaffold(
       backgroundColor: backgroundColor,
@@ -83,19 +132,16 @@ class _RankViewState extends ConsumerState<RankView> {
             ],
           ),
         ],
-        actionsPadding: EdgeInsets.symmetric(
-          horizontal: mediaQuery.size.width * 0.04,
-        ),
+        actionsPadding: EdgeInsets.symmetric(horizontal: context.width(0.04)),
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: EdgeInsets.symmetric(
-            horizontal: mediaQuery.size.width * 0.04,
-          ),
+          padding: EdgeInsets.symmetric(horizontal: context.width(0.04)),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(height: mediaQuery.size.height * 0.01),
+              SizedBox(height: context.height(0.01)),
+              // My Rank 섹션 데이터 바인딩
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.baseline,
@@ -104,32 +150,34 @@ class _RankViewState extends ConsumerState<RankView> {
                   Text(
                     "My Rank",
                     style: TextStyle(
-                      fontSize: mediaQuery.size.width * 0.05,
+                      fontSize: context.width(0.05),
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   const Spacer(),
                   Text(
-                    "2,350,100P",
+                    myRank != null
+                        ? "${NumberFormat('#,###').format(myRank.score)}P"
+                        : "...",
                     style: TextStyle(
-                      fontSize: mediaQuery.size.width * 0.03,
+                      fontSize: context.width(0.03),
                       color: Colors.grey,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   const SizedBox(width: 3),
                   Text(
-                    "1등",
+                    myRank != null ? "${myRank.rank}등" : "...",
                     style: TextStyle(
-                      fontSize: mediaQuery.size.width * 0.05,
+                      fontSize: context.width(0.05),
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                 ],
               ),
-              _buildTopRankersPodium(context),
-              SizedBox(height: mediaQuery.size.height * 0.03),
-              _buildRankList(),
+              _buildTopRankersPodium(context, top10), // top10 데이터 전달
+              SizedBox(height: context.height(0.03)),
+              _buildRankList(top10), // top10 데이터 전달
             ],
           ),
         ),
@@ -137,9 +185,15 @@ class _RankViewState extends ConsumerState<RankView> {
     );
   }
 
-  Widget _buildTopRankersPodium(BuildContext context) {
+  // 상위 3명 시상대 위젯
+  Widget _buildTopRankersPodium(BuildContext context, List<RankModel> top10) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
+
+    // 데이터에서 1, 2, 3위 찾기
+    final ranker1 = top10.isNotEmpty ? top10[0] : null;
+    final ranker2 = top10.length > 1 ? top10[1] : null;
+    final ranker3 = top10.length > 2 ? top10[2] : null;
 
     return SizedBox(
       height: screenHeight * 0.35,
@@ -147,57 +201,76 @@ class _RankViewState extends ConsumerState<RankView> {
         crossAxisAlignment: CrossAxisAlignment.end,
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          _buildPodiumItem(
-            rank: 2,
-            height: screenHeight * 0.16,
-            color: const Color(0xFFC0C0C0), // 은색
-            name: "User B",
-            screenWidth: screenWidth,
-          ),
-          _buildPodiumItem(
-            rank: 1,
-            height: screenHeight * 0.22,
-            color: const Color(0xFFFFD700), // 금색
-            name: "User A",
-            screenWidth: screenWidth,
-          ),
-          _buildPodiumItem(
-            rank: 3,
-            height: screenHeight * 0.1,
-            color: const Color(0xFFCD7F32), // 동색
-            name: "User C",
-            screenWidth: screenWidth,
-          ),
+          // 2위
+          if (ranker2 != null)
+            _buildPodiumItem(
+              ranker: ranker2,
+              height: screenHeight * 0.16,
+              color: const Color(0xFFC0C0C0), // 은색
+              screenWidth: screenWidth,
+            ),
+          // 1위
+          if (ranker1 != null)
+            _buildPodiumItem(
+              ranker: ranker1,
+              height: screenHeight * 0.22,
+              color: const Color(0xFFFFD700), // 금색
+              screenWidth: screenWidth,
+            ),
+          // 3위
+          if (ranker3 != null)
+            _buildPodiumItem(
+              ranker: ranker3,
+              height: screenHeight * 0.1,
+              color: const Color(0xFFCD7F32), // 동색
+              screenWidth: screenWidth,
+            ),
         ],
       ),
     );
   }
 
+  // 시상대 개별 아이템 위젯
   Widget _buildPodiumItem({
-    required int rank,
+    required RankModel ranker,
     required double height,
     required Color color,
-    required String name,
     required double screenWidth,
   }) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
         CircleAvatar(
-          radius: rank == 1 ? 30 : 25,
+          radius: ranker.rank == 1 ? 30 : 25,
+          backgroundImage:
+              ranker.profileImage != null
+                  ? NetworkImage(ranker.profileImage!)
+                  : null,
           backgroundColor: Colors.grey.shade300,
-          child: Icon(
-            Icons.person,
-            size: rank == 1 ? 35 : 30,
-            color: Colors.grey.shade600,
-          ),
+          child:
+              ranker.profileImage == null
+                  ? Icon(
+                    Icons.person,
+                    size: ranker.rank == 1 ? 35 : 30,
+                    color: Colors.grey.shade600,
+                  )
+                  : null,
         ),
         const SizedBox(height: 8),
-        Text(
-          name,
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+        SizedBox(
+          width: context.width(0.25),
+          child: Text(
+            ranker.nickname,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: context.width(0.035),
+            ),
+            maxLines: 2, // 최대 2줄까지 표시
+            overflow: TextOverflow.ellipsis, // 2줄을 넘어가면 말줄임표(...) 표시
+          ),
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: 5),
         Container(
           width: screenWidth / 3.5,
           height: height,
@@ -212,14 +285,14 @@ class _RankViewState extends ConsumerState<RankView> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                '$rank등',
+                '${ranker.rank}등',
                 style: TextStyle(
-                  fontSize: 25,
+                  fontSize: context.width(0.065),
                   fontWeight: FontWeight.bold,
-                  color: Colors.white.withOpacity(0.9),
+                  color: Colors.white.withOpacity(0.9), // 수정된 부분
                   shadows: [
                     Shadow(
-                      color: Colors.black.withOpacity(0.2),
+                      color: Colors.black.withOpacity(0.2), // 수정된 부분
                       blurRadius: 4,
                       offset: const Offset(2, 2),
                     ),
@@ -228,14 +301,14 @@ class _RankViewState extends ConsumerState<RankView> {
               ),
               const SizedBox(height: 5),
               Text(
-                '2,350,100 P',
+                '${NumberFormat('#,###').format(ranker.score)} P',
                 style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.bold,
-                  color: Colors.white.withOpacity(0.9),
+                  color: Colors.white.withOpacity(0.9), // 수정된 부분
                   shadows: [
                     Shadow(
-                      color: Colors.black.withOpacity(0.2),
+                      color: Colors.black.withOpacity(0.2), // 수정된 부분
                       blurRadius: 4,
                       offset: const Offset(2, 2),
                     ),
@@ -249,31 +322,42 @@ class _RankViewState extends ConsumerState<RankView> {
     );
   }
 
-  Widget _buildRankList() {
+  // 4~10위 리스트 위젯
+  Widget _buildRankList(List<RankModel> top10) {
+    // 4위부터 10위까지의 리스트 (데이터가 3개 초과일 경우에만)
+    final remainingRankers =
+        top10.length > 3 ? top10.sublist(3) : <RankModel>[];
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           "TOP 10",
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            fontSize: context.width(0.05),
+            fontWeight: FontWeight.bold,
+          ),
         ),
-        const Text(
+        Text(
           "점수를 측정하는 방식은 다음과 같습니다.",
-          style: TextStyle(fontSize: 13, color: Colors.grey),
+          style: TextStyle(fontSize: context.width(0.032), color: Colors.grey),
         ),
-        const Text(
+        Text(
           "• 테마 완성 시 +100pt\n• 조각 획득 시, 희귀도(S,A,B)에 따라 +10 / 7 / 5pt\n• 출석 시 +10pt",
-          style: TextStyle(fontSize: 13, color: Colors.grey),
+          style: TextStyle(fontSize: context.width(0.032), color: Colors.grey),
         ),
         const SizedBox(height: 12),
         ListView.separated(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          itemCount: 7,
+          itemCount: remainingRankers.length, // 데이터 길이에 맞춤
           itemBuilder: (context, index) {
-            final rank = index + 4;
+            final ranker = remainingRankers[index];
             return Container(
-              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+              padding: EdgeInsets.symmetric(
+                horizontal: context.middlePadding,
+                vertical: context.middlePadding / 2,
+              ),
               decoration: BoxDecoration(
                 color:
                     Theme.of(context).brightness == Brightness.dark
@@ -286,10 +370,10 @@ class _RankViewState extends ConsumerState<RankView> {
                   SizedBox(
                     width: 30,
                     child: Text(
-                      '$rank',
+                      '${ranker.rank}', // 실제 랭킹 데이터 사용
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        fontSize: 18,
+                        fontSize: context.width(0.045),
                         fontWeight: FontWeight.bold,
                         color: Colors.grey.shade600,
                       ),
@@ -298,23 +382,31 @@ class _RankViewState extends ConsumerState<RankView> {
                   const SizedBox(width: 16),
                   CircleAvatar(
                     radius: 22,
+                    backgroundImage:
+                        ranker.profileImage != null
+                            ? NetworkImage(ranker.profileImage!)
+                            : null,
                     backgroundColor: Colors.grey.shade300,
-                    child: Icon(Icons.person, color: Colors.grey.shade600),
+                    child:
+                        ranker.profileImage == null
+                            ? Icon(Icons.person, color: Colors.grey.shade600)
+                            : null,
                   ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
-                      'User ${String.fromCharCode(68 + index)}',
-                      style: const TextStyle(
-                        fontSize: 16,
+                      ranker.nickname, // 실제 닉네임 데이터 사용
+                      style: TextStyle(
+                        fontSize: context.width(0.03),
                         fontWeight: FontWeight.w600,
                       ),
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
-                  const Text(
-                    '1,234 P',
+                  Text(
+                    '${NumberFormat('#,###').format(ranker.score)} P', // 실제 점수 데이터 사용
                     style: TextStyle(
-                      fontSize: 16,
+                      fontSize: context.width(0.04),
                       fontWeight: FontWeight.bold,
                       color: Colors.blueAccent,
                     ),

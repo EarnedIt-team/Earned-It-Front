@@ -15,5 +15,8 @@ abstract class RankState with _$RankState {
 
     /// 상위 10명 랭킹 리스트
     @Default([]) List<RankModel> top10,
+
+    /// 데이터가 마지막으로 업데이트된 시간
+    DateTime? lastUpdated,
   }) = _RankState;
 }

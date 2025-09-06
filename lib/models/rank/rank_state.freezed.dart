@@ -17,7 +17,8 @@ mixin _$RankState {
 /// 데이터 통신 중 로딩 상태
  bool get isLoading;/// 내 랭킹 정보
  RankModel? get myRank;/// 상위 10명 랭킹 리스트
- List<RankModel> get top10;
+ List<RankModel> get top10;/// 데이터가 마지막으로 업데이트된 시간
+ DateTime? get lastUpdated;
 /// Create a copy of RankState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +29,16 @@ $RankStateCopyWith<RankState> get copyWith => _$RankStateCopyWithImpl<RankState>
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is RankState&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.myRank, myRank) || other.myRank == myRank)&&const DeepCollectionEquality().equals(other.top10, top10));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is RankState&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.myRank, myRank) || other.myRank == myRank)&&const DeepCollectionEquality().equals(other.top10, top10)&&(identical(other.lastUpdated, lastUpdated) || other.lastUpdated == lastUpdated));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,isLoading,myRank,const DeepCollectionEquality().hash(top10));
+int get hashCode => Object.hash(runtimeType,isLoading,myRank,const DeepCollectionEquality().hash(top10),lastUpdated);
 
 @override
 String toString() {
-  return 'RankState(isLoading: $isLoading, myRank: $myRank, top10: $top10)';
+  return 'RankState(isLoading: $isLoading, myRank: $myRank, top10: $top10, lastUpdated: $lastUpdated)';
 }
 
 
@@ -48,7 +49,7 @@ abstract mixin class $RankStateCopyWith<$Res>  {
   factory $RankStateCopyWith(RankState value, $Res Function(RankState) _then) = _$RankStateCopyWithImpl;
 @useResult
 $Res call({
- bool isLoading, RankModel? myRank, List<RankModel> top10
+ bool isLoading, RankModel? myRank, List<RankModel> top10, DateTime? lastUpdated
 });
 
 
@@ -65,12 +66,13 @@ class _$RankStateCopyWithImpl<$Res>
 
 /// Create a copy of RankState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? isLoading = null,Object? myRank = freezed,Object? top10 = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? isLoading = null,Object? myRank = freezed,Object? top10 = null,Object? lastUpdated = freezed,}) {
   return _then(_self.copyWith(
 isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
 as bool,myRank: freezed == myRank ? _self.myRank : myRank // ignore: cast_nullable_to_non_nullable
 as RankModel?,top10: null == top10 ? _self.top10 : top10 // ignore: cast_nullable_to_non_nullable
-as List<RankModel>,
+as List<RankModel>,lastUpdated: freezed == lastUpdated ? _self.lastUpdated : lastUpdated // ignore: cast_nullable_to_non_nullable
+as DateTime?,
   ));
 }
 /// Create a copy of RankState
@@ -167,10 +169,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool isLoading,  RankModel? myRank,  List<RankModel> top10)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool isLoading,  RankModel? myRank,  List<RankModel> top10,  DateTime? lastUpdated)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _RankState() when $default != null:
-return $default(_that.isLoading,_that.myRank,_that.top10);case _:
+return $default(_that.isLoading,_that.myRank,_that.top10,_that.lastUpdated);case _:
   return orElse();
 
 }
@@ -188,10 +190,10 @@ return $default(_that.isLoading,_that.myRank,_that.top10);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool isLoading,  RankModel? myRank,  List<RankModel> top10)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool isLoading,  RankModel? myRank,  List<RankModel> top10,  DateTime? lastUpdated)  $default,) {final _that = this;
 switch (_that) {
 case _RankState():
-return $default(_that.isLoading,_that.myRank,_that.top10);case _:
+return $default(_that.isLoading,_that.myRank,_that.top10,_that.lastUpdated);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -208,10 +210,10 @@ return $default(_that.isLoading,_that.myRank,_that.top10);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool isLoading,  RankModel? myRank,  List<RankModel> top10)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool isLoading,  RankModel? myRank,  List<RankModel> top10,  DateTime? lastUpdated)?  $default,) {final _that = this;
 switch (_that) {
 case _RankState() when $default != null:
-return $default(_that.isLoading,_that.myRank,_that.top10);case _:
+return $default(_that.isLoading,_that.myRank,_that.top10,_that.lastUpdated);case _:
   return null;
 
 }
@@ -223,7 +225,7 @@ return $default(_that.isLoading,_that.myRank,_that.top10);case _:
 
 
 class _RankState implements RankState {
-  const _RankState({this.isLoading = false, this.myRank, final  List<RankModel> top10 = const []}): _top10 = top10;
+  const _RankState({this.isLoading = false, this.myRank, final  List<RankModel> top10 = const [], this.lastUpdated}): _top10 = top10;
   
 
 /// 데이터 통신 중 로딩 상태
@@ -239,6 +241,8 @@ class _RankState implements RankState {
   return EqualUnmodifiableListView(_top10);
 }
 
+/// 데이터가 마지막으로 업데이트된 시간
+@override final  DateTime? lastUpdated;
 
 /// Create a copy of RankState
 /// with the given fields replaced by the non-null parameter values.
@@ -250,16 +254,16 @@ _$RankStateCopyWith<_RankState> get copyWith => __$RankStateCopyWithImpl<_RankSt
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _RankState&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.myRank, myRank) || other.myRank == myRank)&&const DeepCollectionEquality().equals(other._top10, _top10));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _RankState&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.myRank, myRank) || other.myRank == myRank)&&const DeepCollectionEquality().equals(other._top10, _top10)&&(identical(other.lastUpdated, lastUpdated) || other.lastUpdated == lastUpdated));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,isLoading,myRank,const DeepCollectionEquality().hash(_top10));
+int get hashCode => Object.hash(runtimeType,isLoading,myRank,const DeepCollectionEquality().hash(_top10),lastUpdated);
 
 @override
 String toString() {
-  return 'RankState(isLoading: $isLoading, myRank: $myRank, top10: $top10)';
+  return 'RankState(isLoading: $isLoading, myRank: $myRank, top10: $top10, lastUpdated: $lastUpdated)';
 }
 
 
@@ -270,7 +274,7 @@ abstract mixin class _$RankStateCopyWith<$Res> implements $RankStateCopyWith<$Re
   factory _$RankStateCopyWith(_RankState value, $Res Function(_RankState) _then) = __$RankStateCopyWithImpl;
 @override @useResult
 $Res call({
- bool isLoading, RankModel? myRank, List<RankModel> top10
+ bool isLoading, RankModel? myRank, List<RankModel> top10, DateTime? lastUpdated
 });
 
 
@@ -287,12 +291,13 @@ class __$RankStateCopyWithImpl<$Res>
 
 /// Create a copy of RankState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? isLoading = null,Object? myRank = freezed,Object? top10 = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? isLoading = null,Object? myRank = freezed,Object? top10 = null,Object? lastUpdated = freezed,}) {
   return _then(_RankState(
 isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
 as bool,myRank: freezed == myRank ? _self.myRank : myRank // ignore: cast_nullable_to_non_nullable
 as RankModel?,top10: null == top10 ? _self._top10 : top10 // ignore: cast_nullable_to_non_nullable
-as List<RankModel>,
+as List<RankModel>,lastUpdated: freezed == lastUpdated ? _self.lastUpdated : lastUpdated // ignore: cast_nullable_to_non_nullable
+as DateTime?,
   ));
 }
 

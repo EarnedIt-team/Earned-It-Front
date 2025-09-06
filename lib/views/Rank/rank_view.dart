@@ -1,50 +1,101 @@
+import 'dart:async';
 import 'package:earned_it/config/design.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class RankView extends StatefulWidget {
+// 다음 정각까지 남은 시간을 1초마다 제공하는 StreamProvider
+final timerProvider = StreamProvider<String>((ref) {
+  return Stream.periodic(const Duration(seconds: 1), (_) {
+    final now = DateTime.now();
+    // 다음 날 자정(00:00:00) 계산
+    final tomorrow = DateTime(now.year, now.month, now.day + 1);
+    final difference = tomorrow.difference(now);
+
+    // 남은 시간을 HH:MM:SS 형식으로 변환
+    final hours = difference.inHours;
+    final minutes = difference.inMinutes % 60;
+    final seconds = difference.inSeconds % 60;
+
+    final hoursStr = hours.toString().padLeft(2, '0');
+    final minutesStr = minutes.toString().padLeft(2, '0');
+    final secondsStr = seconds.toString().padLeft(2, '0');
+
+    return '$hoursStr:$minutesStr:$secondsStr';
+  });
+});
+
+class RankView extends ConsumerStatefulWidget {
   const RankView({super.key});
 
   @override
-  State<RankView> createState() => _RankViewState();
+  ConsumerState<RankView> createState() => _RankViewState();
 }
 
-class _RankViewState extends State<RankView> {
+class _RankViewState extends ConsumerState<RankView> {
   @override
   Widget build(BuildContext context) {
-    // 화면의 밝기 모드를 확인합니다.
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    // 배경색을 설정합니다.
     final backgroundColor = isDarkMode ? Colors.black : lightColor2;
+    final mediaQuery = MediaQuery.of(context);
+    // timerProvider를 감시하여 실시간으로 시간 데이터를 받아옵니다.
+    final remainingTime = ref.watch(timerProvider);
 
     return Scaffold(
       backgroundColor: backgroundColor,
       appBar: AppBar(
         scrolledUnderElevation: 0,
         backgroundColor: backgroundColor,
-        elevation: 0, // AppBar 그림자 제거
-        title: const Text("랭킹", style: TextStyle(fontWeight: FontWeight.bold)),
+        elevation: 0,
+        title: const Row(
+          children: [
+            Icon(Icons.leaderboard),
+            SizedBox(width: 10),
+            Text("랭킹", style: TextStyle(fontWeight: FontWeight.bold)),
+          ],
+        ),
         centerTitle: false,
-        actions: const <Widget>[
+        actions: <Widget>[
           Row(
-            spacing: 5,
             children: [
-              Icon(Icons.timelapse),
-              Text("04:23:15", style: TextStyle(fontWeight: FontWeight.bold)),
+              const Icon(Icons.timelapse),
+              const SizedBox(width: 5),
+              // StreamProvider의 상태에 따라 다른 UI를 보여줍니다.
+              remainingTime.when(
+                data:
+                    (time) => Text(
+                      time,
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                loading:
+                    () => const Text(
+                      "00:00:00",
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                error:
+                    (err, stack) => const Text(
+                      "Error",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.red,
+                      ),
+                    ),
+              ),
             ],
           ),
         ],
-        actionsPadding: EdgeInsets.symmetric(horizontal: context.middlePadding),
+        actionsPadding: EdgeInsets.symmetric(
+          horizontal: mediaQuery.size.width * 0.04,
+        ),
       ),
       body: SingleChildScrollView(
-        // 전체 화면을 스크롤할 수 있도록 합니다.
-        // padding: EdgeInsets.symmetric(vertical: context.middlePadding),
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: context.middlePadding),
+          padding: EdgeInsets.symmetric(
+            horizontal: mediaQuery.size.width * 0.04,
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // 1, 2, 3등을 표시하는 포디움 위젯
-              SizedBox(height: context.height(0.01)),
+              SizedBox(height: mediaQuery.size.height * 0.01),
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.baseline,
@@ -53,7 +104,7 @@ class _RankViewState extends State<RankView> {
                   Text(
                     "My Rank",
                     style: TextStyle(
-                      fontSize: context.width(0.05),
+                      fontSize: mediaQuery.size.width * 0.05,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -61,24 +112,23 @@ class _RankViewState extends State<RankView> {
                   Text(
                     "2,350,100P",
                     style: TextStyle(
-                      fontSize: context.width(0.03),
+                      fontSize: mediaQuery.size.width * 0.03,
                       color: Colors.grey,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
+                  const SizedBox(width: 3),
                   Text(
                     "1등",
                     style: TextStyle(
-                      fontSize: context.width(0.05),
+                      fontSize: mediaQuery.size.width * 0.05,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                 ],
               ),
               _buildTopRankersPodium(context),
-              SizedBox(height: context.height(0.03)),
-
-              // 4~10등 리스트
+              SizedBox(height: mediaQuery.size.height * 0.03),
               _buildRankList(),
             ],
           ),
@@ -87,7 +137,6 @@ class _RankViewState extends State<RankView> {
     );
   }
 
-  // 명예의 전당 (TOP 3) 포디움 위젯
   Widget _buildTopRankersPodium(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
@@ -98,15 +147,13 @@ class _RankViewState extends State<RankView> {
         crossAxisAlignment: CrossAxisAlignment.end,
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          // 2등
           _buildPodiumItem(
             rank: 2,
-            height: screenHeight * 0.15,
+            height: screenHeight * 0.16,
             color: const Color(0xFFC0C0C0), // 은색
             name: "User B",
             screenWidth: screenWidth,
           ),
-          // 1등
           _buildPodiumItem(
             rank: 1,
             height: screenHeight * 0.22,
@@ -114,7 +161,6 @@ class _RankViewState extends State<RankView> {
             name: "User A",
             screenWidth: screenWidth,
           ),
-          // 3등
           _buildPodiumItem(
             rank: 3,
             height: screenHeight * 0.1,
@@ -127,7 +173,6 @@ class _RankViewState extends State<RankView> {
     );
   }
 
-  // 포디움의 각 항목(순위, 이름, 아바타, 막대)을 구성하는 위젯
   Widget _buildPodiumItem({
     required int rank,
     required double height,
@@ -138,9 +183,8 @@ class _RankViewState extends State<RankView> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        // 사용자 아바타
         CircleAvatar(
-          radius: rank == 1 ? 30 : 25, // 1등은 더 크게
+          radius: rank == 1 ? 30 : 25,
           backgroundColor: Colors.grey.shade300,
           child: Icon(
             Icons.person,
@@ -149,13 +193,11 @@ class _RankViewState extends State<RankView> {
           ),
         ),
         const SizedBox(height: 8),
-        // 사용자 이름
         Text(
           name,
           style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
         ),
         const SizedBox(height: 4),
-        // 순위 막대
         Container(
           width: screenWidth / 3.5,
           height: height,
@@ -167,7 +209,6 @@ class _RankViewState extends State<RankView> {
             ),
           ),
           child: Column(
-            spacing: 5,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
@@ -175,25 +216,26 @@ class _RankViewState extends State<RankView> {
                 style: TextStyle(
                   fontSize: 25,
                   fontWeight: FontWeight.bold,
-                  color: Colors.white.withValues(alpha: 0.9),
+                  color: Colors.white.withOpacity(0.9),
                   shadows: [
                     Shadow(
-                      color: Colors.black.withValues(alpha: 0.2),
+                      color: Colors.black.withOpacity(0.2),
                       blurRadius: 4,
                       offset: const Offset(2, 2),
                     ),
                   ],
                 ),
               ),
+              const SizedBox(height: 5),
               Text(
                 '2,350,100 P',
                 style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.bold,
-                  color: Colors.white.withValues(alpha: 0.9),
+                  color: Colors.white.withOpacity(0.9),
                   shadows: [
                     Shadow(
-                      color: Colors.black.withValues(alpha: 0.2),
+                      color: Colors.black.withOpacity(0.2),
                       blurRadius: 4,
                       offset: const Offset(2, 2),
                     ),
@@ -207,28 +249,32 @@ class _RankViewState extends State<RankView> {
     );
   }
 
-  // 4~10등까지의 랭킹 리스트를 빌드하는 위젯
   Widget _buildRankList() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // 리스트 뷰의 제목
         const Text(
           "TOP 10",
           style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        ),
+        const Text(
+          "점수를 측정하는 방식은 다음과 같습니다.",
+          style: TextStyle(fontSize: 13, color: Colors.grey),
+        ),
+        const Text(
+          "• 테마 완성 시 +100pt\n• 조각 획득 시, 희귀도(S,A,B)에 따라 +10 / 7 / 5pt\n• 출석 시 +10pt",
+          style: TextStyle(fontSize: 13, color: Colors.grey),
         ),
         const SizedBox(height: 12),
         ListView.separated(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          itemCount: 7, // 4등부터 10등까지 총 7명
+          itemCount: 7,
           itemBuilder: (context, index) {
             final rank = index + 4;
-            // 각 랭킹 아이템의 UI
             return Container(
               padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
               decoration: BoxDecoration(
-                // 다크/라이트 모드에 따라 카드 색상 조정
                 color:
                     Theme.of(context).brightness == Brightness.dark
                         ? Colors.grey.shade900
@@ -237,7 +283,6 @@ class _RankViewState extends State<RankView> {
               ),
               child: Row(
                 children: [
-                  // 순위
                   SizedBox(
                     width: 30,
                     child: Text(
@@ -251,14 +296,12 @@ class _RankViewState extends State<RankView> {
                     ),
                   ),
                   const SizedBox(width: 16),
-                  // 아바타
                   CircleAvatar(
                     radius: 22,
                     backgroundColor: Colors.grey.shade300,
                     child: Icon(Icons.person, color: Colors.grey.shade600),
                   ),
                   const SizedBox(width: 12),
-                  // 사용자 이름
                   Expanded(
                     child: Text(
                       'User ${String.fromCharCode(68 + index)}',
@@ -268,7 +311,6 @@ class _RankViewState extends State<RankView> {
                       ),
                     ),
                   ),
-                  // 점수 (예시)
                   const Text(
                     '1,234 P',
                     style: TextStyle(
@@ -281,8 +323,7 @@ class _RankViewState extends State<RankView> {
               ),
             );
           },
-          separatorBuilder:
-              (context, index) => const SizedBox(height: 10), // 아이템 사이 간격
+          separatorBuilder: (context, index) => const SizedBox(height: 10),
         ),
       ],
     );

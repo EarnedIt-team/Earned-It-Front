@@ -266,7 +266,7 @@ class _PuzzleViewState extends ConsumerState<_PuzzleViewInternal> {
                     ),
                     const SizedBox(height: 10),
                     Text(
-                      "상위 0.01%",
+                      "상위 ${(pieceState.userRank / pieceState.userCount * 100).toStringAsFixed(2)}%",
                       style: TextStyle(
                         color: Colors.grey,
                         fontSize: context.width(0.04),
@@ -348,6 +348,12 @@ class _PuzzleViewState extends ConsumerState<_PuzzleViewInternal> {
     required String title,
     required double value,
   }) {
+    final pieceState = ref.watch(pieceProvider);
+    final rankValue =
+        pieceState.userCount > 0
+            ? (pieceState.userCount - pieceState.userRank + 1) /
+                pieceState.userCount
+            : 0.0;
     return SizedBox(
       width: context.width(0.25),
       height: context.width(0.25),
@@ -364,7 +370,7 @@ class _PuzzleViewState extends ConsumerState<_PuzzleViewInternal> {
             color: Colors.transparent,
           ),
           CircularProgressIndicator(
-            value: value,
+            value: title == "순위" ? rankValue : value,
             strokeWidth: context.width(0.02),
             valueColor: const AlwaysStoppedAnimation<Color>(
               primaryGradientStart,
@@ -404,7 +410,9 @@ class _PuzzleViewState extends ConsumerState<_PuzzleViewInternal> {
                 ],
               ),
               Text(
-                title == "순위" ? '1등' : '${(value * 100).toStringAsFixed(0)}%',
+                title == "순위"
+                    ? '${pieceState.userRank}등'
+                    : '${(value * 100).toStringAsFixed(0)}%',
                 style: TextStyle(
                   fontSize: context.width(0.055),
                   fontWeight: FontWeight.bold,

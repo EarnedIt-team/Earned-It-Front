@@ -79,6 +79,8 @@ class PieceNotifier extends Notifier<PieceState> {
         totalPieceCount: data['puzzleInfo']['totalPieceCount'] ?? 0,
         completedPieceCount: data['puzzleInfo']['completedPieceCount'] ?? 0,
         totalAccumulatedValue: data['puzzleInfo']['totalAccumulatedValue'] ?? 0,
+        userRank: data['puzzleInfo']['rank'] ?? 0,
+        userCount: data['puzzleInfo']['userCount'] ?? 0,
       );
     } on DioException catch (e) {
       if (context.mounted) _handleApiError(context, e);

@@ -2,6 +2,7 @@ import 'package:earned_it/config/design.dart';
 import 'package:earned_it/models/user/profile_user_model.dart';
 import 'package:earned_it/models/wish/wish_model.dart'; // WishModel import
 import 'package:earned_it/view_models/user/profile_provider.dart';
+import 'package:earned_it/views/report_modal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -58,9 +59,12 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
         centerTitle: false,
         actions: [
           FloatingActionButton.small(
+            highlightElevation: 0,
             backgroundColor: Colors.transparent,
             elevation: 0,
-            onPressed: () {},
+            onPressed: () {
+              showReportModal(context, userIdToReport: widget.userId);
+            },
             child: Image.asset(
               'assets/images/siren_icon.png',
               color: Colors.red,

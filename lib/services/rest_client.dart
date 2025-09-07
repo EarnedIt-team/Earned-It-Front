@@ -230,4 +230,11 @@ abstract class RestClient {
     @Header("Authorization") String accesstoken,
     @Path("pieceId") int pieceId,
   );
+
+  /// 사용자 신고 API
+  @POST("/api/report/user")
+  Future<ApiResponse> reportUser(
+    @Header("Authorization") String accessToken,
+    @Body() Map<String, dynamic> body,
+  );
 }

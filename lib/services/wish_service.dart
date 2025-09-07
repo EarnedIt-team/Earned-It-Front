@@ -18,6 +18,31 @@ class WishService {
 
   WishService(this._restClient);
 
+  /// 통합 위시리스트 정보를 서버에서 불러옵니다.
+  Future<ApiResponse> loadMainWishData({
+    required String accessToken,
+    required int userCount,
+  }) async {
+    try {
+      final String token = "Bearer $accessToken";
+
+      // RestClient에 정의한 메서드 호출
+      final ApiResponse response = await _restClient.loadMainWishList(
+        token,
+        userCount,
+      );
+
+      if (response.code != "SUCCESS") {
+        throw Exception(response.message);
+      }
+      return response;
+    } on DioException catch (e) {
+      throw Exception(e.response?.data["message"] ?? "요청 처리 중 에러가 발생했습니다.");
+    } catch (e) {
+      throw Exception("서버에서 에러가 발생했습니다.");
+    }
+  }
+
   /// 위시아이템을 서버에 추가합니다.
   Future<ApiResponse> addWishItem({
     required String accessToken,

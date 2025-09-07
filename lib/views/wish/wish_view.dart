@@ -49,12 +49,24 @@ class _WishViewState extends ConsumerState<_WishViewInternal> {
   final GlobalKey _three = GlobalKey();
   final GlobalKey _four = GlobalKey();
 
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   WidgetsBinding.instance.addPostFrameCallback((_) async {
+  //     await ref.read(wishViewModelProvider.notifier).loadStarWish();
+  //     await ref.read(wishViewModelProvider.notifier).loadHighLightWish();
+  //     _checkAndShowShowcase();
+  //   });
+  // }
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await ref.read(wishViewModelProvider.notifier).loadStarWish();
-      await ref.read(wishViewModelProvider.notifier).loadHighLightWish();
+      await ref
+          .read(wishViewModelProvider.notifier)
+          .loadMainWishList(userCount: 5);
+
       _checkAndShowShowcase();
     });
   }

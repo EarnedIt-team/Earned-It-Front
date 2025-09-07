@@ -191,6 +191,7 @@ class _ReportModalContentState extends ConsumerState<_ReportModalContent> {
                       : const Text('신고하기'),
             ),
           ),
+          const SizedBox(height: 20),
         ],
       ),
     );

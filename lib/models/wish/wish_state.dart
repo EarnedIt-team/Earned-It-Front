@@ -1,3 +1,5 @@
+import 'package:earned_it/models/user/profile_user_model.dart';
+import 'package:earned_it/models/user/simple_user_model.dart';
 import 'package:earned_it/models/wish/wish_model.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:image_picker/image_picker.dart';
@@ -7,11 +9,16 @@ part 'wish_state.freezed.dart';
 @freezed
 abstract class WishState with _$WishState {
   const factory WishState({
-    // 기존 상태들
     @Default(false) bool isLoading,
     @Default([]) List<WishModel> starWishes,
     @Default([]) List<WishModel> Wishes3,
     @Default([]) List<WishModel> totalWishes,
+
+    /// 나의 정보
+    ProfileUserModel? userInfo,
+
+    /// 타 사용자 정보
+    @Default([]) List<SimpleUserModel> userList,
 
     // --- 전체 리스트 기능을 위한 상태 추가 ---
     @Default(0) int currentWishCount,

@@ -148,7 +148,7 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
                     "초당 수익",
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
-                  Text("${salaryPerSecond}원"),
+                  Text("${userInfo.amountPerSec.toStringAsFixed(3)}원"),
                 ],
               ),
             ],

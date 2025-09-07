@@ -17,7 +17,7 @@ mixin _$ProfileUserModel {
 
 // ✨ @Default(0) 추가
  int get userId; String? get profileImage; String get nickname;// ✨ @Default(0) 추가
- int get monthlySalary;
+ int get monthlySalary; double get amountPerSec;
 /// Create a copy of ProfileUserModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -30,16 +30,16 @@ $ProfileUserModelCopyWith<ProfileUserModel> get copyWith => _$ProfileUserModelCo
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ProfileUserModel&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.profileImage, profileImage) || other.profileImage == profileImage)&&(identical(other.nickname, nickname) || other.nickname == nickname)&&(identical(other.monthlySalary, monthlySalary) || other.monthlySalary == monthlySalary));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ProfileUserModel&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.profileImage, profileImage) || other.profileImage == profileImage)&&(identical(other.nickname, nickname) || other.nickname == nickname)&&(identical(other.monthlySalary, monthlySalary) || other.monthlySalary == monthlySalary)&&(identical(other.amountPerSec, amountPerSec) || other.amountPerSec == amountPerSec));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,userId,profileImage,nickname,monthlySalary);
+int get hashCode => Object.hash(runtimeType,userId,profileImage,nickname,monthlySalary,amountPerSec);
 
 @override
 String toString() {
-  return 'ProfileUserModel(userId: $userId, profileImage: $profileImage, nickname: $nickname, monthlySalary: $monthlySalary)';
+  return 'ProfileUserModel(userId: $userId, profileImage: $profileImage, nickname: $nickname, monthlySalary: $monthlySalary, amountPerSec: $amountPerSec)';
 }
 
 
@@ -50,7 +50,7 @@ abstract mixin class $ProfileUserModelCopyWith<$Res>  {
   factory $ProfileUserModelCopyWith(ProfileUserModel value, $Res Function(ProfileUserModel) _then) = _$ProfileUserModelCopyWithImpl;
 @useResult
 $Res call({
- int userId, String? profileImage, String nickname, int monthlySalary
+ int userId, String? profileImage, String nickname, int monthlySalary, double amountPerSec
 });
 
 
@@ -67,13 +67,14 @@ class _$ProfileUserModelCopyWithImpl<$Res>
 
 /// Create a copy of ProfileUserModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? userId = null,Object? profileImage = freezed,Object? nickname = null,Object? monthlySalary = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? userId = null,Object? profileImage = freezed,Object? nickname = null,Object? monthlySalary = null,Object? amountPerSec = null,}) {
   return _then(_self.copyWith(
 userId: null == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
 as int,profileImage: freezed == profileImage ? _self.profileImage : profileImage // ignore: cast_nullable_to_non_nullable
 as String?,nickname: null == nickname ? _self.nickname : nickname // ignore: cast_nullable_to_non_nullable
 as String,monthlySalary: null == monthlySalary ? _self.monthlySalary : monthlySalary // ignore: cast_nullable_to_non_nullable
-as int,
+as int,amountPerSec: null == amountPerSec ? _self.amountPerSec : amountPerSec // ignore: cast_nullable_to_non_nullable
+as double,
   ));
 }
 
@@ -158,10 +159,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int userId,  String? profileImage,  String nickname,  int monthlySalary)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int userId,  String? profileImage,  String nickname,  int monthlySalary,  double amountPerSec)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ProfileUserModel() when $default != null:
-return $default(_that.userId,_that.profileImage,_that.nickname,_that.monthlySalary);case _:
+return $default(_that.userId,_that.profileImage,_that.nickname,_that.monthlySalary,_that.amountPerSec);case _:
   return orElse();
 
 }
@@ -179,10 +180,10 @@ return $default(_that.userId,_that.profileImage,_that.nickname,_that.monthlySala
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int userId,  String? profileImage,  String nickname,  int monthlySalary)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int userId,  String? profileImage,  String nickname,  int monthlySalary,  double amountPerSec)  $default,) {final _that = this;
 switch (_that) {
 case _ProfileUserModel():
-return $default(_that.userId,_that.profileImage,_that.nickname,_that.monthlySalary);case _:
+return $default(_that.userId,_that.profileImage,_that.nickname,_that.monthlySalary,_that.amountPerSec);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -199,10 +200,10 @@ return $default(_that.userId,_that.profileImage,_that.nickname,_that.monthlySala
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int userId,  String? profileImage,  String nickname,  int monthlySalary)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int userId,  String? profileImage,  String nickname,  int monthlySalary,  double amountPerSec)?  $default,) {final _that = this;
 switch (_that) {
 case _ProfileUserModel() when $default != null:
-return $default(_that.userId,_that.profileImage,_that.nickname,_that.monthlySalary);case _:
+return $default(_that.userId,_that.profileImage,_that.nickname,_that.monthlySalary,_that.amountPerSec);case _:
   return null;
 
 }
@@ -214,7 +215,7 @@ return $default(_that.userId,_that.profileImage,_that.nickname,_that.monthlySala
 @JsonSerializable()
 
 class _ProfileUserModel implements ProfileUserModel {
-  const _ProfileUserModel({this.userId = 0, this.profileImage, required this.nickname, this.monthlySalary = 0});
+  const _ProfileUserModel({this.userId = 0, this.profileImage, required this.nickname, this.monthlySalary = 0, this.amountPerSec = 0.0});
   factory _ProfileUserModel.fromJson(Map<String, dynamic> json) => _$ProfileUserModelFromJson(json);
 
 // ✨ @Default(0) 추가
@@ -223,6 +224,7 @@ class _ProfileUserModel implements ProfileUserModel {
 @override final  String nickname;
 // ✨ @Default(0) 추가
 @override@JsonKey() final  int monthlySalary;
+@override@JsonKey() final  double amountPerSec;
 
 /// Create a copy of ProfileUserModel
 /// with the given fields replaced by the non-null parameter values.
@@ -237,16 +239,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ProfileUserModel&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.profileImage, profileImage) || other.profileImage == profileImage)&&(identical(other.nickname, nickname) || other.nickname == nickname)&&(identical(other.monthlySalary, monthlySalary) || other.monthlySalary == monthlySalary));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ProfileUserModel&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.profileImage, profileImage) || other.profileImage == profileImage)&&(identical(other.nickname, nickname) || other.nickname == nickname)&&(identical(other.monthlySalary, monthlySalary) || other.monthlySalary == monthlySalary)&&(identical(other.amountPerSec, amountPerSec) || other.amountPerSec == amountPerSec));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,userId,profileImage,nickname,monthlySalary);
+int get hashCode => Object.hash(runtimeType,userId,profileImage,nickname,monthlySalary,amountPerSec);
 
 @override
 String toString() {
-  return 'ProfileUserModel(userId: $userId, profileImage: $profileImage, nickname: $nickname, monthlySalary: $monthlySalary)';
+  return 'ProfileUserModel(userId: $userId, profileImage: $profileImage, nickname: $nickname, monthlySalary: $monthlySalary, amountPerSec: $amountPerSec)';
 }
 
 
@@ -257,7 +259,7 @@ abstract mixin class _$ProfileUserModelCopyWith<$Res> implements $ProfileUserMod
   factory _$ProfileUserModelCopyWith(_ProfileUserModel value, $Res Function(_ProfileUserModel) _then) = __$ProfileUserModelCopyWithImpl;
 @override @useResult
 $Res call({
- int userId, String? profileImage, String nickname, int monthlySalary
+ int userId, String? profileImage, String nickname, int monthlySalary, double amountPerSec
 });
 
 
@@ -274,13 +276,14 @@ class __$ProfileUserModelCopyWithImpl<$Res>
 
 /// Create a copy of ProfileUserModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? userId = null,Object? profileImage = freezed,Object? nickname = null,Object? monthlySalary = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? userId = null,Object? profileImage = freezed,Object? nickname = null,Object? monthlySalary = null,Object? amountPerSec = null,}) {
   return _then(_ProfileUserModel(
 userId: null == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
 as int,profileImage: freezed == profileImage ? _self.profileImage : profileImage // ignore: cast_nullable_to_non_nullable
 as String?,nickname: null == nickname ? _self.nickname : nickname // ignore: cast_nullable_to_non_nullable
 as String,monthlySalary: null == monthlySalary ? _self.monthlySalary : monthlySalary // ignore: cast_nullable_to_non_nullable
-as int,
+as int,amountPerSec: null == amountPerSec ? _self.amountPerSec : amountPerSec // ignore: cast_nullable_to_non_nullable
+as double,
   ));
 }
 

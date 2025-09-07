@@ -12,6 +12,7 @@ _ProfileUserModel _$ProfileUserModelFromJson(Map<String, dynamic> json) =>
       profileImage: json['profileImage'] as String?,
       nickname: json['nickname'] as String,
       monthlySalary: (json['monthlySalary'] as num?)?.toInt() ?? 0,
+      amountPerSec: (json['amountPerSec'] as num?)?.toDouble() ?? 0.0,
     );
 
 Map<String, dynamic> _$ProfileUserModelToJson(_ProfileUserModel instance) =>
@@ -20,4 +21,5 @@ Map<String, dynamic> _$ProfileUserModelToJson(_ProfileUserModel instance) =>
       'profileImage': instance.profileImage,
       'nickname': instance.nickname,
       'monthlySalary': instance.monthlySalary,
+      'amountPerSec': instance.amountPerSec,
     };

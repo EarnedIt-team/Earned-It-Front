@@ -14,6 +14,8 @@ abstract class ProfileUserModel with _$ProfileUserModel {
 
     // ✨ @Default(0) 추가
     @Default(0) int monthlySalary,
+
+    @Default(0.0) double amountPerSec,
   }) = _ProfileUserModel;
 
   factory ProfileUserModel.fromJson(Map<String, dynamic> json) =>

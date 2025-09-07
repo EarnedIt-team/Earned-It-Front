@@ -94,6 +94,13 @@ abstract class RestClient {
     @Body() Map<String, dynamic> body,
   );
 
+  /// 통합 위시리스트 조회 API
+  @GET("/api/wish/main")
+  Future<ApiResponse> loadMainWishList(
+    @Header("Authorization") String accessToken,
+    @Query("userCount") int userCount,
+  );
+
   /// Star 위시리스트 불러오기 API
   @GET("/api/star")
   Future<ApiResponse> loadStarInfo(@Header("Authorization") String accessToken);

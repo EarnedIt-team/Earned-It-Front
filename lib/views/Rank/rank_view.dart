@@ -4,6 +4,7 @@ import 'package:earned_it/models/rank/rank_model.dart';
 import 'package:earned_it/view_models/rank_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 // 다음 정각까지 남은 시간을 1초마다 제공하는 StreamProvider
@@ -190,10 +191,31 @@ class _RankViewState extends ConsumerState<RankView> {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
+    // 1. 시상대의 최대/최소 높이를 미리 정의합니다.
+    final maxPodiumHeight = screenHeight * 0.21; // 1등이 차지할 최대 높이
+    final minPodiumHeight = screenHeight * 0.10; // 점수가 0점에 가까울 때의 최소 높이
+
+    // 2. 랭킹 1위의 점수를 최대 점수로 설정합니다. (리스트가 비어있을 경우 에러 방지)
+    final maxScore = top10.isNotEmpty ? top10[0].score : 1;
+
     // 데이터에서 1, 2, 3위 찾기
     final ranker1 = top10.isNotEmpty ? top10[0] : null;
     final ranker2 = top10.length > 1 ? top10[1] : null;
     final ranker3 = top10.length > 2 ? top10[2] : null;
+
+    // 3. 각 랭커의 점수 비율에 따라 높이를 동적으로 계산합니다.
+    // (점수 / 최대점수) 비율을 높이 범위에 적용
+    final height1 = ranker1 != null ? maxPodiumHeight : 0.0;
+    final height2 =
+        ranker2 != null
+            ? minPodiumHeight +
+                (ranker2.score / maxScore) * (maxPodiumHeight - minPodiumHeight)
+            : 0.0;
+    final height3 =
+        ranker3 != null
+            ? minPodiumHeight +
+                (ranker3.score / maxScore) * (maxPodiumHeight - minPodiumHeight)
+            : 0.0;
 
     return SizedBox(
       height: screenHeight * 0.35,
@@ -205,7 +227,7 @@ class _RankViewState extends ConsumerState<RankView> {
           if (ranker2 != null)
             _buildPodiumItem(
               ranker: ranker2,
-              height: screenHeight * 0.16,
+              height: height2, // ✨ 계산된 높이 전달
               color: const Color(0xFFC0C0C0), // 은색
               screenWidth: screenWidth,
             ),
@@ -213,7 +235,7 @@ class _RankViewState extends ConsumerState<RankView> {
           if (ranker1 != null)
             _buildPodiumItem(
               ranker: ranker1,
-              height: screenHeight * 0.22,
+              height: height1, // ✨ 계산된 높이 전달
               color: const Color(0xFFFFD700), // 금색
               screenWidth: screenWidth,
             ),
@@ -221,7 +243,7 @@ class _RankViewState extends ConsumerState<RankView> {
           if (ranker3 != null)
             _buildPodiumItem(
               ranker: ranker3,
-              height: screenHeight * 0.1,
+              height: height3, // ✨ 계산된 높이 전달
               color: const Color(0xFFCD7F32), // 동색
               screenWidth: screenWidth,
             ),
@@ -237,88 +259,98 @@ class _RankViewState extends ConsumerState<RankView> {
     required Color color,
     required double screenWidth,
   }) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: [
-        CircleAvatar(
-          radius: ranker.rank == 1 ? 30 : 25,
-          backgroundImage:
-              ranker.profileImage != null
-                  ? NetworkImage(ranker.profileImage!)
-                  : null,
-          backgroundColor: Colors.grey.shade300,
-          child:
-              ranker.profileImage == null
-                  ? Icon(
-                    Icons.person,
-                    size: ranker.rank == 1 ? 35 : 30,
-                    color: Colors.grey.shade600,
-                  )
-                  : null,
-        ),
-        const SizedBox(height: 8),
-        SizedBox(
-          width: context.width(0.25),
-          child: Text(
-            ranker.nickname,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: context.width(0.035),
-            ),
-            maxLines: 2, // 최대 2줄까지 표시
-            overflow: TextOverflow.ellipsis, // 2줄을 넘어가면 말줄임표(...) 표시
+    return InkWell(
+      onTap: () {
+        // isPublic이 null일 경우를 대비해 기본값 false를 사용 (?? false)
+        final isPublic = ranker.isPublic ?? false;
+
+        // 1. Path Parameter를 사용하는 경로로 이동
+        // 2. Query Parameter로 isPublic 값 전달
+        context.push('/profile/${ranker.userId}?isPublic=$isPublic');
+      },
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          CircleAvatar(
+            radius: ranker.rank == 1 ? 30 : 25,
+            backgroundImage:
+                ranker.profileImage != null
+                    ? NetworkImage(ranker.profileImage!)
+                    : null,
+            backgroundColor: Colors.grey.shade300,
+            child:
+                ranker.profileImage == null
+                    ? Icon(
+                      Icons.person,
+                      size: ranker.rank == 1 ? 35 : 30,
+                      color: Colors.grey.shade600,
+                    )
+                    : null,
           ),
-        ),
-        const SizedBox(height: 5),
-        Container(
-          width: screenWidth / 3.5,
-          height: height,
-          decoration: BoxDecoration(
-            color: color,
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(12),
-              topRight: Radius.circular(12),
+          const SizedBox(height: 8),
+          SizedBox(
+            width: context.width(0.25),
+            child: Text(
+              ranker.nickname,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: context.width(0.035),
+              ),
+              maxLines: 2, // 최대 2줄까지 표시
+              overflow: TextOverflow.ellipsis, // 2줄을 넘어가면 말줄임표(...) 표시
             ),
           ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                '${ranker.rank}등',
-                style: TextStyle(
-                  fontSize: context.width(0.065),
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white.withOpacity(0.9), // 수정된 부분
-                  shadows: [
-                    Shadow(
-                      color: Colors.black.withOpacity(0.2), // 수정된 부분
-                      blurRadius: 4,
-                      offset: const Offset(2, 2),
-                    ),
-                  ],
-                ),
+          const SizedBox(height: 5),
+          Container(
+            width: screenWidth / 3.5,
+            height: height,
+            decoration: BoxDecoration(
+              color: color,
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(12),
+                topRight: Radius.circular(12),
               ),
-              const SizedBox(height: 5),
-              Text(
-                '${NumberFormat('#,###').format(ranker.score)} P',
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white.withOpacity(0.9), // 수정된 부분
-                  shadows: [
-                    Shadow(
-                      color: Colors.black.withOpacity(0.2), // 수정된 부분
-                      blurRadius: 4,
-                      offset: const Offset(2, 2),
-                    ),
-                  ],
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  '${ranker.rank}등',
+                  style: TextStyle(
+                    fontSize: context.width(0.065),
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white.withOpacity(0.9), // 수정된 부분
+                    shadows: [
+                      Shadow(
+                        color: Colors.black.withOpacity(0.2), // 수정된 부분
+                        blurRadius: 4,
+                        offset: const Offset(2, 2),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+                const SizedBox(height: 5),
+                Text(
+                  '${NumberFormat('#,###').format(ranker.score)} P',
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white.withOpacity(0.9), // 수정된 부분
+                    shadows: [
+                      Shadow(
+                        color: Colors.black.withOpacity(0.2), // 수정된 부분
+                        blurRadius: 4,
+                        offset: const Offset(2, 2),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -353,65 +385,75 @@ class _RankViewState extends ConsumerState<RankView> {
           itemCount: remainingRankers.length, // 데이터 길이에 맞춤
           itemBuilder: (context, index) {
             final ranker = remainingRankers[index];
-            return Container(
-              padding: EdgeInsets.symmetric(
-                horizontal: context.middlePadding,
-                vertical: context.middlePadding / 2,
-              ),
-              decoration: BoxDecoration(
-                color:
-                    Theme.of(context).brightness == Brightness.dark
-                        ? Colors.grey.shade900
-                        : Colors.white,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Row(
-                children: [
-                  SizedBox(
-                    width: 30,
-                    child: Text(
-                      '${ranker.rank}', // 실제 랭킹 데이터 사용
-                      textAlign: TextAlign.center,
+            return InkWell(
+              onTap: () {
+                // isPublic이 null일 경우를 대비해 기본값 false를 사용 (?? false)
+                final isPublic = ranker.isPublic ?? false;
+
+                // 1. Path Parameter를 사용하는 경로로 이동
+                // 2. Query Parameter로 isPublic 값 전달
+                context.push('/profile/${ranker.userId}?isPublic=$isPublic');
+              },
+              child: Container(
+                padding: EdgeInsets.symmetric(
+                  horizontal: context.middlePadding,
+                  vertical: context.middlePadding / 2,
+                ),
+                decoration: BoxDecoration(
+                  color:
+                      Theme.of(context).brightness == Brightness.dark
+                          ? Colors.grey.shade900
+                          : Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  children: [
+                    SizedBox(
+                      width: 30,
+                      child: Text(
+                        '${ranker.rank}', // 실제 랭킹 데이터 사용
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: context.width(0.045),
+                          fontWeight: FontWeight.bold,
+                          color: Colors.grey.shade600,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    CircleAvatar(
+                      radius: 22,
+                      backgroundImage:
+                          ranker.profileImage != null
+                              ? NetworkImage(ranker.profileImage!)
+                              : null,
+                      backgroundColor: Colors.grey.shade300,
+                      child:
+                          ranker.profileImage == null
+                              ? Icon(Icons.person, color: Colors.grey.shade600)
+                              : null,
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        ranker.nickname, // 실제 닉네임 데이터 사용
+                        style: TextStyle(
+                          fontSize: context.width(0.03),
+                          fontWeight: FontWeight.w600,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    Text(
+                      '${NumberFormat('#,###').format(ranker.score)} P', // 실제 점수 데이터 사용
                       style: TextStyle(
-                        fontSize: context.width(0.045),
+                        fontSize: context.width(0.04),
                         fontWeight: FontWeight.bold,
-                        color: Colors.grey.shade600,
+                        color: Colors.blueAccent,
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 16),
-                  CircleAvatar(
-                    radius: 22,
-                    backgroundImage:
-                        ranker.profileImage != null
-                            ? NetworkImage(ranker.profileImage!)
-                            : null,
-                    backgroundColor: Colors.grey.shade300,
-                    child:
-                        ranker.profileImage == null
-                            ? Icon(Icons.person, color: Colors.grey.shade600)
-                            : null,
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      ranker.nickname, // 실제 닉네임 데이터 사용
-                      style: TextStyle(
-                        fontSize: context.width(0.03),
-                        fontWeight: FontWeight.w600,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                  Text(
-                    '${NumberFormat('#,###').format(ranker.score)} P', // 실제 점수 데이터 사용
-                    style: TextStyle(
-                      fontSize: context.width(0.04),
-                      fontWeight: FontWeight.bold,
-                      color: Colors.blueAccent,
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             );
           },

@@ -6,6 +6,7 @@ import 'package:earned_it/views/auth/login/login_view.dart';
 import 'package:earned_it/views/home/init_home_view.dart';
 import 'package:earned_it/views/navigation_view.dart';
 import 'package:earned_it/views/onboarding/onboarding_view.dart';
+import 'package:earned_it/views/profile_view.dart';
 import 'package:earned_it/views/puzzle/puzzle_view.dart';
 import 'package:earned_it/views/auth/signup/sign_view.dart';
 import 'package:earned_it/views/setting/nickname_edit_view.dart';
@@ -106,6 +107,20 @@ final GoRouter routes = GoRouter(
     GoRoute(
       path: '/rank',
       builder: (BuildContext context, GoRouterState state) => const RankView(),
+    ),
+    GoRoute(
+      // 1. Path Parameter로 userId를 받도록 경로 설정
+      path: '/profile/:userId',
+      builder: (BuildContext context, GoRouterState state) {
+        // 2. 경로에서 userId 추출 (문자열 -> 정수 변환)
+        final userId = int.parse(state.pathParameters['userId']!);
+
+        // 3. 쿼리 파라미터에서 isPublic 추출 (문자열 -> bool 변환)
+        final isPublic = state.uri.queryParameters['isPublic'] == 'true';
+
+        // 4. 추출한 값들을 ProfileView에 전달
+        return ProfileView(userId: userId);
+      },
     ),
     // =================================================
     // 셸(Shell) 경로: 하단 네비게이션 바가 유지되는 화면들

@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$RankModel {
 
- int get userId; int get rank; String get nickname; int get score; String? get profileImage;
+ int get userId; int get rank; String get nickname; int get score; bool? get isPublic; String? get profileImage;
 /// Create a copy of RankModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $RankModelCopyWith<RankModel> get copyWith => _$RankModelCopyWithImpl<RankModel>
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is RankModel&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.rank, rank) || other.rank == rank)&&(identical(other.nickname, nickname) || other.nickname == nickname)&&(identical(other.score, score) || other.score == score)&&(identical(other.profileImage, profileImage) || other.profileImage == profileImage));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is RankModel&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.rank, rank) || other.rank == rank)&&(identical(other.nickname, nickname) || other.nickname == nickname)&&(identical(other.score, score) || other.score == score)&&(identical(other.isPublic, isPublic) || other.isPublic == isPublic)&&(identical(other.profileImage, profileImage) || other.profileImage == profileImage));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,userId,rank,nickname,score,profileImage);
+int get hashCode => Object.hash(runtimeType,userId,rank,nickname,score,isPublic,profileImage);
 
 @override
 String toString() {
-  return 'RankModel(userId: $userId, rank: $rank, nickname: $nickname, score: $score, profileImage: $profileImage)';
+  return 'RankModel(userId: $userId, rank: $rank, nickname: $nickname, score: $score, isPublic: $isPublic, profileImage: $profileImage)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $RankModelCopyWith<$Res>  {
   factory $RankModelCopyWith(RankModel value, $Res Function(RankModel) _then) = _$RankModelCopyWithImpl;
 @useResult
 $Res call({
- int userId, int rank, String nickname, int score, String? profileImage
+ int userId, int rank, String nickname, int score, bool? isPublic, String? profileImage
 });
 
 
@@ -65,13 +65,14 @@ class _$RankModelCopyWithImpl<$Res>
 
 /// Create a copy of RankModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? userId = null,Object? rank = null,Object? nickname = null,Object? score = null,Object? profileImage = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? userId = null,Object? rank = null,Object? nickname = null,Object? score = null,Object? isPublic = freezed,Object? profileImage = freezed,}) {
   return _then(_self.copyWith(
 userId: null == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
 as int,rank: null == rank ? _self.rank : rank // ignore: cast_nullable_to_non_nullable
 as int,nickname: null == nickname ? _self.nickname : nickname // ignore: cast_nullable_to_non_nullable
 as String,score: null == score ? _self.score : score // ignore: cast_nullable_to_non_nullable
-as int,profileImage: freezed == profileImage ? _self.profileImage : profileImage // ignore: cast_nullable_to_non_nullable
+as int,isPublic: freezed == isPublic ? _self.isPublic : isPublic // ignore: cast_nullable_to_non_nullable
+as bool?,profileImage: freezed == profileImage ? _self.profileImage : profileImage // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }
@@ -157,10 +158,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int userId,  int rank,  String nickname,  int score,  String? profileImage)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int userId,  int rank,  String nickname,  int score,  bool? isPublic,  String? profileImage)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _RankModel() when $default != null:
-return $default(_that.userId,_that.rank,_that.nickname,_that.score,_that.profileImage);case _:
+return $default(_that.userId,_that.rank,_that.nickname,_that.score,_that.isPublic,_that.profileImage);case _:
   return orElse();
 
 }
@@ -178,10 +179,10 @@ return $default(_that.userId,_that.rank,_that.nickname,_that.score,_that.profile
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int userId,  int rank,  String nickname,  int score,  String? profileImage)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int userId,  int rank,  String nickname,  int score,  bool? isPublic,  String? profileImage)  $default,) {final _that = this;
 switch (_that) {
 case _RankModel():
-return $default(_that.userId,_that.rank,_that.nickname,_that.score,_that.profileImage);case _:
+return $default(_that.userId,_that.rank,_that.nickname,_that.score,_that.isPublic,_that.profileImage);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -198,10 +199,10 @@ return $default(_that.userId,_that.rank,_that.nickname,_that.score,_that.profile
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int userId,  int rank,  String nickname,  int score,  String? profileImage)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int userId,  int rank,  String nickname,  int score,  bool? isPublic,  String? profileImage)?  $default,) {final _that = this;
 switch (_that) {
 case _RankModel() when $default != null:
-return $default(_that.userId,_that.rank,_that.nickname,_that.score,_that.profileImage);case _:
+return $default(_that.userId,_that.rank,_that.nickname,_that.score,_that.isPublic,_that.profileImage);case _:
   return null;
 
 }
@@ -213,13 +214,14 @@ return $default(_that.userId,_that.rank,_that.nickname,_that.score,_that.profile
 @JsonSerializable()
 
 class _RankModel implements RankModel {
-  const _RankModel({required this.userId, required this.rank, required this.nickname, required this.score, this.profileImage});
+  const _RankModel({required this.userId, required this.rank, required this.nickname, required this.score, this.isPublic = false, this.profileImage});
   factory _RankModel.fromJson(Map<String, dynamic> json) => _$RankModelFromJson(json);
 
 @override final  int userId;
 @override final  int rank;
 @override final  String nickname;
 @override final  int score;
+@override@JsonKey() final  bool? isPublic;
 @override final  String? profileImage;
 
 /// Create a copy of RankModel
@@ -235,16 +237,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _RankModel&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.rank, rank) || other.rank == rank)&&(identical(other.nickname, nickname) || other.nickname == nickname)&&(identical(other.score, score) || other.score == score)&&(identical(other.profileImage, profileImage) || other.profileImage == profileImage));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _RankModel&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.rank, rank) || other.rank == rank)&&(identical(other.nickname, nickname) || other.nickname == nickname)&&(identical(other.score, score) || other.score == score)&&(identical(other.isPublic, isPublic) || other.isPublic == isPublic)&&(identical(other.profileImage, profileImage) || other.profileImage == profileImage));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,userId,rank,nickname,score,profileImage);
+int get hashCode => Object.hash(runtimeType,userId,rank,nickname,score,isPublic,profileImage);
 
 @override
 String toString() {
-  return 'RankModel(userId: $userId, rank: $rank, nickname: $nickname, score: $score, profileImage: $profileImage)';
+  return 'RankModel(userId: $userId, rank: $rank, nickname: $nickname, score: $score, isPublic: $isPublic, profileImage: $profileImage)';
 }
 
 
@@ -255,7 +257,7 @@ abstract mixin class _$RankModelCopyWith<$Res> implements $RankModelCopyWith<$Re
   factory _$RankModelCopyWith(_RankModel value, $Res Function(_RankModel) _then) = __$RankModelCopyWithImpl;
 @override @useResult
 $Res call({
- int userId, int rank, String nickname, int score, String? profileImage
+ int userId, int rank, String nickname, int score, bool? isPublic, String? profileImage
 });
 
 
@@ -272,13 +274,14 @@ class __$RankModelCopyWithImpl<$Res>
 
 /// Create a copy of RankModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? userId = null,Object? rank = null,Object? nickname = null,Object? score = null,Object? profileImage = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? userId = null,Object? rank = null,Object? nickname = null,Object? score = null,Object? isPublic = freezed,Object? profileImage = freezed,}) {
   return _then(_RankModel(
 userId: null == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
 as int,rank: null == rank ? _self.rank : rank // ignore: cast_nullable_to_non_nullable
 as int,nickname: null == nickname ? _self.nickname : nickname // ignore: cast_nullable_to_non_nullable
 as String,score: null == score ? _self.score : score // ignore: cast_nullable_to_non_nullable
-as int,profileImage: freezed == profileImage ? _self.profileImage : profileImage // ignore: cast_nullable_to_non_nullable
+as int,isPublic: freezed == isPublic ? _self.isPublic : isPublic // ignore: cast_nullable_to_non_nullable
+as bool?,profileImage: freezed == profileImage ? _self.profileImage : profileImage // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }

@@ -1,7 +1,7 @@
 import 'package:earned_it/config/design.dart';
 import 'package:earned_it/view_models/setting/state_auth_provider.dart';
 import 'package:earned_it/view_models/theme_provider.dart';
-import 'package:earned_it/view_models/user_provider.dart';
+import 'package:earned_it/view_models/user/user_provider.dart';
 import 'package:earned_it/view_models/wish/wish_provider.dart';
 import 'package:earned_it/views/navigation_view.dart';
 import 'package:flutter/material.dart';

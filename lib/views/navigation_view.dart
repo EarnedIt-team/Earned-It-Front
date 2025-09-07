@@ -4,7 +4,7 @@ import 'package:earned_it/view_models/checkedIn_provider.dart';
 import 'package:earned_it/view_models/piece_provider.dart';
 import 'package:earned_it/view_models/setting/set_profileimage_provider.dart';
 import 'package:earned_it/view_models/setting/state_auth_provider.dart';
-import 'package:earned_it/view_models/user_provider.dart';
+import 'package:earned_it/view_models/user/user_provider.dart';
 import 'package:earned_it/view_models/wish/wish_order_provider.dart';
 import 'package:earned_it/view_models/wish/wish_provider.dart';
 import 'package:earned_it/views/checkedIn_Modal.dart';

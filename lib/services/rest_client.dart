@@ -14,6 +14,13 @@ abstract class RestClient {
   @GET("/api/profile")
   Future<ApiResponse> loadProfile(@Header("Authorization") String accessToken);
 
+  /// 타 프로필 기본 조회 API
+  @GET("/api/profile/{userId}")
+  Future<ApiResponse> loadOtherProfile(
+    @Header("Authorization") String accessToken,
+    @Path("userId") int userId,
+  );
+
   /// 이메일 인증 코드 요청 API
   @POST("/api/auth/email/send")
   Future<ApiResponse> sendEmail(@Query('email') String email);

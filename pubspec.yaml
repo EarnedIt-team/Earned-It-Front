@@ -75,6 +75,7 @@ flutter:
     - assets/images/iphone.png
     - assets/images/macbook.png
     - assets/images/switch.png
+    - assets/images/siren_icon.png
     - assets/images/money/money_small.png
     - assets/images/money/money_middleSmall.png
     - assets/images/money/money_middle.png

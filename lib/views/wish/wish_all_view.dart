@@ -1,7 +1,7 @@
 import 'package:earned_it/config/design.dart';
 import 'package:earned_it/models/wish/wish_filter_state.dart';
 import 'package:earned_it/models/wish/wish_model.dart';
-import 'package:earned_it/view_models/user_provider.dart';
+import 'package:earned_it/view_models/user/user_provider.dart';
 import 'package:earned_it/view_models/wish/wish_filter_provider.dart';
 import 'package:earned_it/view_models/wish/wish_provider.dart';
 import 'package:earned_it/views/loading_overlay_view.dart';

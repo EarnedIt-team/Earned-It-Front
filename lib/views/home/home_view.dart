@@ -3,7 +3,7 @@ import 'package:animated_toggle_switch/animated_toggle_switch.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:earned_it/config/design.dart';
 import 'package:earned_it/view_models/home_provider.dart';
-import 'package:earned_it/view_models/user_provider.dart';
+import 'package:earned_it/view_models/user/user_provider.dart';
 import 'package:earned_it/view_models/wish/wish_provider.dart';
 import 'package:earned_it/views/home/home_piece_view.dart';
 import 'package:earned_it/views/splash_view.dart';

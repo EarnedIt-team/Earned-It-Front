@@ -166,6 +166,12 @@ class SetSalaryView extends ConsumerWidget {
                       keyboardType: TextInputType.number,
                       decoration: InputDecoration(
                         hintText: '월 급여를 입력하세요.',
+                        hintStyle: TextStyle(
+                          color:
+                              Theme.of(context).brightness == Brightness.dark
+                                  ? Colors.white
+                                  : Colors.black,
+                        ),
                         suffixText:
                             setSalaryProvider.salaryController.text.isNotEmpty
                                 ? '원'

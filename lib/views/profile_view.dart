@@ -1,6 +1,6 @@
 import 'package:earned_it/config/design.dart';
 import 'package:earned_it/models/user/profile_user_model.dart';
-import 'package:earned_it/models/wish/wish_model.dart'; // WishModel import
+import 'package:earned_it/models/wish/wish_model.dart';
 import 'package:earned_it/view_models/user/profile_provider.dart';
 import 'package:earned_it/views/report_modal.dart';
 import 'package:flutter/material.dart';
@@ -90,7 +90,6 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
               ),
             ),
             const SizedBox(height: 10),
-            // ✨ 찜 목록 UI 로직을 개선된 형태로 수정
             Expanded(
               child:
                   profileState.starList.isNotEmpty
@@ -113,17 +112,26 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
 
     return Row(
       children: [
-        CircleAvatar(
-          backgroundColor: Colors.grey.shade300,
-          radius: 45,
-          backgroundImage:
+        // ✨ 1. CircleAvatar를 InkWell로 감싸서 탭 가능하게 만듭니다.
+        InkWell(
+          // 이미지가 있을 때만 탭 이벤트를 활성화합니다.
+          onTap:
               userInfo.profileImage != null
-                  ? NetworkImage(userInfo.profileImage!)
+                  ? () => _showImageDialog(context, userInfo.profileImage!)
                   : null,
-          child:
-              userInfo.profileImage == null
-                  ? Icon(Icons.person, size: 45, color: Colors.grey.shade600)
-                  : null,
+          customBorder: const CircleBorder(), // 탭 효과를 원형으로 만듭니다.
+          child: CircleAvatar(
+            backgroundColor: Colors.grey.shade300,
+            radius: 45,
+            backgroundImage:
+                userInfo.profileImage != null
+                    ? NetworkImage(userInfo.profileImage!)
+                    : null,
+            child:
+                userInfo.profileImage == null
+                    ? Icon(Icons.person, size: 45, color: Colors.grey.shade600)
+                    : null,
+          ),
         ),
         const SizedBox(width: 20),
         Expanded(
@@ -173,24 +181,32 @@ Widget _buildWishListView(List<WishModel> starList) {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(8.0),
-              child: Image.network(
-                item.itemImage,
-                width: 90,
-                height: 90,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return Container(
+            InkWell(
+              onTap: () {
+                _showImageDialog(context, item.itemImage);
+              },
+              child: Material(
+                color: Colors.transparent,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(8.0),
+                  child: Image.network(
+                    item.itemImage,
                     width: 90,
                     height: 90,
-                    color: Colors.grey[200],
-                    child: Icon(
-                      Icons.image_not_supported,
-                      color: Colors.grey[400],
-                    ),
-                  );
-                },
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Container(
+                        width: 90,
+                        height: 90,
+                        color: Colors.grey[200],
+                        child: Icon(
+                          Icons.image_not_supported,
+                          color: Colors.grey[400],
+                        ),
+                      );
+                    },
+                  ),
+                ),
               ),
             ),
             const SizedBox(width: 16),
@@ -218,12 +234,63 @@ Widget _buildWishListView(List<WishModel> starList) {
                   Text(
                     '${formattedPrice}원',
                     style: TextStyle(
-                      fontSize: context.width(0.04),
+                      fontSize: 15, // context.width(0.04)는 context가 없어서 상수로 변경
                       fontWeight: FontWeight.w500,
                       color: primaryGradientStart,
                     ),
                   ),
                 ],
+              ),
+            ),
+          ],
+        ),
+      );
+    },
+  );
+}
+
+/// 이미지를 확대해서 보여주는 다이얼로그 함수
+void _showImageDialog(BuildContext context, String imageUrl) {
+  showDialog(
+    context: context,
+    barrierColor: Colors.black87,
+    builder: (BuildContext context) {
+      return Dialog(
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+        insetPadding: const EdgeInsets.all(16),
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            InteractiveViewer(
+              panEnabled: true,
+              minScale: 0.5,
+              maxScale: 4.0,
+              child: Image.network(
+                imageUrl,
+                fit: BoxFit.contain,
+                loadingBuilder: (context, child, loadingProgress) {
+                  if (loadingProgress == null) return child;
+                  return Center(
+                    child: CircularProgressIndicator(
+                      value:
+                          loadingProgress.expectedTotalBytes != null
+                              ? loadingProgress.cumulativeBytesLoaded /
+                                  loadingProgress.expectedTotalBytes!
+                              : null,
+                    ),
+                  );
+                },
+              ),
+            ),
+            Positioned(
+              top: 0,
+              right: 0,
+              child: IconButton(
+                icon: const Icon(Icons.close, color: Colors.white, size: 30),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
               ),
             ),
           ],

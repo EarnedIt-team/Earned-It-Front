@@ -157,6 +157,10 @@ class NavigationView extends ConsumerWidget {
     ref.listen<bool>(isOpenEditProfileImage, (previous, next) {
       if (next == true) {
         showModalBottomSheet(
+          backgroundColor:
+              Theme.of(context).brightness == Brightness.dark
+                  ? lightDarkColor
+                  : lightColor2,
           context: context,
           // ... (BottomSheet UI는 동일)
           builder: (BuildContext context) {

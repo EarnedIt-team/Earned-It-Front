@@ -559,7 +559,9 @@ class _StarWishlistSection extends ConsumerWidget {
                           ),
                         ),
                         Tooltip(
-                          message: '메인 화면에 표시되는 최대 5개의 위시아이템입니다.\n\n...',
+                          triggerMode: TooltipTriggerMode.tap,
+                          message:
+                              '메인 화면에 표시되는 위시아이템입니다.\n\n*최대 5개까지 등록이 가능합니다.',
                           child: Icon(
                             Icons.info_outline,
                             size: context.width(0.04),

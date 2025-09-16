@@ -131,7 +131,7 @@ class _RankViewState extends ConsumerState<RankView> {
 
     // 1. 시상대의 최대/최소 높이를 미리 정의합니다.
     final maxPodiumHeight = screenHeight * 0.22; // 1등이 차지할 최대 높이
-    final minPodiumHeight = screenHeight * 0.05; // 점수가 0점에 가까울 때의 최소 높이
+    final minPodiumHeight = screenHeight * 0.03; // 점수가 0점에 가까울 때의 최소 높이
 
     // 2. 랭킹 1위의 점수를 최대 점수로 설정합니다. (리스트가 비어있을 경우 에러 방지)
     final maxScore = top10.isNotEmpty ? top10[0].score : 1;
@@ -166,7 +166,7 @@ class _RankViewState extends ConsumerState<RankView> {
             _buildPodiumItem(
               ranker: ranker2,
               height: height2, // ✨ 계산된 높이 전달
-              color: const Color(0xFFC0C0C0), // 은색
+              color: const Color.fromARGB(255, 236, 128, 111),
               screenWidth: screenWidth,
             ),
           // 1위
@@ -174,7 +174,7 @@ class _RankViewState extends ConsumerState<RankView> {
             _buildPodiumItem(
               ranker: ranker1,
               height: height1, // ✨ 계산된 높이 전달
-              color: const Color(0xFFFFD700), // 금색
+              color: primaryGradientEnd, // 금색
               screenWidth: screenWidth,
             ),
           // 3위
@@ -182,7 +182,7 @@ class _RankViewState extends ConsumerState<RankView> {
             _buildPodiumItem(
               ranker: ranker3,
               height: height3, // ✨ 계산된 높이 전달
-              color: const Color(0xFFCD7F32), // 동색
+              color: const Color.fromARGB(255, 151, 105, 98), // 동색
               screenWidth: screenWidth,
             ),
         ],
@@ -213,7 +213,7 @@ class _RankViewState extends ConsumerState<RankView> {
             radius: ranker.rank == 1 ? 30 : 25, // 테두리를 위해 약간 더 크게
             backgroundColor:
                 ranker.public!
-                    ? primaryColor
+                    ? primaryGradientStart
                     : Colors.transparent, // public일 때만 색상 적용
             child: CircleAvatar(
               radius: ranker.rank == 1 ? 28 : 23,
@@ -369,7 +369,9 @@ class _RankViewState extends ConsumerState<RankView> {
                     CircleAvatar(
                       radius: 20, // 테두리를 위해 약간 더 크게
                       backgroundColor:
-                          ranker.public! ? primaryColor : Colors.transparent,
+                          ranker.public!
+                              ? primaryGradientStart
+                              : Colors.transparent,
                       child: CircleAvatar(
                         radius: 18,
                         backgroundImage:
@@ -391,7 +393,7 @@ class _RankViewState extends ConsumerState<RankView> {
                       child: Text(
                         ranker.nickname, // 실제 닉네임 데이터 사용
                         style: TextStyle(
-                          fontSize: context.width(0.03),
+                          fontSize: context.width(0.035),
                           fontWeight: FontWeight.w600,
                         ),
                         overflow: TextOverflow.ellipsis,

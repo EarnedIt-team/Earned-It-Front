@@ -404,13 +404,26 @@ class _SettingViewState extends ConsumerState<SettingView> {
                   context: context,
                   builder:
                       (_) => AlertDialog(
+                        backgroundColor:
+                            Theme.of(context).brightness == Brightness.dark
+                                ? lightDarkColor
+                                : lightColor2,
                         title: const Text('테마 선택'),
                         content: Column(
                           mainAxisSize: MainAxisSize.min,
                           children:
                               ThemeMode.values.map((theme) {
                                 return RadioListTile<ThemeMode>(
-                                  title: Text(_themeModeToString(theme)),
+                                  title: Text(
+                                    _themeModeToString(theme),
+                                    style: TextStyle(
+                                      color:
+                                          Theme.of(context).brightness ==
+                                                  Brightness.dark
+                                              ? Colors.white
+                                              : Colors.black,
+                                    ),
+                                  ),
                                   value: theme,
                                   groupValue: currentThemeMode,
                                   onChanged: (newTheme) {

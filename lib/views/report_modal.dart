@@ -1,3 +1,4 @@
+import 'package:earned_it/config/design.dart';
 import 'package:earned_it/config/exception.dart';
 import 'package:earned_it/config/toastMessage.dart';
 import 'package:earned_it/services/report_service.dart';
@@ -126,7 +127,10 @@ class _ReportModalContentState extends ConsumerState<_ReportModalContent> {
     return Container(
       padding: const EdgeInsets.all(20.0),
       decoration: BoxDecoration(
-        color: Theme.of(context).canvasColor,
+        color:
+            Theme.of(context).brightness == Brightness.dark
+                ? lightDarkColor
+                : lightColor2,
         borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(20),
           topRight: Radius.circular(20),
@@ -136,18 +140,40 @@ class _ReportModalContentState extends ConsumerState<_ReportModalContent> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            '신고하기',
-            style: Theme.of(
-              context,
-            ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+          Row(
+            spacing: 5,
+            children: [
+              Image.asset(
+                'assets/images/siren_icon.png',
+                color:
+                    Theme.of(context).brightness == Brightness.dark
+                        ? Colors.white
+                        : Colors.black,
+              ),
+              Text(
+                '유저 신고',
+                style: TextStyle(
+                  fontSize: context.width(0.05),
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
           ),
+
           const SizedBox(height: 16),
           Column(
             children:
                 ReportReason.values.map((reason) {
                   return RadioListTile<ReportReason>(
-                    title: Text(reason.displayName),
+                    title: Text(
+                      reason.displayName,
+                      style: TextStyle(
+                        color:
+                            Theme.of(context).brightness == Brightness.dark
+                                ? Colors.white
+                                : Colors.black,
+                      ),
+                    ),
                     value: reason,
                     groupValue: _selectedReason,
                     onChanged: (value) {
@@ -162,8 +188,14 @@ class _ReportModalContentState extends ConsumerState<_ReportModalContent> {
           TextField(
             controller: _memoController,
             maxLines: 3,
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               hintText: '상세 내용을 입력해주세요. (선택 사항)',
+              hintStyle: TextStyle(
+                color:
+                    Theme.of(context).brightness == Brightness.dark
+                        ? Colors.white
+                        : Colors.black,
+              ),
               border: OutlineInputBorder(),
             ),
           ),
@@ -188,7 +220,13 @@ class _ReportModalContentState extends ConsumerState<_ReportModalContent> {
                           strokeWidth: 3,
                         ),
                       )
-                      : const Text('신고하기'),
+                      : Text(
+                        '신고하기',
+                        style: TextStyle(
+                          fontSize: context.width(0.04),
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
             ),
           ),
           const SizedBox(height: 20),

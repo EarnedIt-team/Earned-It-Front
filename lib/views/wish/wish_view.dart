@@ -1,5 +1,8 @@
+import 'package:earned_it/models/user/profile_user_model.dart';
+import 'package:earned_it/models/user/simple_user_model.dart';
 import 'package:earned_it/view_models/home_provider.dart';
-import 'package:earned_it/view_models/user_provider.dart';
+import 'package:earned_it/view_models/user/profile_provider.dart';
+import 'package:earned_it/view_models/user/user_provider.dart';
 import 'package:earned_it/view_models/wish/wish_order_provider.dart';
 import 'package:earned_it/view_models/wish/wish_provider.dart';
 import 'dart:math';
@@ -49,12 +52,17 @@ class _WishViewState extends ConsumerState<_WishViewInternal> {
   final GlobalKey _three = GlobalKey();
   final GlobalKey _four = GlobalKey();
 
+  // 현재 선택된 유저 ID를 저장하는 상태 변수. null이면 '내 정보'
+  int? _selectedUserId;
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await ref.read(wishViewModelProvider.notifier).loadStarWish();
-      await ref.read(wishViewModelProvider.notifier).loadHighLightWish();
+      await ref
+          .read(wishViewModelProvider.notifier)
+          .loadMainWishList(userCount: 5);
+
       _checkAndShowShowcase();
     });
   }
@@ -79,12 +87,29 @@ class _WishViewState extends ConsumerState<_WishViewInternal> {
     super.dispose();
   }
 
+  // 사용자 탭 이벤트를 처리하는 함수
+  void _handleUserTap(int? userId) {
+    // userId가 null이면 '내 정보'를 탭한 것이므로 아무것도 하지 않고 종료
+    if (userId == null) {
+      print("내 프로필 탭");
+      return;
+    }
+
+    // 다른 사용자를 탭한 경우, go_router를 사용해 프로필 페이지로 이동
+    // isPublic 값은 현재 데이터 모델에 없으므로, 'true'로 가정하여 전달합니다.
+    const bool isPublic = true;
+    context.push('/profile/$userId?isPublic=$isPublic');
+  }
+
   @override
   Widget build(BuildContext context) {
     final userState = ref.watch(userProvider);
     final wishState = ref.watch(wishViewModelProvider);
     final starWishList = wishState.starWishes;
     final HighLightWishList = wishState.Wishes3;
+    final userInfo = wishState.userInfo; // 내 정보
+    final userList = wishState.userList; // 타 사용자 정보
+    final isMyProfileSelected = _selectedUserId == null; // 내 거를 선택했는가?
     final currencyFormat = NumberFormat.decimalPattern('ko_KR');
 
     return GestureDetector(
@@ -199,260 +224,17 @@ class _WishViewState extends ConsumerState<_WishViewInternal> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          // 추후 타 사용자 위시리스트 들어오는 공간
-                          // Showcase(
-                          //   targetBorderRadius: BorderRadius.all(
-                          //     Radius.circular(context.width(0.05)),
-                          //   ),
-                          //   overlayColor:
-                          //       Theme.of(context).brightness == Brightness.dark
-                          //           ? const Color.fromARGB(255, 46, 46, 46)
-                          //           : Colors.grey,
-                          //   key: _two,
-                          //   description: '키워드를 입력해서, 등록된 위시아이템을 검색할 수 있습니다.',
-                          //   child: Padding(
-                          //     padding: EdgeInsets.only(
-                          //       top:
-                          //           (starWishList.isNotEmpty ||
-                          //                   HighLightWishList.isNotEmpty)
-                          //               ? context.middlePadding / 2
-                          //               : 0,
-                          //       left: context.middlePadding,
-                          //       right: context.middlePadding,
-                          //       bottom:
-                          //           (starWishList.isNotEmpty ||
-                          //                   HighLightWishList.isNotEmpty)
-                          //               ? context.middlePadding / 2
-                          //               : 0,
-                          //     ),
-
-                          //     child: InkWell(
-                          //       onTap: () => context.push('/wishSearch'),
-                          //       child: AbsorbPointer(
-                          //         child: TextField(
-                          //           decoration: InputDecoration(
-                          //             hintText: '브랜드, 이름 등',
-                          //             prefixIcon: const Icon(Icons.search),
-                          //             border: OutlineInputBorder(
-                          //               borderRadius: BorderRadius.circular(
-                          //                 context.width(0.1),
-                          //               ),
-                          //               borderSide: const BorderSide(
-                          //                 width: 1,
-                          //                 color: Colors.grey,
-                          //               ),
-                          //             ),
-                          //             filled: true,
-                          //             fillColor:
-                          //                 Theme.of(context).brightness ==
-                          //                         Brightness.dark
-                          //                     ? Colors.transparent
-                          //                     : lightColor,
-                          //             contentPadding: EdgeInsets.zero,
-                          //           ),
-                          //         ),
-                          //       ),
-                          //     ),
-                          //   ),
-                          // ),
-
-                          // --- Star 위시리스트 섹션 ---
-                          if (starWishList.isNotEmpty)
-                            Padding(
-                              padding: EdgeInsets.only(
-                                top: context.middlePadding / 2,
-                                left: context.middlePadding / 2,
-                                right: context.middlePadding / 2,
-                                bottom: context.middlePadding / 2,
-                              ),
-                              // 👇 2. 실시간 데이터가 필요한 헤더 부분만 Consumer로 감쌉니다.
-                              child: Consumer(
-                                builder: (context, ref, child) {
-                                  final homeState = ref.watch(
-                                    homeViewModelProvider,
-                                  );
-                                  final totalPrice = starWishList.fold<int>(
-                                    0,
-                                    (sum, item) => sum + item.price,
-                                  );
-                                  final double totalDisplayAmount =
-                                      (totalPrice > 0)
-                                          ? min(
-                                            homeState.currentEarnedAmount,
-                                            totalPrice.toDouble(),
-                                          )
-                                          : homeState.currentEarnedAmount;
-
-                                  return Container(
-                                    decoration: BoxDecoration(
-                                      border: Border.all(
-                                        width: 1,
-                                        color: primaryColor,
-                                      ),
-                                      color:
-                                          Theme.of(context).brightness ==
-                                                  Brightness.dark
-                                              ? lightDarkColor
-                                              : Colors.white,
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                    padding: EdgeInsets.only(
-                                      top: context.middlePadding / 2,
-                                      left: context.middlePadding,
-                                      right: context.middlePadding,
-                                      bottom: context.middlePadding / 2,
-                                    ),
-                                    child: Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: <Widget>[
-                                        Row(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.baseline,
-                                          textBaseline: TextBaseline.alphabetic,
-                                          children: [
-                                            Row(
-                                              children: [
-                                                Text(
-                                                  "Star",
-                                                  style: TextStyle(
-                                                    fontSize: context.width(
-                                                      0.07,
-                                                    ),
-                                                    fontWeight: FontWeight.w500,
-                                                    color: primaryColor,
-                                                    height: 1.0,
-                                                  ),
-                                                ),
-                                                Tooltip(
-                                                  showDuration: const Duration(
-                                                    seconds: 7,
-                                                  ),
-                                                  triggerMode:
-                                                      TooltipTriggerMode.tap,
-                                                  message:
-                                                      '메인 화면에 표시되는 최대 5개의 위시아이템입니다.\n\n• 등록된 순서대로 누적 금액이 적용되어 진행률이 계산됩니다.\n• 이전 목표를 달성하면, 누적 금액이 다음 목표에 적용됩니다.',
-                                                  child: Icon(
-                                                    Icons.info_outline,
-                                                    size: context.width(0.04),
-                                                    color: Colors.blue,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                            const SizedBox(width: 2),
-                                            Text(
-                                              " (${starWishList.length}/5)",
-                                              style: TextStyle(
-                                                color:
-                                                    Theme.of(
-                                                              context,
-                                                            ).brightness ==
-                                                            Brightness.dark
-                                                        ? Colors.white
-                                                        : Colors.black,
-                                                fontSize: context.width(0.035),
-                                                fontWeight: FontWeight.w600,
-                                                height: 1.0,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        Row(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.baseline,
-                                          textBaseline: TextBaseline.alphabetic,
-                                          children: [
-                                            if (totalPrice > 0)
-                                              Text(
-                                                "${currencyFormat.format(totalPrice)} 원 / ",
-                                                style: TextStyle(
-                                                  fontSize: context.width(0.03),
-                                                  color: Colors.grey,
-                                                  height: 1.5,
-                                                ),
-                                              ),
-                                            totalDisplayAmount >= totalPrice
-                                                ? Text(
-                                                  "달성 완료",
-                                                  style: TextStyle(
-                                                    fontSize: context.width(
-                                                      0.045,
-                                                    ),
-                                                    fontWeight: FontWeight.bold,
-                                                    color: Colors.green,
-                                                    height: 1.5,
-                                                  ),
-                                                )
-                                                : Row(
-                                                  children: [
-                                                    AnimatedDigitWidget(
-                                                      value:
-                                                          totalDisplayAmount
-                                                              .toInt(),
-                                                      enableSeparator: true,
-                                                      textStyle: TextStyle(
-                                                        color:
-                                                            Theme.of(
-                                                                      context,
-                                                                    ).brightness ==
-                                                                    Brightness
-                                                                        .dark
-                                                                ? Colors.white
-                                                                : Colors.black,
-                                                        fontSize: context.width(
-                                                          0.05,
-                                                        ),
-
-                                                        height: 1.5,
-                                                      ),
-                                                    ),
-                                                    Text(
-                                                      " 원",
-                                                      style: TextStyle(
-                                                        color:
-                                                            Theme.of(
-                                                                      context,
-                                                                    ).brightness ==
-                                                                    Brightness
-                                                                        .dark
-                                                                ? Colors.white
-                                                                : Colors.black,
-                                                        fontSize: context.width(
-                                                          0.05,
-                                                        ),
-                                                        height: 1.5,
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                },
-                              ),
+                          if (userInfo != null)
+                            // 타 사용자 리스트
+                            _UserStoryList(
+                              userInfo: userInfo,
+                              userList: userList,
+                              selectedUserId: _selectedUserId,
+                              onUserTap: _handleUserTap,
                             ),
 
-                          // --- Star 위시리스트 목록 ---
                           if (starWishList.isNotEmpty)
-                            ListView.builder(
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              itemCount: starWishList.length,
-                              itemBuilder: (context, index) {
-                                final item = starWishList[index];
-                                // 각 아이템 위젯을 분리하여 재빌드를 최소화
-                                return _WishlistItem(
-                                  item: item,
-                                  itemIndex: index,
-                                  isStar: true,
-                                );
-                              },
-                            ),
+                            _StarWishlistSection(starWishList: starWishList),
 
                           // --- All 위시리스트 섹션 ---
                           if (HighLightWishList.isNotEmpty)
@@ -588,6 +370,289 @@ class _WishViewState extends ConsumerState<_WishViewInternal> {
           ),
         ],
       ),
+    );
+  }
+}
+
+/// 인스타 스토리 형태의 전체 가로 목록을 만드는 위젯
+class _UserStoryList extends StatelessWidget {
+  final ProfileUserModel userInfo;
+  final List<SimpleUserModel> userList;
+  final int? selectedUserId;
+  final Function(int?) onUserTap;
+
+  const _UserStoryList({
+    required this.userInfo,
+    required this.userList,
+    this.selectedUserId,
+    required this.onUserTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 110,
+      child: Row(
+        children: [
+          Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: context.middlePadding / 2,
+            ),
+            child: _StoryCircleItem(
+              nickname: userInfo.nickname,
+              profileImageUrl: userInfo.profileImage,
+              isSelected: selectedUserId == null,
+              onTap: () => onUserTap(null),
+            ),
+          ),
+          const VerticalDivider(width: 1, thickness: 1),
+          Expanded(
+            child: ListView.builder(
+              padding: EdgeInsets.symmetric(
+                horizontal: context.middlePadding / 2,
+              ),
+              scrollDirection: Axis.horizontal,
+              itemCount: userList.length,
+              itemBuilder: (context, index) {
+                final user = userList[index];
+                return _StoryCircleItem(
+                  nickname: user.nickname,
+                  profileImageUrl: user.profileImage,
+                  isSelected: selectedUserId == user.userId,
+                  onTap: () => onUserTap(user.userId),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// 프로필 사진과 닉네임을 보여주는 개별 아이템 위젯
+class _StoryCircleItem extends StatelessWidget {
+  final String? profileImageUrl;
+  final String nickname;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const _StoryCircleItem({
+    this.profileImageUrl,
+    required this.nickname,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final displayedName =
+        nickname.length > 5 ? '${nickname.substring(0, 5)}...' : nickname;
+
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(10),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+        child: SizedBox(
+          width: 70,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(2.0),
+                decoration: BoxDecoration(
+                  color: isSelected ? primaryColor : Colors.transparent,
+                  shape: BoxShape.circle,
+                ),
+                child: CircleAvatar(
+                  radius: context.width(0.08),
+                  backgroundColor: Colors.grey.shade300,
+                  backgroundImage:
+                      profileImageUrl != null
+                          ? NetworkImage(profileImageUrl!)
+                          : null,
+                  child:
+                      profileImageUrl == null
+                          ? Icon(
+                            Icons.person,
+                            size: context.width(0.08),
+                            color: Colors.grey.shade600,
+                          )
+                          : null,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                displayedName,
+                style: const TextStyle(fontSize: 12),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Star 위시리스트의 헤더와 목록을 모두 포함하는 섹션 위젯
+class _StarWishlistSection extends ConsumerWidget {
+  // Star 위시리스트 데이터를 외부에서 전달받습니다.
+  final List<dynamic> starWishList;
+
+  const _StarWishlistSection({required this.starWishList});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    // ConsumerWidget이므로 ref를 직접 사용할 수 있습니다.
+    final homeState = ref.watch(homeViewModelProvider);
+    final currencyFormat = NumberFormat.decimalPattern('ko_KR');
+
+    // 합계 금액 계산 로직
+    final totalPrice = starWishList.fold<int>(
+      0,
+      // ✨ item.price를 int로 명시적으로 캐스팅합니다.
+      (sum, item) => sum + (item.price as int),
+    );
+    final double totalDisplayAmount =
+        (totalPrice > 0)
+            ? min(homeState.currentEarnedAmount, totalPrice.toDouble())
+            : homeState.currentEarnedAmount;
+
+    // Column으로 헤더와 리스트를 묶어서 반환합니다.
+    return Column(
+      children: [
+        // --- Star 위시리스트 헤더 ---
+        Padding(
+          padding: EdgeInsets.all(context.middlePadding / 2),
+          child: Container(
+            decoration: BoxDecoration(
+              border: Border.all(width: 1, color: primaryColor),
+              color:
+                  Theme.of(context).brightness == Brightness.dark
+                      ? lightDarkColor
+                      : Colors.white,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            padding: EdgeInsets.symmetric(
+              vertical: context.middlePadding / 2,
+              horizontal: context.middlePadding,
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                // ... (기존 헤더의 왼쪽 Row UI)
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.baseline,
+                  textBaseline: TextBaseline.alphabetic,
+                  children: [
+                    Row(
+                      children: [
+                        Text(
+                          "Star",
+                          style: TextStyle(
+                            fontSize: context.width(0.07),
+                            fontWeight: FontWeight.w500,
+                            color: primaryColor,
+                            height: 1.0,
+                          ),
+                        ),
+                        Tooltip(
+                          triggerMode: TooltipTriggerMode.tap,
+                          message:
+                              '메인 화면에 표시되는 위시아이템입니다.\n\n*최대 5개까지 등록이 가능합니다.',
+                          child: Icon(
+                            Icons.info_outline,
+                            size: context.width(0.04),
+                            color: Colors.blue,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(width: 2),
+                    Text(
+                      " (${starWishList.length}/5)",
+                      style: TextStyle(
+                        fontSize: context.width(0.035),
+                        fontWeight: FontWeight.w600,
+                        height: 1.0,
+                      ),
+                    ),
+                  ],
+                ),
+                // ... (기존 헤더의 오른쪽 Row UI)
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.baseline,
+                  textBaseline: TextBaseline.alphabetic,
+                  children: [
+                    if (totalPrice > 0)
+                      Text(
+                        "${currencyFormat.format(totalPrice)} 원 / ",
+                        style: TextStyle(
+                          fontSize: context.width(0.03),
+                          color: Colors.grey,
+                          height: 1.5,
+                        ),
+                      ),
+                    totalDisplayAmount >= totalPrice
+                        ? Text(
+                          "달성 완료",
+                          style: TextStyle(
+                            fontSize: context.width(0.045),
+                            fontWeight: FontWeight.bold,
+                            color: Colors.green,
+                            height: 1.5,
+                          ),
+                        )
+                        : Row(
+                          children: [
+                            AnimatedDigitWidget(
+                              value: totalDisplayAmount.toInt(),
+                              enableSeparator: true,
+                              textStyle: TextStyle(
+                                color:
+                                    Theme.of(context).brightness ==
+                                            Brightness.dark
+                                        ? Colors.white
+                                        : Colors.black,
+                                fontSize: context.width(0.05),
+                                height: 1.5,
+                              ),
+                            ),
+                            Text(
+                              " 원",
+                              style: TextStyle(
+                                fontSize: context.width(0.05),
+                                height: 1.5,
+                              ),
+                            ),
+                          ],
+                        ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+
+        // --- Star 위시리스트 목록 ---
+        ListView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: starWishList.length,
+          itemBuilder: (context, index) {
+            final item = starWishList[index];
+            // TODO: item의 타입이 StarWishModel/WishModel 두 가지일 수 있으므로 타입 확인 및 분기 처리가 필요합니다.
+            // 아래는 WishModel 기준의 예시입니다.
+            if (item is WishModel) {
+              return _WishlistItem(item: item, itemIndex: index, isStar: true);
+            }
+            // StarWishModel을 위한 별도 아이템 위젯 또는 임시 위젯
+            return ListTile(title: Text(item.name));
+          },
+        ),
+      ],
     );
   }
 }

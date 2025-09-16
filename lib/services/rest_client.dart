@@ -14,6 +14,13 @@ abstract class RestClient {
   @GET("/api/profile")
   Future<ApiResponse> loadProfile(@Header("Authorization") String accessToken);
 
+  /// 타 프로필 기본 조회 API
+  @GET("/api/profile/{userId}")
+  Future<ApiResponse> loadOtherProfile(
+    @Header("Authorization") String accessToken,
+    @Path("userId") int userId,
+  );
+
   /// 이메일 인증 코드 요청 API
   @POST("/api/auth/email/send")
   Future<ApiResponse> sendEmail(@Query('email') String email);
@@ -87,6 +94,13 @@ abstract class RestClient {
     @Body() Map<String, dynamic> body,
   );
 
+  /// 통합 위시리스트 조회 API
+  @GET("/api/wish/main")
+  Future<ApiResponse> loadMainWishList(
+    @Header("Authorization") String accessToken,
+    @Query("userCount") int userCount,
+  );
+
   /// Star 위시리스트 불러오기 API
   @GET("/api/star")
   Future<ApiResponse> loadStarInfo(@Header("Authorization") String accessToken);
@@ -97,6 +111,10 @@ abstract class RestClient {
     @Header("Authorization") String accessToken,
     @Body() Map<String, dynamic> body,
   );
+
+  /// 랭킹 정보 불러오기 API
+  @GET("/api/rank")
+  Future<ApiResponse> loadRankInfo(@Header("Authorization") String accessToken);
 
   /// 월 수익 설정 API
   @POST("/api/profile/salary")
@@ -125,6 +143,13 @@ abstract class RestClient {
   @PATCH("/api/profile/image/delete")
   Future<ApiResponse> deleteProfileImage(
     @Header("Authorization") String accesstoken,
+  );
+
+  /// 공개 여부 수정 API
+  @PATCH("/api/profile/visibility")
+  Future<ApiResponse> setPublic(
+    @Header("Authorization") String accesstoken,
+    @Body() Map<String, dynamic> body,
   );
 
   /// 위시아이템 추가 API
@@ -218,5 +243,12 @@ abstract class RestClient {
   Future<ApiResponse> keepPiece(
     @Header("Authorization") String accesstoken,
     @Path("pieceId") int pieceId,
+  );
+
+  /// 사용자 신고 API
+  @POST("/api/report/user")
+  Future<ApiResponse> reportUser(
+    @Header("Authorization") String accessToken,
+    @Body() Map<String, dynamic> body,
   );
 }

@@ -152,4 +152,7 @@ final ThemeData darkTheme = ThemeData(
     backgroundColor: Colors.black,
     foregroundColor: Colors.white,
   ),
+
+  // 기본 텍스트 화이트로 지정
+  textTheme: Typography.whiteMountainView.apply(fontFamily: 'Mainfonts'),
 );

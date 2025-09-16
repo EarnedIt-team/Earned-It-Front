@@ -1,7 +1,7 @@
 import 'package:earned_it/config/design.dart';
 import 'package:earned_it/view_models/setting/state_auth_provider.dart';
 import 'package:earned_it/view_models/theme_provider.dart';
-import 'package:earned_it/view_models/user_provider.dart';
+import 'package:earned_it/view_models/user/user_provider.dart';
 import 'package:earned_it/view_models/wish/wish_provider.dart';
 import 'package:earned_it/views/navigation_view.dart';
 import 'package:flutter/material.dart';
@@ -260,7 +260,7 @@ class _SettingViewState extends ConsumerState<SettingView> {
                   horizontal: context.middlePadding / 2,
                 ),
                 leading: Icon(
-                  Icons.edit_outlined,
+                  Icons.text_fields,
                   color:
                       Theme.of(context).brightness == Brightness.dark
                           ? Colors.white
@@ -289,14 +289,14 @@ class _SettingViewState extends ConsumerState<SettingView> {
                   horizontal: context.middlePadding / 2,
                 ),
                 leading: Icon(
-                  Icons.photo_camera_outlined,
+                  Icons.image_outlined,
                   color:
                       Theme.of(context).brightness == Brightness.dark
                           ? Colors.white
                           : Colors.black,
                 ),
                 title: Text(
-                  '프로필 사진 변경',
+                  '사진 변경',
                   style: TextStyle(
                     color:
                         Theme.of(context).brightness == Brightness.dark
@@ -310,6 +310,35 @@ class _SettingViewState extends ConsumerState<SettingView> {
                 ),
                 onTap: () {
                   ref.read(isOpenEditProfileImage.notifier).state = true;
+                },
+              ),
+            if (userState.isLogin == true)
+              ListTile(
+                contentPadding: EdgeInsets.symmetric(
+                  horizontal: context.middlePadding / 2,
+                ),
+                leading: Icon(
+                  Icons.public,
+                  color:
+                      Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white
+                          : Colors.black,
+                ),
+                title: Text(
+                  '공개 범위 설정',
+                  style: TextStyle(
+                    color:
+                        Theme.of(context).brightness == Brightness.dark
+                            ? Colors.white
+                            : Colors.black,
+                  ),
+                ),
+                trailing: const Icon(
+                  Icons.chevron_right,
+                  color: primaryGradientEnd,
+                ),
+                onTap: () {
+                  context.push('/setPublic');
                 },
               ),
             if (userState.isLogin == true)
@@ -375,13 +404,26 @@ class _SettingViewState extends ConsumerState<SettingView> {
                   context: context,
                   builder:
                       (_) => AlertDialog(
+                        backgroundColor:
+                            Theme.of(context).brightness == Brightness.dark
+                                ? lightDarkColor
+                                : lightColor2,
                         title: const Text('테마 선택'),
                         content: Column(
                           mainAxisSize: MainAxisSize.min,
                           children:
                               ThemeMode.values.map((theme) {
                                 return RadioListTile<ThemeMode>(
-                                  title: Text(_themeModeToString(theme)),
+                                  title: Text(
+                                    _themeModeToString(theme),
+                                    style: TextStyle(
+                                      color:
+                                          Theme.of(context).brightness ==
+                                                  Brightness.dark
+                                              ? Colors.white
+                                              : Colors.black,
+                                    ),
+                                  ),
                                   value: theme,
                                   groupValue: currentThemeMode,
                                   onChanged: (newTheme) {

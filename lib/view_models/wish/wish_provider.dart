@@ -1,12 +1,14 @@
 import 'package:dio/dio.dart';
 import 'package:earned_it/config/exception.dart';
 import 'package:earned_it/config/toastMessage.dart';
+import 'package:earned_it/models/user/profile_user_model.dart';
+import 'package:earned_it/models/user/simple_user_model.dart';
 import 'package:earned_it/models/wish/wish_filter_state.dart';
 import 'package:earned_it/models/wish/wish_model.dart';
 import 'package:earned_it/models/wish/wish_state.dart';
 import 'package:earned_it/services/auth/login_service.dart';
 import 'package:earned_it/services/wish_service.dart';
-import 'package:earned_it/view_models/user_provider.dart';
+import 'package:earned_it/view_models/user/user_provider.dart';
 import 'package:earned_it/view_models/wish/wish_filter_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -27,7 +29,7 @@ class WishViewModel extends Notifier<WishState> {
     return const WishState(); // isLoading이 false인 초기 상태
   }
 
-  /// 서버 응답 데이터로 위시리스트 상태 전체를 업데이트합니다.
+  /// 서버 응답 데이터로 Star 위시리스트 상태 전체를 업데이트합니다.
   void updateStarWishesFromServer(Map<String, dynamic> data) {
     final List<dynamic> rawStarWishes = data["starWishes"] ?? [];
 
@@ -38,6 +40,61 @@ class WishViewModel extends Notifier<WishState> {
 
     state = state.copyWith(starWishes: starWishesList);
     print("Star 위시리스트 업데이트");
+  }
+
+  /// 통합 위시리스트 정보를 불러옵니다.
+  Future<void> loadMainWishList({required int userCount}) async {
+    if (state.isLoading) return;
+
+    state = state.copyWith(isLoading: true);
+    try {
+      final String? accessToken = await _storage.read(key: 'accessToken');
+      if (accessToken == null) throw Exception("로그인이 필요합니다.");
+
+      final response = await _wishService.loadMainWishData(
+        accessToken: accessToken,
+        userCount: userCount,
+      );
+
+      // API 응답 데이터의 'data' 필드를 가져옵니다.
+      final data = response.data;
+
+      // 각 필드를 올바른 모델로 파싱합니다.
+      final userInfo = ProfileUserModel.fromJson(data['userInfo']);
+
+      final userList =
+          (data['userList'] as List)
+              .map(
+                (json) =>
+                    SimpleUserModel.fromJson(json as Map<String, dynamic>),
+              )
+              .toList();
+
+      final starList =
+          (data['starList'] as List)
+              .map((json) => WishModel.fromJson(json as Map<String, dynamic>))
+              .toList();
+
+      final wishList =
+          (data['wishList'] as List)
+              .map((json) => WishModel.fromJson(json as Map<String, dynamic>))
+              .toList();
+
+      // 파싱된 데이터로 상태를 업데이트합니다.
+      state = state.copyWith(
+        isLoading: false,
+        userInfo: userInfo,
+        userList: userList,
+        starWishes: starList,
+        Wishes3: wishList,
+      );
+
+      print("통합 위시리스트 저장 완료");
+    } catch (e) {
+      print("통합 위시리스트 불러오기 Error: $e");
+      state = state.copyWith(isLoading: false);
+      // TODO: 사용자에게 에러 메시지 표시
+    }
   }
 
   /// 사용자의 Star 위시리스트를 불러옵니다.

@@ -16,6 +16,7 @@ _UserState _$UserStateFromJson(Map<String, dynamic> json) => _UserState(
   earningsPerSecond: (json['amountPerSec'] as num?)?.toDouble() ?? 0.0,
   hasAgreedTerm: json['hasAgreedTerm'] as bool? ?? true,
   isCheckedIn: json['isCheckedIn'] as bool? ?? false,
+  isPublic: json['isPublic'] as bool? ?? false,
 );
 
 Map<String, dynamic> _$UserStateToJson(_UserState instance) =>
@@ -29,4 +30,5 @@ Map<String, dynamic> _$UserStateToJson(_UserState instance) =>
       'amountPerSec': instance.earningsPerSecond,
       'hasAgreedTerm': instance.hasAgreedTerm,
       'isCheckedIn': instance.isCheckedIn,
+      'isPublic': instance.isPublic,
     };

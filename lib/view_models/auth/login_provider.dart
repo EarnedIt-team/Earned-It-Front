@@ -4,7 +4,7 @@ import 'package:earned_it/models/login/login_state.dart';
 import 'package:earned_it/services/auth/apple_login_service.dart';
 import 'package:earned_it/services/auth/kakao_login_service.dart';
 import 'package:earned_it/services/auth/login_service.dart';
-import 'package:earned_it/view_models/user_provider.dart';
+import 'package:earned_it/view_models/user/user_provider.dart';
 import 'package:earned_it/views/auth/agreement_modal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

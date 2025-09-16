@@ -2,10 +2,11 @@ import 'package:earned_it/config/design.dart';
 import 'package:earned_it/config/toastMessage.dart';
 import 'package:earned_it/models/piece/theme_model.dart';
 import 'package:earned_it/view_models/piece_provider.dart';
-import 'package:earned_it/view_models/user_provider.dart';
+import 'package:earned_it/view_models/user/user_provider.dart';
 import 'package:earned_it/views/navigation_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -42,6 +43,7 @@ class _PuzzleViewState extends ConsumerState<_PuzzleViewInternal> {
 
   final GlobalKey _one = GlobalKey();
   final GlobalKey _two = GlobalKey();
+  final GlobalKey _three = GlobalKey();
 
   @override
   void initState() {
@@ -62,7 +64,7 @@ class _PuzzleViewState extends ConsumerState<_PuzzleViewInternal> {
     final hasSeen = prefs.getBool('hasSeenPuzzleShowcase') ?? false;
 
     if (!hasSeen && mounted) {
-      ShowCaseWidget.of(context).startShowCase([_one, _two]);
+      ShowCaseWidget.of(context).startShowCase([_one, _two, _three]);
     }
   }
 
@@ -114,7 +116,6 @@ class _PuzzleViewState extends ConsumerState<_PuzzleViewInternal> {
 
   AppBar _buildAppBar(BuildContext context, WidgetRef ref) {
     final pieceState = ref.watch(pieceProvider);
-    final currencyFormat = NumberFormat.decimalPattern('ko_KR');
     return AppBar(
       scrolledUnderElevation: 0,
       title: const Row(
@@ -125,24 +126,50 @@ class _PuzzleViewState extends ConsumerState<_PuzzleViewInternal> {
         ],
       ),
       centerTitle: false,
-      actions: [
-        Tooltip(
-          showDuration: const Duration(seconds: 5),
-          triggerMode: TooltipTriggerMode.tap,
-          message:
-              '획득한 모든 퍼즐 조각의 가치를 합산한 점수입니다.\n*같은 조각을 여러 번 획득해도 점수는 한 번만 계산됩니다.',
-          child: Icon(
-            Icons.info_outline,
-            size: context.width(0.04),
-            color: Colors.blue,
+      actions: <Widget>[
+        Showcase(
+          targetBorderRadius: BorderRadius.all(
+            Radius.circular(context.width(0.05)),
           ),
-        ),
-        SizedBox(width: context.width(0.01)),
-        Text(
-          '현재 가치 : ${currencyFormat.format(pieceState.totalAccumulatedValue)} 원',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: context.width(0.04),
+          tooltipPosition: TooltipPosition.bottom,
+          overlayColor:
+              Theme.of(context).brightness == Brightness.dark
+                  ? const Color.fromARGB(255, 46, 46, 46)
+                  : Colors.grey,
+          targetPadding: EdgeInsets.all(context.middlePadding / 2),
+          key: _three,
+          description: '기준에 따라 획득한 점수로 등수를 매깁니다.\n해당 페이지에서, 다른 사람들과 비교해보세요!',
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              padding: EdgeInsets.symmetric(horizontal: context.middlePadding),
+              shadowColor: Colors.transparent,
+              elevation: 0,
+              backgroundColor:
+                  Theme.of(context).brightness == Brightness.dark
+                      ? Colors.black
+                      : Colors.white,
+              side: const BorderSide(width: 1, color: primaryGradientStart),
+            ),
+            onPressed: () {
+              context.push('/rank');
+            },
+            child: Row(
+              spacing: 5,
+              children: [
+                Icon(
+                  Icons.leaderboard,
+                  size: context.width(0.04),
+                  color: primaryGradientStart,
+                ),
+                Text(
+                  "랭킹",
+                  style: TextStyle(
+                    fontSize: context.width(0.035),
+                    color: primaryGradientStart,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ],
@@ -156,6 +183,7 @@ class _PuzzleViewState extends ConsumerState<_PuzzleViewInternal> {
     List<ThemeModel> themes,
   ) {
     final pieceState = ref.watch(pieceProvider);
+    final currencyFormat = NumberFormat.decimalPattern('ko_KR');
     final double themeProgress =
         (pieceState.themeCount > 0)
             ? pieceState.completedThemeCount / pieceState.themeCount
@@ -174,7 +202,46 @@ class _PuzzleViewState extends ConsumerState<_PuzzleViewInternal> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(height: context.height(0.01)),
+          Row(
+            children: [
+              Text(
+                '현재 가치',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: context.height(0.02),
+                  color:
+                      Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white
+                          : Colors.black,
+                ),
+              ),
+              const SizedBox(width: 3),
+              Tooltip(
+                showDuration: const Duration(seconds: 5),
+                triggerMode: TooltipTriggerMode.tap,
+                message:
+                    '획득한 모든 퍼즐 조각의 가치를 합산한 점수입니다.\n*같은 조각을 여러 번 획득해도 금액은 한 번만 계산됩니다.',
+                child: Icon(
+                  Icons.info_outline,
+                  size: context.width(0.04),
+                  color: Colors.blue,
+                ),
+              ),
+              const Spacer(),
+              Text(
+                '${currencyFormat.format(pieceState.totalAccumulatedValue)} 원',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: context.height(0.02),
+                  color:
+                      Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white
+                          : Colors.black,
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: context.height(0.03)),
           Showcase(
             targetBorderRadius: BorderRadius.all(
               Radius.circular(context.width(0.05)),
@@ -188,7 +255,25 @@ class _PuzzleViewState extends ConsumerState<_PuzzleViewInternal> {
             description: '테마와 조각의 전체 진행률을 확인할 수 있습니다.',
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              spacing: context.width(0.03),
               children: [
+                Column(
+                  children: <Widget>[
+                    _buildProgressCircle(
+                      context: context,
+                      title: "순위",
+                      value: 1,
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      "상위 ${(pieceState.userRank / pieceState.userCount * 100).toStringAsFixed(2)}%",
+                      style: TextStyle(
+                        color: Colors.grey,
+                        fontSize: context.width(0.04),
+                      ),
+                    ),
+                  ],
+                ),
                 Column(
                   children: <Widget>[
                     _buildProgressCircle(
@@ -263,6 +348,12 @@ class _PuzzleViewState extends ConsumerState<_PuzzleViewInternal> {
     required String title,
     required double value,
   }) {
+    final pieceState = ref.watch(pieceProvider);
+    final rankValue =
+        pieceState.userCount > 0
+            ? (pieceState.userCount - pieceState.userRank + 1) /
+                pieceState.userCount
+            : 0.0;
     return SizedBox(
       width: context.width(0.25),
       height: context.width(0.25),
@@ -279,7 +370,7 @@ class _PuzzleViewState extends ConsumerState<_PuzzleViewInternal> {
             color: Colors.transparent,
           ),
           CircularProgressIndicator(
-            value: value,
+            value: title == "순위" ? rankValue : value,
             strokeWidth: context.width(0.02),
             valueColor: const AlwaysStoppedAnimation<Color>(
               primaryGradientStart,
@@ -305,7 +396,9 @@ class _PuzzleViewState extends ConsumerState<_PuzzleViewInternal> {
                     showDuration: const Duration(seconds: 5),
                     triggerMode: TooltipTriggerMode.tap,
                     message:
-                        title == "테마"
+                        title == "순위"
+                            ? '테마 + 조각 + 현재 가치의 점수를 종합하여\n결정된 순위입니다.\n\n*매 정각마다 갱신됩니다.'
+                            : title == "테마"
                             ? '각 테마의 퍼즐을 모두 획득하면\n완성한 테마로 기록됩니다.'
                             : '출석체크와 같은 활동으로 획득한\n전체 퍼즐 조각의 수입니다.',
                     child: Icon(
@@ -317,10 +410,16 @@ class _PuzzleViewState extends ConsumerState<_PuzzleViewInternal> {
                 ],
               ),
               Text(
-                '${(value * 100).toStringAsFixed(0)}%',
+                title == "순위"
+                    ? '${pieceState.userRank}등'
+                    : '${(value * 100).toStringAsFixed(0)}%',
                 style: TextStyle(
                   fontSize: context.width(0.055),
                   fontWeight: FontWeight.bold,
+                  color:
+                      Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white
+                          : Colors.black,
                 ),
               ),
             ],
@@ -346,6 +445,10 @@ class _PuzzleViewState extends ConsumerState<_PuzzleViewInternal> {
               style: TextStyle(
                 fontSize: context.height(0.02),
                 fontWeight: FontWeight.bold,
+                color:
+                    Theme.of(context).brightness == Brightness.dark
+                        ? Colors.white
+                        : Colors.black,
               ),
             ),
             Text(

@@ -4,7 +4,7 @@ import 'package:earned_it/view_models/checkedIn_provider.dart';
 import 'package:earned_it/view_models/piece_provider.dart';
 import 'package:earned_it/view_models/setting/set_profileimage_provider.dart';
 import 'package:earned_it/view_models/setting/state_auth_provider.dart';
-import 'package:earned_it/view_models/user_provider.dart';
+import 'package:earned_it/view_models/user/user_provider.dart';
 import 'package:earned_it/view_models/wish/wish_order_provider.dart';
 import 'package:earned_it/view_models/wish/wish_provider.dart';
 import 'package:earned_it/views/checkedIn_Modal.dart';
@@ -157,6 +157,10 @@ class NavigationView extends ConsumerWidget {
     ref.listen<bool>(isOpenEditProfileImage, (previous, next) {
       if (next == true) {
         showModalBottomSheet(
+          backgroundColor:
+              Theme.of(context).brightness == Brightness.dark
+                  ? lightDarkColor
+                  : lightColor2,
           context: context,
           // ... (BottomSheet UI는 동일)
           builder: (BuildContext context) {
@@ -324,9 +328,17 @@ class NavigationView extends ConsumerWidget {
       }
     });
 
+    final String location = GoRouterState.of(context).uri.toString();
+
     return Stack(
       children: [
         Scaffold(
+          backgroundColor:
+              location.startsWith('/wish')
+                  ? Theme.of(context).brightness == Brightness.dark
+                      ? Colors.black
+                      : lightColor2
+                  : null,
           body: child,
           bottomNavigationBar: ClipRRect(
             borderRadius: const BorderRadius.only(

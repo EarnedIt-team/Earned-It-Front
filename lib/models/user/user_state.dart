@@ -33,6 +33,9 @@ abstract class UserState with _$UserState {
 
     /// 출석 체크 여부 (Default = false)
     @Default(false) bool isCheckedIn,
+
+    /// 공개 여부 (Default = false)
+    @Default(false) bool isPublic,
   }) = _UserState;
 
   // JSON 직렬화를 위한 fromJson 팩토리 생성자 추가

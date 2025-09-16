@@ -4,7 +4,7 @@ import 'package:earned_it/config/toastMessage.dart';
 import 'package:earned_it/models/setting/nickname_edit_state.dart';
 import 'package:earned_it/services/auth/login_service.dart';
 import 'package:earned_it/services/setting_service.dart';
-import 'package:earned_it/view_models/user_provider.dart';
+import 'package:earned_it/view_models/user/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -53,7 +53,13 @@ class NicknameEditViewModel extends AutoDisposeNotifier<NicknameEditState> {
     // --- 유효성 검사 규칙 ---
     if (currentText.isEmpty) {
       error = '닉네임을 입력해주세요.';
-    } else if (RegExp(r'\s').hasMatch(currentText)) {
+    }
+    // ✨ --- 수정된 부분 시작 --- ✨
+    else if (currentText.length < 2) {
+      error = '최소 2글자 이상 입력해주세요.';
+    }
+    // ✨ --- 수정된 부분 끝 --- ✨
+    else if (RegExp(r'\s').hasMatch(currentText)) {
       error = '공백은 사용할 수 없습니다.';
     } else if (RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch(currentText)) {
       error = '특수문자는 사용할 수 없습니다.';

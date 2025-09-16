@@ -5,7 +5,7 @@ import 'package:earned_it/models/checkedIn/checkedIn_model.dart';
 import 'package:earned_it/models/checkedIn/checkedIn_state.dart';
 import 'package:earned_it/services/auth/login_service.dart';
 import 'package:earned_it/services/checkin_service.dart';
-import 'package:earned_it/view_models/user_provider.dart';
+import 'package:earned_it/view_models/user/user_provider.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';

@@ -105,4 +105,28 @@ class SettingService {
       throw Exception("서버에서 에러가 발생했습니다.");
     }
   }
+
+  /// 사용자의 프로필 공개 여부를 수정합니다.
+  Future<ApiResponse> setPublic(String accessToken, bool isPublic) async {
+    try {
+      String token = "Bearer $accessToken";
+
+      final Map<String, dynamic> requestBody = <String, dynamic>{
+        "isPublic": isPublic,
+      };
+
+      final ApiResponse response = await _restClient.setPublic(
+        token,
+        requestBody,
+      );
+
+      return response;
+      // 400 에러 등
+    } on DioException catch (e) {
+      rethrow;
+    } catch (e) {
+      // DioException이 아닌 다른 예외 발생 시 (네트워크 연결 끊김 등)
+      throw Exception("서버에서 에러가 발생했습니다.");
+    }
+  }
 }

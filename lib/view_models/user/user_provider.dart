@@ -42,6 +42,8 @@ class UserNotifier extends Notifier<UserState> {
         isearningsPerSecond: response.data["userInfo"]["hasSalary"] ?? false,
         // 출석 체크 여부
         isCheckedIn: response.data["userInfo"]["checkedIn"] ?? false,
+        // 공개 여부
+        isPublic: response.data["userInfo"]["public"] ?? false,
       );
 
       // 위시리스트(Star) 관련 데이터는 WishNotifier에 업데이트를 위임합니다.

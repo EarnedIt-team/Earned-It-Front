@@ -32,6 +32,12 @@ abstract class PieceState with _$PieceState {
     /// 선택한 조각
     PieceInfoModel? selectedPiece,
 
+    /// 사용자 현재 랭킹 순위
+    @Default(0) int userRank,
+
+    /// 전체 사용자 인원 수
+    @Default(0) int userCount,
+
     /// 현재까지 획득한 조각 리스트 (퍼즐 View)
     @Default([]) List<ThemeModel> pieces,
   }) = _PieceState;

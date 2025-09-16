@@ -5,7 +5,7 @@ import 'package:earned_it/models/piece/piece_info_model.dart';
 import 'package:earned_it/models/piece/piece_state.dart';
 import 'package:earned_it/models/piece/theme_model.dart';
 import 'package:earned_it/services/piece_service.dart';
-import 'package:earned_it/view_models/user_provider.dart';
+import 'package:earned_it/view_models/user/user_provider.dart';
 import 'package:earned_it/views/navigation_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -79,6 +79,8 @@ class PieceNotifier extends Notifier<PieceState> {
         totalPieceCount: data['puzzleInfo']['totalPieceCount'] ?? 0,
         completedPieceCount: data['puzzleInfo']['completedPieceCount'] ?? 0,
         totalAccumulatedValue: data['puzzleInfo']['totalAccumulatedValue'] ?? 0,
+        userRank: data['puzzleInfo']['rank'] ?? 0,
+        userCount: data['puzzleInfo']['userCount'] ?? 0,
       );
     } on DioException catch (e) {
       if (context.mounted) _handleApiError(context, e);
@@ -95,6 +97,7 @@ class PieceNotifier extends Notifier<PieceState> {
   Future<void> loadPieceInfo(BuildContext context, int pieceId) async {
     // 상세 정보 로딩은 전체 화면 로딩과 별개로 처리
     try {
+      state = state.copyWith(isLoading: true);
       final accessToken = await _storage.read(key: 'accessToken');
       if (accessToken == null) throw Exception("로그인이 필요합니다.");
 
@@ -116,6 +119,10 @@ class PieceNotifier extends Notifier<PieceState> {
       if (context.mounted) _handleApiError(context, e);
     } catch (e) {
       if (context.mounted) _handleGeneralError(context, e);
+    } finally {
+      if (ref.exists(pieceServiceProvider)) {
+        state = state.copyWith(isLoading: false);
+      }
     }
   }
 

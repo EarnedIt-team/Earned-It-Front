@@ -2,7 +2,7 @@ import 'package:earned_it/config/design.dart';
 import 'package:earned_it/config/toastMessage.dart';
 import 'package:earned_it/view_models/home_provider.dart';
 import 'package:earned_it/view_models/piece_provider.dart';
-import 'package:earned_it/view_models/user_provider.dart';
+import 'package:earned_it/view_models/user/user_provider.dart';
 import 'package:earned_it/views/navigation_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

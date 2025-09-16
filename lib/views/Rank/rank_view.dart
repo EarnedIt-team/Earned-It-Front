@@ -7,27 +7,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
-// 다음 정각까지 남은 시간을 1초마다 제공하는 StreamProvider
-final timerProvider = StreamProvider<String>((ref) {
-  return Stream.periodic(const Duration(seconds: 1), (_) {
-    final now = DateTime.now();
-    // 다음 날 자정(00:00:00) 계산
-    final tomorrow = DateTime(now.year, now.month, now.day + 1);
-    final difference = tomorrow.difference(now);
-
-    // 남은 시간을 HH:MM:SS 형식으로 변환
-    final hours = difference.inHours;
-    final minutes = difference.inMinutes % 60;
-    final seconds = difference.inSeconds % 60;
-
-    final hoursStr = hours.toString().padLeft(2, '0');
-    final minutesStr = minutes.toString().padLeft(2, '0');
-    final secondsStr = seconds.toString().padLeft(2, '0');
-
-    return '$hoursStr:$minutesStr:$secondsStr';
-  });
-});
-
 class RankView extends ConsumerStatefulWidget {
   const RankView({super.key});
 
@@ -43,18 +22,7 @@ class _RankViewState extends ConsumerState<RankView> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       // view model의 현재 상태를 읽어옵니다.
       final rankState = ref.read(rankViewModelProvider);
-      final lastUpdated = rankState.lastUpdated;
-      final now = DateTime.now();
-
-      // 마지막 업데이트 시간이 null(최초 로드)이거나,
-      // 마지막 업데이트 날짜와 현재 날짜가 다를 경우에만 데이터를 새로 불러옵니다.
-      print("마지막 업데이트 : $lastUpdated");
-      if (lastUpdated == null ||
-          lastUpdated.year != now.year ||
-          lastUpdated.month != now.month ||
-          lastUpdated.day != now.day) {
-        ref.read(rankViewModelProvider.notifier).loadRankData(context);
-      }
+      ref.read(rankViewModelProvider.notifier).loadRankData(context);
     });
   }
 
@@ -62,7 +30,6 @@ class _RankViewState extends ConsumerState<RankView> {
   Widget build(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final backgroundColor = isDarkMode ? Colors.black : lightColor2;
-    final remainingTime = ref.watch(timerProvider);
 
     // RankViewModel의 상태를 watch
     final rankState = ref.watch(rankViewModelProvider);
@@ -104,35 +71,6 @@ class _RankViewState extends ConsumerState<RankView> {
           ],
         ),
         centerTitle: false,
-        actions: <Widget>[
-          Row(
-            children: [
-              const Icon(Icons.timelapse),
-              const SizedBox(width: 5),
-              // StreamProvider의 상태에 따라 다른 UI를 보여줍니다.
-              remainingTime.when(
-                data:
-                    (time) => Text(
-                      time,
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                loading:
-                    () => const Text(
-                      "00:00:00",
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                error:
-                    (err, stack) => const Text(
-                      "Error",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.red,
-                      ),
-                    ),
-              ),
-            ],
-          ),
-        ],
         actionsPadding: EdgeInsets.symmetric(horizontal: context.width(0.04)),
       ),
       body: SingleChildScrollView(
@@ -192,8 +130,8 @@ class _RankViewState extends ConsumerState<RankView> {
     final screenHeight = MediaQuery.of(context).size.height;
 
     // 1. 시상대의 최대/최소 높이를 미리 정의합니다.
-    final maxPodiumHeight = screenHeight * 0.21; // 1등이 차지할 최대 높이
-    final minPodiumHeight = screenHeight * 0.10; // 점수가 0점에 가까울 때의 최소 높이
+    final maxPodiumHeight = screenHeight * 0.22; // 1등이 차지할 최대 높이
+    final minPodiumHeight = screenHeight * 0.05; // 점수가 0점에 가까울 때의 최소 높이
 
     // 2. 랭킹 1위의 점수를 최대 점수로 설정합니다. (리스트가 비어있을 경우 에러 방지)
     final maxScore = top10.isNotEmpty ? top10[0].score : 1;
@@ -260,32 +198,39 @@ class _RankViewState extends ConsumerState<RankView> {
     required double screenWidth,
   }) {
     return InkWell(
-      onTap: () {
-        // isPublic이 null일 경우를 대비해 기본값 false를 사용 (?? false)
-        final isPublic = ranker.isPublic ?? false;
-
-        // 1. Path Parameter를 사용하는 경로로 이동
-        // 2. Query Parameter로 isPublic 값 전달
-        context.push('/profile/${ranker.userId}?isPublic=$isPublic');
-      },
+      onTap:
+          ranker.public!
+              ? () {
+                context.push(
+                  '/profile/${ranker.userId}?isPublic=${ranker.public}}',
+                );
+              }
+              : null,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           CircleAvatar(
-            radius: ranker.rank == 1 ? 30 : 25,
-            backgroundImage:
-                ranker.profileImage != null
-                    ? NetworkImage(ranker.profileImage!)
-                    : null,
-            backgroundColor: Colors.grey.shade300,
-            child:
-                ranker.profileImage == null
-                    ? Icon(
-                      Icons.person,
-                      size: ranker.rank == 1 ? 35 : 30,
-                      color: Colors.grey.shade600,
-                    )
-                    : null,
+            radius: ranker.rank == 1 ? 30 : 25, // 테두리를 위해 약간 더 크게
+            backgroundColor:
+                ranker.public!
+                    ? primaryColor
+                    : Colors.transparent, // public일 때만 색상 적용
+            child: CircleAvatar(
+              radius: ranker.rank == 1 ? 28 : 23,
+              backgroundImage:
+                  ranker.profileImage != null
+                      ? NetworkImage(ranker.profileImage!)
+                      : null,
+              backgroundColor: Colors.grey.shade300,
+              child:
+                  ranker.profileImage == null
+                      ? Icon(
+                        Icons.person,
+                        size: ranker.rank == 1 ? 35 : 30,
+                        color: Colors.grey.shade600,
+                      )
+                      : null,
+            ),
           ),
           const SizedBox(height: 8),
           SizedBox(
@@ -386,14 +331,14 @@ class _RankViewState extends ConsumerState<RankView> {
           itemBuilder: (context, index) {
             final ranker = remainingRankers[index];
             return InkWell(
-              onTap: () {
-                // isPublic이 null일 경우를 대비해 기본값 false를 사용 (?? false)
-                final isPublic = ranker.isPublic ?? false;
-
-                // 1. Path Parameter를 사용하는 경로로 이동
-                // 2. Query Parameter로 isPublic 값 전달
-                context.push('/profile/${ranker.userId}?isPublic=$isPublic');
-              },
+              onTap:
+                  ranker.public!
+                      ? () {
+                        context.push(
+                          '/profile/${ranker.userId}?isPublic=${ranker.public}}',
+                        );
+                      }
+                      : null,
               child: Container(
                 padding: EdgeInsets.symmetric(
                   horizontal: context.middlePadding,
@@ -422,16 +367,24 @@ class _RankViewState extends ConsumerState<RankView> {
                     ),
                     const SizedBox(width: 16),
                     CircleAvatar(
-                      radius: 22,
-                      backgroundImage:
-                          ranker.profileImage != null
-                              ? NetworkImage(ranker.profileImage!)
-                              : null,
-                      backgroundColor: Colors.grey.shade300,
-                      child:
-                          ranker.profileImage == null
-                              ? Icon(Icons.person, color: Colors.grey.shade600)
-                              : null,
+                      radius: 20, // 테두리를 위해 약간 더 크게
+                      backgroundColor:
+                          ranker.public! ? primaryColor : Colors.transparent,
+                      child: CircleAvatar(
+                        radius: 18,
+                        backgroundImage:
+                            ranker.profileImage != null
+                                ? NetworkImage(ranker.profileImage!)
+                                : null,
+                        backgroundColor: Colors.grey.shade300,
+                        child:
+                            ranker.profileImage == null
+                                ? Icon(
+                                  Icons.person,
+                                  color: Colors.grey.shade600,
+                                )
+                                : null,
+                      ),
                     ),
                     const SizedBox(width: 12),
                     Expanded(

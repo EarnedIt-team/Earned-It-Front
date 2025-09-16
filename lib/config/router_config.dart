@@ -10,6 +10,7 @@ import 'package:earned_it/views/profile_view.dart';
 import 'package:earned_it/views/puzzle/puzzle_view.dart';
 import 'package:earned_it/views/auth/signup/sign_view.dart';
 import 'package:earned_it/views/setting/nickname_edit_view.dart';
+import 'package:earned_it/views/setting/set_public_view.dart';
 import 'package:earned_it/views/setting/set_salary_view.dart';
 import 'package:earned_it/views/setting/setting_view.dart';
 import 'package:earned_it/views/splash_view.dart';
@@ -72,6 +73,11 @@ final GoRouter routes = GoRouter(
       builder:
           (BuildContext context, GoRouterState state) =>
               const NicknameEditView(),
+    ),
+    GoRoute(
+      path: '/setPublic',
+      builder:
+          (BuildContext context, GoRouterState state) => const SetPublicView(),
     ),
     GoRoute(
       path: '/addWish',

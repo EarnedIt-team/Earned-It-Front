@@ -11,7 +11,7 @@ _RankModel _$RankModelFromJson(Map<String, dynamic> json) => _RankModel(
   rank: (json['rank'] as num).toInt(),
   nickname: json['nickname'] as String,
   score: (json['score'] as num).toInt(),
-  isPublic: json['isPublic'] as bool? ?? false,
+  public: json['public'] as bool? ?? false,
   profileImage: json['profileImage'] as String?,
 );
 
@@ -21,6 +21,6 @@ Map<String, dynamic> _$RankModelToJson(_RankModel instance) =>
       'rank': instance.rank,
       'nickname': instance.nickname,
       'score': instance.score,
-      'isPublic': instance.isPublic,
+      'public': instance.public,
       'profileImage': instance.profileImage,
     };

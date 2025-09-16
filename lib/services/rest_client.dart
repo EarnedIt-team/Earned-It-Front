@@ -145,6 +145,13 @@ abstract class RestClient {
     @Header("Authorization") String accesstoken,
   );
 
+  /// 공개 여부 수정 API
+  @PATCH("/api/profile/visibility")
+  Future<ApiResponse> setPublic(
+    @Header("Authorization") String accesstoken,
+    @Body() Map<String, dynamic> body,
+  );
+
   /// 위시아이템 추가 API
   @POST("/api/wish")
   @MultiPart()

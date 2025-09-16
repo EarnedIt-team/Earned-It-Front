@@ -96,6 +96,10 @@ flutter:
     - assets/lottie/empty_piece.json
     - assets/lottie/giftBox.json
 
+    - assets/images/setting/publicEx1.png
+    - assets/images/setting/publicEx2.png
+    - assets/images/setting/publicEx3.png
+
   fonts:
     - family: Mainfonts
       fonts:

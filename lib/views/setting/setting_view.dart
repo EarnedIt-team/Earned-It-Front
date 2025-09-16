@@ -260,7 +260,7 @@ class _SettingViewState extends ConsumerState<SettingView> {
                   horizontal: context.middlePadding / 2,
                 ),
                 leading: Icon(
-                  Icons.edit_outlined,
+                  Icons.text_fields,
                   color:
                       Theme.of(context).brightness == Brightness.dark
                           ? Colors.white
@@ -289,14 +289,14 @@ class _SettingViewState extends ConsumerState<SettingView> {
                   horizontal: context.middlePadding / 2,
                 ),
                 leading: Icon(
-                  Icons.photo_camera_outlined,
+                  Icons.image_outlined,
                   color:
                       Theme.of(context).brightness == Brightness.dark
                           ? Colors.white
                           : Colors.black,
                 ),
                 title: Text(
-                  '프로필 사진 변경',
+                  '사진 변경',
                   style: TextStyle(
                     color:
                         Theme.of(context).brightness == Brightness.dark
@@ -310,6 +310,35 @@ class _SettingViewState extends ConsumerState<SettingView> {
                 ),
                 onTap: () {
                   ref.read(isOpenEditProfileImage.notifier).state = true;
+                },
+              ),
+            if (userState.isLogin == true)
+              ListTile(
+                contentPadding: EdgeInsets.symmetric(
+                  horizontal: context.middlePadding / 2,
+                ),
+                leading: Icon(
+                  Icons.public,
+                  color:
+                      Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white
+                          : Colors.black,
+                ),
+                title: Text(
+                  '공개 범위 설정',
+                  style: TextStyle(
+                    color:
+                        Theme.of(context).brightness == Brightness.dark
+                            ? Colors.white
+                            : Colors.black,
+                  ),
+                ),
+                trailing: const Icon(
+                  Icons.chevron_right,
+                  color: primaryGradientEnd,
+                ),
+                onTap: () {
+                  context.push('/setPublic');
                 },
               ),
             if (userState.isLogin == true)

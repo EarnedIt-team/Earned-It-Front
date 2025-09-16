@@ -11,7 +11,7 @@ abstract class RankModel with _$RankModel {
     required int rank,
     required String nickname,
     required int score,
-    @Default(false) bool? isPublic,
+    @Default(false) bool? public,
     String? profileImage,
   }) = _RankModel;
 

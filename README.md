@@ -20,6 +20,7 @@
 <br>
 
 ### 🚀 개발 배경
+<img width="5000" height="1542" alt="Frame 427318230" src="https://github.com/user-attachments/assets/d3d9dd00-e15f-4eae-a8e6-4bb4120884c5" />
 
 ### "나는 하루에 얼마를 벌까?"
 
@@ -64,7 +65,7 @@
 <br>
 
 ### 📅 일정
-<img width="5000" height="1542" alt="Frame 427318228" src="https://github.com/user-attachments/assets/b3a187c9-bd75-4efc-ab9b-1eab9a9a2601" />
+<img width="5000" height="1542" alt="Frame 427318228" src="https://github.com/user-attachments/assets/c918740d-c92b-411a-bffa-4d923fa1bbb4" />
 
 <br>
 <br>

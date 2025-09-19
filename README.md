@@ -218,26 +218,47 @@ Earned-It-Front/
 
 ## 🖥️ 구동 화면
 ### Splash & Onboarding View
+![Splash View](https://github.com/user-attachments/assets/d0d288a2-07bf-409c-b64c-9c683669ff68)
+![Onboarding View](https://github.com/user-attachments/assets/b2473a9d-bb65-449d-9e45-7409d4038c88)
 
-### Login & sign View
+### Login & Sign-In View
+![Login View](https://github.com/user-attachments/assets/17249da9-00be-426a-8d51-9986199ace47)
+![Sign-In View](https://github.com/user-attachments/assets/d3ee1603-afee-41f6-bf29-281a534d84ce)
 
 ### Main View (초기)
+![Init Setting View](https://github.com/user-attachments/assets/4e1caeba-9d32-4b1d-a306-052f563d9bef)
+![Init View](https://github.com/user-attachments/assets/c5811097-0bd9-4503-8402-3ab05903ef75)
 
 ### Main View (설정 완료)
+![WishList Widget](https://github.com/user-attachments/assets/217835ac-d5f3-4ab6-bee4-410a90937a8a)
+![Piece Widget](https://github.com/user-attachments/assets/1a9d0309-8a34-4753-84f3-26727f87b760)
+![Daily Modal](https://github.com/user-attachments/assets/2bbc3fea-92ef-48f3-9593-99df78c78f3c)
 
 ### WishList View
+![WishList View](https://github.com/user-attachments/assets/af2bc3b8-723a-4600-913f-ddfd4e1c57b1)
+![WishList View](https://github.com/user-attachments/assets/ef106a19-b413-4b72-a8f3-e07a4df500c7)
+![WishList View](https://github.com/user-attachments/assets/ce84367b-9a58-4866-b0bd-787bc53c7e91)
 
-### Add WishList View
-
-### Search WishList View
+### Add & Delete WishList
+![Add & Delete WishList](https://github.com/user-attachments/assets/fae858d8-4e80-46e9-a8a1-1a4756530390)
+![Add & Delete WishList](https://github.com/user-attachments/assets/a8716186-7c0c-4896-a241-c1326b3c2e4f)
 
 ### Puzzle View
+![Puzzle View](https://github.com/user-attachments/assets/fba6452b-e651-4afa-9009-b219ae5a797d)
+![Puzzle View](https://github.com/user-attachments/assets/0b15108c-2b95-41b2-aca7-8e7e14cd1c40)
 
-### Rank View
+### Rank & Profile View
+![Rank & Profile View](https://github.com/user-attachments/assets/e0f690aa-bbdf-4675-8987-eb3401b54728)
+![Rank & Profile View](https://github.com/user-attachments/assets/b81ea8a2-6d5a-424b-84c0-4567602e0965)
 
-### Profile View
+### Showcase View
+![Showcase View](https://github.com/user-attachments/assets/6d1d217d-c6df-42d1-ae30-028f856fbc26)
 
-### Setting View
+### Setting View (Dark Mode)
+![Setting View](https://github.com/user-attachments/assets/265a7a03-97e8-46f0-9e0e-dbec4e1af544)
+![Setting View](https://github.com/user-attachments/assets/3891a0e0-91bd-45b2-9a3f-ca46e5842a8b)
+![Setting View](https://github.com/user-attachments/assets/d2463cca-62f5-4a99-be67-9c0b6dec9961)
+
 
 ## 📋 서비스 & 버전 관리
 <img width="5000" height="1542" alt="Frame 427318232" src="https://github.com/user-attachments/assets/bdb885b6-32b8-411b-9d15-e083cee29679" />

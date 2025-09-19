@@ -110,7 +110,7 @@
 <br>
 
 ### 📃 API 명세 (Google Docs)
-<img width="1000" height="700" alt="image" src="https://github.com/user-attachments/assets/428f97c0-e81d-47b9-8013-a68b3a5bc791" />
+<img width="1365" height="767" alt="image" src="https://github.com/user-attachments/assets/52ad89ef-4742-4533-a59d-32d597658e15" />
 
 <br>
 

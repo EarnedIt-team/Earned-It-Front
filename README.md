@@ -86,9 +86,9 @@
       <td align="center"><img src="https://avatars.githubusercontent.com/u/122330470?v=4" width="100"></td>
     </tr>
     <tr>
-      <td align="center">👑 PM & Front-End</td>
+      <td align="center">Front-End</td>
       <td align="center">Back-End</td>
-      <td align="center">Back-End</td>
+      <td align="center">👑 PM & Back-End</td>
       <td align="center">Back-End</td>
     </tr>
     <tr>

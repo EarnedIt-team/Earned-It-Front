@@ -101,3 +101,122 @@
 </div>
 <br>
 <br>
+
+## 🛠️ 설계 & 개발
+### ✒️ 초기 디자인 & 스토리보드 (Figma)
+<img width="1890" height="920" alt="Frame 427318231" src="https://github.com/user-attachments/assets/f35bf9f5-5d02-48e8-a674-e16c22ec97eb" />
+<img width="12284" height="9256" alt="스토리보드 V_0" src="https://github.com/user-attachments/assets/fd8f5410-d800-4fdc-be93-a1f2ed41426f" />
+
+<br>
+
+### 📃 API 명세 (Google Docs)
+<img width="1905" height="869" alt="image" src="https://github.com/user-attachments/assets/428f97c0-e81d-47b9-8013-a68b3a5bc791" />
+
+<br>
+
+### 🏗️ 기술 스택 & 개발 도구
+### Front-End
+- **Flutter >=3.29.0 (Dart Version: >=3.7.0)**
+
+### Backend
+- **Java 17**
+- **Spring Boot 3.5.3**
+- **Spring Security**: JWT 기반 인증
+- **Spring Data JPA**: 데이터 접근 계층
+- **QueryDSL**: 동적 쿼리 처리
+- **MapStruct**: DTO 매핑
+
+### Database
+- **PostgreSQL**: 메인 데이터베이스
+- **Redis**: 캐싱 및 세션 관리
+
+### Infrastructure
+- **Docker & Docker Compose**: 컨테이너화
+- **AWS S3**: 파일 저장소
+- **Gmail SMTP**: 이메일 전송
+
+### Documentation
+- **Swagger UI**: API 문서화
+- **Thymeleaf**: 관리자 페이지 템플릿
+
+### Design
+- **Figma** : 스토리 보드 및 UI/UX
+- **Chat GPT** : 이미지 생성
+
+### Cooperation
+- **Git**
+- **Notion** : 프로젝트 문서 관리
+- **Zep** : 화상 회의
+- **Slack** : 일정 관리 및 소통
+- **Trello** : 이슈 트래커
+
+<br>
+
+## 📁 프로젝트 구조
+
+```
+Earned-It-Front/
+├── assets/
+│   ├── fonts/         # 폰트 에셋 (.ttf, .otf)
+│   ├── images/        # 이미지 에셋 (.png, .jpg, .svg)
+│   └── lottie/        # Lottie 애니메이션 에셋 (.json)
+│
+└── lib/
+    ├── config/        # ⚙️ 전역 설정 및 유틸리티
+    │   ├── design.dart
+    │   ├── exception.dart
+    │   ├── router.dart
+    │   └── toast_message.dart
+    │
+    ├── models/        # 📦 데이터 모델 (DTO, Entity)
+    │   ├── user/
+    │   │   └── user_state.dart
+    │   └── wish/
+    │       └── wish_state.dart
+    │
+    ├── services/      # 📡 데이터 통신 계층 (Repository, API Client)
+    │   ├── rest_client.dart  # (Retrofit)
+    │   ├── user_service.dart
+    │   └── wish_service.dart
+    │
+    ├── view_models/   # 🧠 비즈니스 로직 및 상태 관리 (Service)
+    │   ├── user/
+    │   │   └── user_provider.dart
+    │   └── wish/
+    │       └── wish_provider.dart
+    │
+    └── views/         # 🎨 UI (화면 및 위젯)
+        ├── ../login/
+        │   └── login_view.dart
+        ├── home/
+        │   └── home_view.dart
+        └── main.dart
+```
+
+### 📚 주요 라이브러리
+<div align="center">
+
+| 이름           | 설명                           | 버전               |
+| ------------ | ---------------------------- | ----------------- |
+| `flutter_riverpod`      | 상태관리 프레임워크       | `^2.6.1` |
+| `go_router`      | 선언적 라우팅 패키지       | `^16.0.0` |
+| `freezed`      | 데이터 모델 생성 패키지       | `^3.1.0` |
+| `retrofit / dio`      | REST API 통신 클라이언트       | `^4.6.0`, `5.8.0+1` |
+| `flutter_secure_storage`      | 보안 로컬 저장소       | `^9.2.4` |
+| `flutter_dotenv`      | 환경 변수 설정 패키지       | `5.2.1` |
+| `kakao_flutter_sdk`      | Kakao 소셜 로그인       | `^1.9.7+3` |
+| `sign_in_with_apple`      | Apple 소셜 로그인       | `^7.0.1` |
+| `lottie`      | Lottie 애니메이션       | `^3.3.1` |
+| `image_picker`      | 이미지 가져오기       | `^1.1.2` |
+| `showcaseview`      | 사용자 온보딩 가이드       | `^4.0.1` |
+| `home_widget`      | 홈 화면 위젯 기능       | `^0.8.0` |
+| `logger`      | 로그 관리       | `^2.6.1` |
+| `build_runner`      | Code Generation & Build      | `^2.5.4` |
+
+</div>
+
+## 🖥️ 구동 화면
+
+## 📋 서비스 & 버전 관리
+
+

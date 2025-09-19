@@ -110,7 +110,7 @@
 <br>
 
 ### 📃 API 명세 (Google Docs)
-<img width="1905" height="869" alt="image" src="https://github.com/user-attachments/assets/428f97c0-e81d-47b9-8013-a68b3a5bc791" />
+<img width="1000" height="700" alt="image" src="https://github.com/user-attachments/assets/428f97c0-e81d-47b9-8013-a68b3a5bc791" />
 
 <br>
 
@@ -216,6 +216,25 @@ Earned-It-Front/
 </div>
 
 ## 🖥️ 구동 화면
+### Splash & Onboarding View
+
+### Login & sign View
+
+### Main View (초기)
+
+### Main View (설정 완료)
+
+### WishList View
+
+### Add WishList View
+
+### Search WishList View
+
+### Puzzle View
+
+### Rank View
+
+### Setting View
 
 ## 📋 서비스 & 버전 관리
 

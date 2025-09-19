@@ -210,6 +210,7 @@ Earned-It-Front/
 | `image_picker`      | 이미지 가져오기       | `^1.1.2` |
 | `showcaseview`      | 사용자 온보딩 가이드       | `^4.0.1` |
 | `home_widget`      | 홈 화면 위젯 기능       | `^0.8.0` |
+| `fluttertoast`      | 팝업 메세지       | `^8.2.12` |
 | `logger`      | 로그 관리       | `^2.6.1` |
 | `build_runner`      | Code Generation & Build      | `^2.5.4` |
 

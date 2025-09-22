@@ -86,9 +86,9 @@
       <td align="center"><img src="https://avatars.githubusercontent.com/u/122330470?v=4" width="100"></td>
     </tr>
     <tr>
-      <td align="center">👑 PM & Front-End</td>
+      <td align="center">Front-End</td>
       <td align="center">Back-End</td>
-      <td align="center">Back-End</td>
+      <td align="center">👑 PM & Back-End</td>
       <td align="center">Back-End</td>
     </tr>
     <tr>
@@ -101,3 +101,166 @@
 </div>
 <br>
 <br>
+
+## 🛠️ 설계 & 개발
+### ✒️ 초기 디자인 & 스토리보드 (Figma)
+<img width="1890" height="920" alt="Frame 427318231" src="https://github.com/user-attachments/assets/f35bf9f5-5d02-48e8-a674-e16c22ec97eb" />
+<img width="12284" height="9256" alt="스토리보드 V_0" src="https://github.com/user-attachments/assets/fd8f5410-d800-4fdc-be93-a1f2ed41426f" />
+
+<br>
+
+### 📃 API 명세 (Google Docs)
+<img width="1365" height="767" alt="image" src="https://github.com/user-attachments/assets/52ad89ef-4742-4533-a59d-32d597658e15" />
+
+<br>
+
+### 🏗️ 기술 스택 & 개발 도구
+### Front-End
+- **Flutter >=3.29.0 (Dart Version: >=3.7.0)**
+
+### Backend
+- **Java 17**
+- **Spring Boot 3.5.3**
+- **Spring Security**: JWT 기반 인증
+- **Spring Data JPA**: 데이터 접근 계층
+- **QueryDSL**: 동적 쿼리 처리
+- **MapStruct**: DTO 매핑
+
+### Database
+- **PostgreSQL**: 메인 데이터베이스
+- **Redis**: 캐싱 및 세션 관리
+
+### Infrastructure
+- **Docker & Docker Compose**: 컨테이너화
+- **AWS S3**: 파일 저장소
+- **Gmail SMTP**: 이메일 전송
+
+### Documentation
+- **Swagger UI**: API 문서화
+- **Thymeleaf**: 관리자 페이지 템플릿
+
+### Design
+- **Figma** : 스토리 보드 및 UI/UX
+- **Chat GPT** : 이미지 생성
+
+### Cooperation
+- **Git**
+- **Notion** : 프로젝트 문서 관리
+- **Zep** : 화상 회의
+- **Slack** : 일정 관리 및 소통
+- **Trello** : 이슈 트래커
+
+<br>
+
+## 📁 프로젝트 구조
+
+```
+Earned-It-Front/
+├── assets/
+│   ├── fonts/         # 폰트 에셋 (.ttf, .otf)
+│   ├── images/        # 이미지 에셋 (.png, .jpg, .svg)
+│   └── lottie/        # Lottie 애니메이션 에셋 (.json)
+│
+└── lib/
+    ├── config/        # ⚙️ 전역 설정 및 유틸리티
+    │   ├── design.dart
+    │   ├── exception.dart
+    │   ├── router.dart
+    │   └── toast_message.dart
+    │
+    ├── models/        # 📦 데이터 모델 (DTO, Entity)
+    │   ├── user/
+    │   │   └── user_state.dart
+    │   └── wish/
+    │       └── wish_state.dart
+    │
+    ├── services/      # 📡 데이터 통신 계층 (Repository, API Client)
+    │   ├── rest_client.dart  # (Retrofit)
+    │   ├── user_service.dart
+    │   └── wish_service.dart
+    │
+    ├── view_models/   # 🧠 비즈니스 로직 및 상태 관리 (Service)
+    │   ├── user/
+    │   │   └── user_provider.dart
+    │   └── wish/
+    │       └── wish_provider.dart
+    │
+    └── views/         # 🎨 UI (화면 및 위젯)
+        ├── ../login/
+        │   └── login_view.dart
+        ├── home/
+        │   └── home_view.dart
+        └── main.dart
+```
+
+### 📚 주요 라이브러리
+<div align="center">
+
+| 이름           | 설명                           | 버전               |
+| ------------ | ---------------------------- | ----------------- |
+| `flutter_riverpod`      | 상태관리 프레임워크       | `^2.6.1` |
+| `go_router`      | 선언적 라우팅 패키지       | `^16.0.0` |
+| `freezed`      | 데이터 모델 생성 패키지       | `^3.1.0` |
+| `retrofit / dio`      | REST API 통신 클라이언트       | `^4.6.0`, `5.8.0+1` |
+| `flutter_secure_storage`      | 보안 로컬 저장소       | `^9.2.4` |
+| `flutter_dotenv`      | 환경 변수 설정 패키지       | `5.2.1` |
+| `kakao_flutter_sdk`      | Kakao 소셜 로그인       | `^1.9.7+3` |
+| `sign_in_with_apple`      | Apple 소셜 로그인       | `^7.0.1` |
+| `lottie`      | Lottie 애니메이션       | `^3.3.1` |
+| `image_picker`      | 이미지 가져오기       | `^1.1.2` |
+| `showcaseview`      | 사용자 온보딩 가이드       | `^4.0.1` |
+| `home_widget`      | 홈 화면 위젯 기능       | `^0.8.0` |
+| `fluttertoast`      | 팝업 메세지       | `^8.2.12` |
+| `logger`      | 로그 관리       | `^2.6.1` |
+| `build_runner`      | Code Generation & Build      | `^2.5.4` |
+
+</div>
+
+## 🖥️ 구동 화면
+### Splash & Onboarding View
+![Splash View](https://github.com/user-attachments/assets/d0d288a2-07bf-409c-b64c-9c683669ff68)
+![Onboarding View](https://github.com/user-attachments/assets/b2473a9d-bb65-449d-9e45-7409d4038c88)
+
+### Login & Sign-In View
+![Login View](https://github.com/user-attachments/assets/17249da9-00be-426a-8d51-9986199ace47)
+![Sign-In View](https://github.com/user-attachments/assets/d3ee1603-afee-41f6-bf29-281a534d84ce)
+
+### Main View (초기)
+![Init Setting View](https://github.com/user-attachments/assets/4e1caeba-9d32-4b1d-a306-052f563d9bef)
+![Init View](https://github.com/user-attachments/assets/c5811097-0bd9-4503-8402-3ab05903ef75)
+
+### Main View (설정 완료)
+![WishList Widget](https://github.com/user-attachments/assets/217835ac-d5f3-4ab6-bee4-410a90937a8a)
+![Piece Widget](https://github.com/user-attachments/assets/1a9d0309-8a34-4753-84f3-26727f87b760)
+![Daily Modal](https://github.com/user-attachments/assets/2bbc3fea-92ef-48f3-9593-99df78c78f3c)
+
+### WishList View
+![WishList View](https://github.com/user-attachments/assets/af2bc3b8-723a-4600-913f-ddfd4e1c57b1)
+![WishList View](https://github.com/user-attachments/assets/ef106a19-b413-4b72-a8f3-e07a4df500c7)
+![WishList View](https://github.com/user-attachments/assets/ce84367b-9a58-4866-b0bd-787bc53c7e91)
+
+### Add & Delete WishList
+![Add & Delete WishList](https://github.com/user-attachments/assets/fae858d8-4e80-46e9-a8a1-1a4756530390)
+![Add & Delete WishList](https://github.com/user-attachments/assets/a8716186-7c0c-4896-a241-c1326b3c2e4f)
+
+### Puzzle View
+![Puzzle View](https://github.com/user-attachments/assets/fba6452b-e651-4afa-9009-b219ae5a797d)
+![Puzzle View](https://github.com/user-attachments/assets/0b15108c-2b95-41b2-aca7-8e7e14cd1c40)
+
+### Rank & Profile View
+![Rank & Profile View](https://github.com/user-attachments/assets/e0f690aa-bbdf-4675-8987-eb3401b54728)
+![Rank & Profile View](https://github.com/user-attachments/assets/b81ea8a2-6d5a-424b-84c0-4567602e0965)
+
+### Showcase View
+![Showcase View](https://github.com/user-attachments/assets/6d1d217d-c6df-42d1-ae30-028f856fbc26)
+
+### Setting View (Dark Mode)
+![Setting View](https://github.com/user-attachments/assets/265a7a03-97e8-46f0-9e0e-dbec4e1af544)
+![Setting View](https://github.com/user-attachments/assets/3891a0e0-91bd-45b2-9a3f-ca46e5842a8b)
+![Setting View](https://github.com/user-attachments/assets/d2463cca-62f5-4a99-be67-9c0b6dec9961)
+
+
+## 📋 서비스 & 버전 관리
+<img width="5000" height="1542" alt="Frame 427318232" src="https://github.com/user-attachments/assets/bdb885b6-32b8-411b-9d15-e083cee29679" />
+
+> 자세한 내용은 "[Notion](https://sugar-wallflower-ded.notion.site/23f14fb4e50a80ce8cabfe1bbb43814b?pvs=73)" 을 참고바랍니다.

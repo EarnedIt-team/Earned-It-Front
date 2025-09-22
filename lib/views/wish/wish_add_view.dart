@@ -178,7 +178,7 @@ class WishAddView extends ConsumerWidget {
                       ),
                     ),
                     TextField(
-                      maxLength: 20,
+                      maxLength: 12,
                       textAlign: TextAlign.end,
                       controller: wishAddNotifier.priceController,
                       keyboardType: TextInputType.number,
@@ -219,7 +219,7 @@ class WishAddView extends ConsumerWidget {
                       ),
                     ),
                     TextField(
-                      maxLength: 12,
+                      maxLength: 20,
                       textAlign: TextAlign.end,
                       controller: wishAddNotifier.vendorController,
                       decoration: const InputDecoration(

@@ -1,8 +1,11 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:earned_it/config/exception.dart';
 import 'package:earned_it/config/toastMessage.dart';
 import 'package:earned_it/models/wish/wish_add_state.dart';
 import 'package:earned_it/models/wish/wish_model.dart';
+import 'package:earned_it/models/wish/wish_search_state.dart';
 import 'package:earned_it/services/auth/login_service.dart';
 import 'package:earned_it/services/wish_service.dart';
 import 'package:earned_it/view_models/wish/wish_provider.dart';
@@ -11,6 +14,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart'; // path_provider 패키지 import
 
 final wishAddViewModelProvider =
     NotifierProvider.autoDispose<WishAddViewModel, WishAddState>(
@@ -55,6 +60,46 @@ class WishAddViewModel extends AutoDisposeNotifier<WishAddState> {
     });
 
     return const WishAddState();
+  }
+
+  Future<void> populateFromProduct(ProductModel product) async {
+    // 텍스트 필드 채우기
+    nameController.text = product.name;
+    vendorController.text = product.maker ?? '';
+    priceController.text = product.price.toInt().toString(); // 소수점 버리고 정수로 변환
+    urlController.text = product.url;
+
+    // 이미지 URL을 XFile로 변환
+    final imageFile = await _urlToXFile(product.imageUrl);
+    if (imageFile != null) {
+      state = state.copyWith(itemImage: imageFile);
+    }
+
+    // 버튼 활성화 상태를 최종적으로 업데이트
+    _updateCanSubmit();
+  }
+
+  // URL을 XFile 객체로 변환하는 헬퍼 메서드
+  Future<XFile?> _urlToXFile(String imageUrl) async {
+    try {
+      final response = await http.get(Uri.parse(imageUrl));
+      if (response.statusCode == 200) {
+        final tempDir = await getTemporaryDirectory();
+        // 파일 이름은 URL의 마지막 부분을 사용하거나 고유하게 생성
+        final fileName = imageUrl
+            .split('/')
+            .lastWhere(
+              (e) => e.isNotEmpty,
+              orElse: () => '${DateTime.now().millisecondsSinceEpoch}.jpg',
+            );
+        final file = File('${tempDir.path}/$fileName');
+        await file.writeAsBytes(response.bodyBytes);
+        return XFile(file.path);
+      }
+    } catch (e) {
+      debugPrint("이미지 다운로드 실패: $e");
+    }
+    return null;
   }
 
   void _updateCanSubmit() {

@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:earned_it/config/design.dart';
+import 'package:earned_it/models/wish/wish_search_state.dart';
 import 'package:earned_it/services/wish_service.dart';
 import 'package:earned_it/view_models/wish/wish_add_provider.dart';
 import 'package:earned_it/view_models/wish/wish_provider.dart';
@@ -56,7 +57,20 @@ class WishAddView extends ConsumerWidget {
               centerTitle: false,
               actions: <Widget>[
                 IconButton(
-                  onPressed: () => context.push('/simpleAddWish'),
+                  onPressed: () async {
+                    // 1. '/simpleAddWish' 경로로 이동하고, ProductModel 타입의 결과를 기다립니다.
+                    final result = await context.push<ProductModel>(
+                      '/simpleAddWish',
+                    );
+
+                    // 2. 결과가 null이 아니고 (사용자가 상품을 선택했고),
+                    //    현재 위젯이 화면에 아직 있다면 ViewModel 함수를 호출합니다.
+                    if (result != null && context.mounted) {
+                      ref
+                          .read(wishAddViewModelProvider.notifier)
+                          .populateFromProduct(result);
+                    }
+                  },
                   icon: const Icon(Icons.search),
                   tooltip: "간편 위시아이템 추가",
                 ),
@@ -143,7 +157,7 @@ class WishAddView extends ConsumerWidget {
                       ),
                     ),
                     TextField(
-                      maxLength: 20,
+                      maxLength: 50,
                       textAlign: TextAlign.end,
                       controller: wishAddNotifier.nameController,
                       decoration: const InputDecoration(
@@ -164,7 +178,7 @@ class WishAddView extends ConsumerWidget {
                       ),
                     ),
                     TextField(
-                      maxLength: 12,
+                      maxLength: 20,
                       textAlign: TextAlign.end,
                       controller: wishAddNotifier.priceController,
                       keyboardType: TextInputType.number,
@@ -253,8 +267,8 @@ class WishAddView extends ConsumerWidget {
                               color:
                                   Theme.of(context).brightness ==
                                           Brightness.dark
-                                      ? Colors.white
-                                      : Colors.black,
+                                      ? primaryColor
+                                      : const Color.fromARGB(255, 216, 155, 50),
                             ),
                           ),
                           subtitle: Text(

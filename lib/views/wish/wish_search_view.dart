@@ -41,6 +41,7 @@ class _WishSearchViewState extends ConsumerState<WishSearchView> {
 
   @override
   void dispose() {
+    FocusScope.of(context).unfocus();
     _scrollController.dispose();
     _searchController.dispose();
     super.dispose();

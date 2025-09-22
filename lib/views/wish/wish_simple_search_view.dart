@@ -1,7 +1,10 @@
+import 'package:earned_it/config/design.dart';
 import 'package:earned_it/models/wish/wish_search_state.dart';
+import 'package:earned_it/view_models/wish/wish_add_provider.dart';
 import 'package:earned_it/view_models/wish/wish_search_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 class WishSimpleSearchView extends ConsumerStatefulWidget {
@@ -44,18 +47,26 @@ class _WishSimpleSearchViewState extends ConsumerState<WishSimpleSearchView> {
     final searchState = ref.watch(wishSearchViewModelProvider);
     final searchViewModel = ref.read(wishSearchViewModelProvider.notifier);
 
-    return Scaffold(
-      appBar: AppBar(
-        scrolledUnderElevation: 0,
-        title: const Text(
-          "상품 검색",
-          style: TextStyle(fontWeight: FontWeight.bold),
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Scaffold(
+        backgroundColor:
+            Theme.of(context).brightness == Brightness.dark
+                ? Colors.black
+                : lightColor2,
+        appBar: AppBar(
+          backgroundColor:
+              Theme.of(context).brightness == Brightness.dark
+                  ? Colors.black
+                  : lightColor2,
+          scrolledUnderElevation: 0,
+          title: const Text(
+            "상품 검색",
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          centerTitle: false,
         ),
-        centerTitle: false,
-      ),
-      body: GestureDetector(
-        onTap: () => FocusScope.of(context).unfocus(), // 키보드 바깥 터치 시 숨김
-        child: Padding(
+        body: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
@@ -114,7 +125,11 @@ class _WishSimpleSearchViewState extends ConsumerState<WishSimpleSearchView> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.search_off, size: 60, color: Colors.grey[400]),
+            Icon(
+              state.searchInfo == null ? Icons.search : Icons.search_off,
+              size: 60,
+              color: Colors.grey[400],
+            ),
             const SizedBox(height: 16),
             Text(
               // searchInfo가 null이면 아직 검색 전, null이 아니면 검색 후 결과 없음
@@ -131,40 +146,110 @@ class _WishSimpleSearchViewState extends ConsumerState<WishSimpleSearchView> {
 
     // 4. 검색 결과가 있을 때
     return ListView.builder(
-      itemCount: state.products.length,
+      itemCount: state.products.length + 1,
       itemBuilder: (context, index) {
+        if (index == state.products.length) {
+          // 마지막 인덱스일 경우, 푸터 텍스트를 반환합니다.
+          return Padding(
+            padding: const EdgeInsets.symmetric(vertical: 24.0),
+            child: Text(
+              "* 네이버 쇼핑 API를 통해 나온 결과입니다.\n* 최대 10개까지만 표시됩니다.",
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 12, color: Colors.grey[500]),
+            ),
+          );
+        }
+
         final product = state.products[index];
         final formattedPrice = NumberFormat('#,###').format(product.price);
         return Card(
-          margin: const EdgeInsets.symmetric(vertical: 6.0),
-          child: ListTile(
-            leading: ClipRRect(
-              borderRadius: BorderRadius.circular(8.0),
-              child: Image.network(
-                product.imageUrl,
-                width: 60,
-                height: 60,
-                fit: BoxFit.cover,
-                errorBuilder:
-                    (context, error, stackTrace) =>
-                        const Icon(Icons.image_not_supported),
+          color:
+              Theme.of(context).brightness == Brightness.dark
+                  ? lightDarkColor
+                  : Colors.white,
+          margin: EdgeInsets.symmetric(vertical: context.middlePadding / 2),
+          elevation: 0,
+          clipBehavior: Clip.antiAlias, // InkWell 효과가 Card 밖으로 나가지 않도록 함
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12.0),
+          ),
+          child: InkWell(
+            onTap: () {
+              context.pop(product);
+            },
+            child: Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // --- 왼쪽 이미지 ---
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(8.0),
+                    child: Image.network(
+                      product.imageUrl,
+                      // 이미지 크기를 키워 전체적인 높이를 늘립니다.
+                      width: context.width(0.3),
+                      height: context.width(0.3),
+                      fit: BoxFit.cover,
+                      errorBuilder:
+                          (context, error, stackTrace) => Container(
+                            width: context.width(0.3),
+                            height: context.width(0.3),
+                            color: Colors.grey[200],
+                            child: Icon(
+                              Icons.image_not_supported,
+                              color: Colors.grey[400],
+                            ),
+                          ),
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  // --- 오른쪽 텍스트 정보 ---
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // 제조사
+                        if (product.maker != null &&
+                            product.maker!.isNotEmpty) ...[
+                          Text(
+                            product.maker!,
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: Colors.grey[600],
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          const SizedBox(height: 4),
+                        ],
+
+                        // 상품명
+                        Text(
+                          product.name,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 8),
+                        // 가격
+                        Text(
+                          '${formattedPrice}원',
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ),
-            title: Text(
-              product.name,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-            subtitle: Text(
-              '${product.maker ?? ''}\n${formattedPrice}원',
-              style: const TextStyle(color: Colors.grey),
-            ),
-            isThreeLine: true,
-            onTap: () {
-              // TODO: 이 상품을 위시리스트에 추가하는 로직 구현
-              print('선택된 상품: ${product.name}');
-              // 예: context.pop(product);
-            },
           ),
         );
       },

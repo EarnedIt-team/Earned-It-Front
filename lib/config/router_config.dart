@@ -19,6 +19,7 @@ import 'package:earned_it/views/wish/wish_all_view.dart';
 import 'package:earned_it/views/wish/wish_detail_view.dart';
 import 'package:earned_it/views/wish/wish_edit_view.dart';
 import 'package:earned_it/views/wish/wish_search_view.dart';
+import 'package:earned_it/views/wish/wish_simple_search_view.dart';
 import 'package:earned_it/views/wish/wish_view.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -83,6 +84,12 @@ final GoRouter routes = GoRouter(
       path: '/addWish',
       builder:
           (BuildContext context, GoRouterState state) => const WishAddView(),
+    ),
+    GoRoute(
+      path: '/simpleAddWish',
+      builder:
+          (BuildContext context, GoRouterState state) =>
+              const WishSimpleSearchView(),
     ),
     GoRoute(
       path: '/editWish',

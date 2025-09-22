@@ -7,6 +7,7 @@ import 'package:earned_it/views/loading_overlay_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 // 커스텀 포맷터는 그대로 유지
@@ -53,6 +54,16 @@ class WishAddView extends ConsumerWidget {
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
               centerTitle: false,
+              actions: <Widget>[
+                IconButton(
+                  onPressed: () => context.push('/simpleAddWish'),
+                  icon: const Icon(Icons.search),
+                  tooltip: "간편 위시아이템 추가",
+                ),
+              ],
+              actionsPadding: EdgeInsets.symmetric(
+                horizontal: context.middlePadding / 2,
+              ),
             ),
             body: Padding(
               padding: EdgeInsets.symmetric(horizontal: context.middlePadding),

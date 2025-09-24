@@ -440,17 +440,35 @@ class _PuzzleViewState extends ConsumerState<_PuzzleViewInternal> {
           crossAxisAlignment: CrossAxisAlignment.baseline,
           textBaseline: TextBaseline.alphabetic,
           children: [
-            Text(
-              theme.themeName,
-              style: TextStyle(
-                fontSize: context.height(0.02),
-                fontWeight: FontWeight.bold,
-                color:
-                    Theme.of(context).brightness == Brightness.dark
-                        ? Colors.white
-                        : Colors.black,
-              ),
-            ),
+            theme.totalCount == theme.collectedCount
+                ? Row(
+                  spacing: 5,
+                  children: [
+                    const Icon(Icons.check, color: Colors.green),
+                    Text(
+                      theme.themeName,
+                      style: TextStyle(
+                        fontSize: context.height(0.02),
+                        fontWeight: FontWeight.bold,
+                        color:
+                            Theme.of(context).brightness == Brightness.dark
+                                ? Colors.white
+                                : Colors.black,
+                      ),
+                    ),
+                  ],
+                )
+                : Text(
+                  theme.themeName,
+                  style: TextStyle(
+                    fontSize: context.height(0.02),
+                    fontWeight: FontWeight.bold,
+                    color:
+                        Theme.of(context).brightness == Brightness.dark
+                            ? Colors.white
+                            : Colors.black,
+                  ),
+                ),
             Text(
               theme.totalValue == 0
                   ? "??? 원"

@@ -173,7 +173,7 @@ class _WishEditViewState extends ConsumerState<WishEditView> {
                       ),
                     ),
                     TextField(
-                      maxLength: 20,
+                      maxLength: 50,
                       textAlign: TextAlign.end,
                       controller: wishEditNotifier.nameController,
                       decoration: const InputDecoration(
@@ -235,7 +235,7 @@ class _WishEditViewState extends ConsumerState<WishEditView> {
                       ),
                     ),
                     TextField(
-                      maxLength: 12,
+                      maxLength: 20,
                       textAlign: TextAlign.end,
                       controller: wishEditNotifier.vendorController,
                       decoration: const InputDecoration(
@@ -284,8 +284,8 @@ class _WishEditViewState extends ConsumerState<WishEditView> {
                               color:
                                   Theme.of(context).brightness ==
                                           Brightness.dark
-                                      ? Colors.white
-                                      : Colors.black,
+                                      ? primaryColor
+                                      : const Color.fromARGB(255, 216, 155, 50),
                             ),
                           ),
                           subtitle: Text(

@@ -161,6 +161,16 @@ abstract class RestClient {
     @Part(name: "image") required File itemImage,
   });
 
+  /// 상품 검색 API
+  @GET("/api/v1/products/search")
+  Future<ApiResponse> searchProducts(
+    @Header("Authorization") String accessToken,
+    @Query("query") String query, // 검색어
+    @Query("useCache") bool useCache, // 캐시 사용 여부
+    @Query("removeBackground") bool removeBackground, // 이미지 배경 제거 여부
+    @Query("display") int display, // 검색 결과 개수
+  );
+
   /// 위시아이템 삭제 API
   @DELETE("/api/wish/{wishId}")
   Future<ApiResponse> deleteWishItem(

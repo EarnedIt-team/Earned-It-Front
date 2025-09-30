@@ -120,3 +120,7 @@ app.*.symbols
 
 *.env
 *.DS_Store
+
+firebase_options.dart
+**/ios/Runner/GoogleService-Info.plist
+**/android/app/google-services.json

@@ -39,6 +39,13 @@ end
 post_install do |installer|
   installer.pods_project.targets.each do |target|
     flutter_additional_ios_build_settings(target)
+    target.build_configurations.each do |config|
+      config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= [
+        '$(inherited)',
+        ## 푸시 알림 권한
+        'PERMISSION_NOTIFICATIONS=1',
+    ]
+  end
   end
   # iOS info.plist 키 정의
   # flutter_env_plugin_path = File.join(Dir.pwd, '.symlinks', 'plugins', 'flutter_env_native', 'ios', 'setup_env.sh')
@@ -47,3 +54,4 @@ post_install do |installer|
   # Run the setup_env.sh script from the plugin
   # system("sh \"#{flutter_env_plugin_path}\" \"#{root_dir}\"")
 end
+

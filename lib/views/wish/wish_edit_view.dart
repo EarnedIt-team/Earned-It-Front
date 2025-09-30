@@ -12,15 +12,33 @@ import 'package:intl/intl.dart';
 // 커스텀 포맷터
 class NumberInputFormatter extends TextInputFormatter {
   final NumberFormat _formatter = NumberFormat.decimalPattern('ko_KR');
+
   @override
   TextEditingValue formatEditUpdate(
     TextEditingValue oldValue,
     TextEditingValue newValue,
   ) {
-    if (newValue.text.isEmpty) return newValue.copyWith(text: '');
-    final plainNumber = newValue.text.replaceAll(',', '');
+    if (newValue.text.isEmpty) {
+      return newValue.copyWith(text: '');
+    }
+
+    // 1. 쉼표를 제거하여 순수 숫자 문자열을 얻습니다.
+    String plainNumber = newValue.text.replaceAll(',', '');
+
+    // 순수 숫자의 길이가 12자를 초과하는지 확인합니다.
+    if (plainNumber.length > 12) {
+      // 12자를 초과하면, 이전 값(oldValue)을 그대로 반환하여 입력을 막습니다.
+      // 이렇게 하면 13번째 문자가 입력되지 않습니다.
+      return oldValue;
+    }
+
+    // 3. 순수 숫자를 정수로 변환합니다.
     final number = int.tryParse(plainNumber) ?? 0;
-    final formatted = _formatter.format(number);
+
+    // 4. 쉼표를 포함하여 포맷팅합니다.
+    final String formatted = _formatter.format(number);
+
+    // 5. 포맷팅된 텍스트와 올바른 커서 위치를 포함하여 새로운 값을 반환합니다.
     return newValue.copyWith(
       text: formatted,
       selection: TextSelection.collapsed(offset: formatted.length),
@@ -106,9 +124,7 @@ class _WishEditViewState extends ConsumerState<WishEditView> {
                         aspectRatio: 16 / 9,
                         child: Container(
                           decoration: BoxDecoration(
-                            color: Theme.of(
-                              context,
-                            ).colorScheme.secondary.withOpacity(0.1),
+                            color: Colors.transparent,
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
                               color: Theme.of(
@@ -149,11 +165,24 @@ class _WishEditViewState extends ConsumerState<WishEditView> {
                                                 ),
                                               ),
                                     )
-                                    : const Center(
-                                      child: Icon(
-                                        Icons.add_photo_alternate_outlined,
-                                        size: 40,
-                                        color: Colors.grey,
+                                    : Center(
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Icon(
+                                            Icons.add_photo_alternate_outlined,
+                                            size: context.width(0.12),
+                                            color: primaryGradientEnd,
+                                          ),
+                                          const SizedBox(height: 10),
+                                          const Text(
+                                            "탭하여 이미지 추가",
+                                            style: TextStyle(
+                                              color: Colors.grey,
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
                           ),
@@ -176,10 +205,20 @@ class _WishEditViewState extends ConsumerState<WishEditView> {
                       maxLength: 50,
                       textAlign: TextAlign.end,
                       controller: wishEditNotifier.nameController,
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         hintText: '제품명을 입력하세요.',
-                        hintStyle: TextStyle(color: Colors.grey),
+                        hintStyle: const TextStyle(color: Colors.grey),
+                        counterText:
+                            '${wishEditNotifier.nameController.text.replaceAll(',', '').length}/50',
+                        counterStyle: const TextStyle(
+                          fontSize: 12.0,
+                          color: Color.fromARGB(255, 136, 136, 136),
+                        ),
                       ),
+                      inputFormatters: [
+                        // 첫 글자로 공백이 오는 것을 막음 (정규식: ^ -> 시작, \s -> 공백)
+                        FilteringTextInputFormatter.deny(RegExp(r'^\s')),
+                      ],
                     ),
                     const SizedBox(height: 24),
                     Text(
@@ -194,7 +233,7 @@ class _WishEditViewState extends ConsumerState<WishEditView> {
                       ),
                     ),
                     TextField(
-                      maxLength: 12,
+                      // maxLength: 12,
                       textAlign: TextAlign.end,
                       controller: wishEditNotifier.priceController,
                       keyboardType: TextInputType.number,
@@ -220,6 +259,12 @@ class _WishEditViewState extends ConsumerState<WishEditView> {
                                     !wishEditState.canSubmit
                                 ? wishEditState.priceError
                                 : null,
+                        counterText:
+                            '${wishEditNotifier.priceController.text.replaceAll(',', '').length}/12',
+                        counterStyle: const TextStyle(
+                          fontSize: 12.0,
+                          color: Color.fromARGB(255, 136, 136, 136),
+                        ),
                       ),
                     ),
                     const SizedBox(height: 24),
@@ -238,9 +283,15 @@ class _WishEditViewState extends ConsumerState<WishEditView> {
                       maxLength: 20,
                       textAlign: TextAlign.end,
                       controller: wishEditNotifier.vendorController,
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         hintText: '브랜드나 제조사를 입력하세요.',
-                        hintStyle: TextStyle(color: Colors.grey),
+                        hintStyle: const TextStyle(color: Colors.grey),
+                        counterText:
+                            '${wishEditNotifier.vendorController.text.replaceAll(',', '').length}/20',
+                        counterStyle: const TextStyle(
+                          fontSize: 12.0,
+                          color: Color.fromARGB(255, 136, 136, 136),
+                        ),
                       ),
                     ),
                     const SizedBox(height: 24),

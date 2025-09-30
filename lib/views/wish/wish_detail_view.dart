@@ -5,6 +5,7 @@ import 'package:earned_it/models/wish/wish_state.dart';
 import 'package:earned_it/view_models/wish/wish_detail_provider.dart';
 import 'package:earned_it/view_models/wish/wish_provider.dart';
 import 'package:earned_it/views/loading_overlay_view.dart';
+import 'package:earned_it/views/profile_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -33,6 +34,7 @@ class WishDetailView extends ConsumerWidget {
     final item = ref.watch(wishItemProvider(initialWishItem.wishId));
     final notifier = ref.read(wishDetailViewModelProvider);
     final wishState = ref.watch(wishViewModelProvider);
+    final currencyFormat = NumberFormat.decimalPattern('ko_KR');
 
     if (item == null) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
@@ -86,20 +88,25 @@ class WishDetailView extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   // --- 이미지 ---
-                  SizedBox(
-                    height: context.height(0.4), // 이미지 높이를 고정
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: Image.network(
-                        item.itemImage,
-                        fit: BoxFit.contain,
-                        errorBuilder:
-                            (context, error, stackTrace) => const Center(
-                              child: Icon(
-                                Icons.image_not_supported_outlined,
-                                size: 50,
+                  InkWell(
+                    onTap: () {
+                      showImageDialog(context, item.itemImage);
+                    },
+                    child: SizedBox(
+                      height: context.height(0.4), // 이미지 높이를 고정
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: Image.network(
+                          item.itemImage,
+                          fit: BoxFit.fitWidth,
+                          errorBuilder:
+                              (context, error, stackTrace) => const Center(
+                                child: Icon(
+                                  Icons.image_not_supported_outlined,
+                                  size: 50,
+                                ),
                               ),
-                            ),
+                        ),
                       ),
                     ),
                   ),
@@ -112,6 +119,16 @@ class WishDetailView extends ConsumerWidget {
                     style: const TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(height: context.height(0.01)),
+
+                  Text(
+                    "${currencyFormat.format(item.price)}원",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: context.width(0.045),
+                      height: 1.5,
                     ),
                   ),
                   SizedBox(height: context.height(0.01)),
@@ -207,7 +224,12 @@ class WishDetailView extends ConsumerWidget {
     required bool isActive,
     required VoidCallback onTap,
   }) {
-    final activeColor = isActive ? primaryGradientStart : Colors.grey.shade600;
+    final activeColor =
+        isActive
+            ? label == "Star"
+                ? const Color.fromARGB(255, 254, 171, 28)
+                : Colors.lightBlue
+            : Colors.grey.shade600;
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(12),

@@ -117,7 +117,7 @@ class _ProfileViewState extends ConsumerState<ProfileView> {
           // 이미지가 있을 때만 탭 이벤트를 활성화합니다.
           onTap:
               userInfo.profileImage != null
-                  ? () => _showImageDialog(context, userInfo.profileImage!)
+                  ? () => showImageDialog(context, userInfo.profileImage!)
                   : null,
           customBorder: const CircleBorder(), // 탭 효과를 원형으로 만듭니다.
           child: CircleAvatar(
@@ -183,7 +183,7 @@ Widget _buildWishListView(List<WishModel> starList) {
           children: [
             InkWell(
               onTap: () {
-                _showImageDialog(context, item.itemImage);
+                showImageDialog(context, item.itemImage);
               },
               child: Material(
                 color: Colors.transparent,
@@ -250,7 +250,7 @@ Widget _buildWishListView(List<WishModel> starList) {
 }
 
 /// 이미지를 확대해서 보여주는 다이얼로그 함수
-void _showImageDialog(BuildContext context, String imageUrl) {
+void showImageDialog(BuildContext context, String imageUrl) {
   showDialog(
     context: context,
     barrierColor: Colors.black87,

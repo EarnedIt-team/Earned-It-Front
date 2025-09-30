@@ -53,10 +53,14 @@ class _HomePieceViewState extends ConsumerState<HomePieceView> {
             child:
                 pieceState.recentlyPiece != null
                     ? Column(
+                      spacing: 3,
                       children: [
                         Container(
                           decoration: BoxDecoration(
-                            border: Border.all(width: 1, color: Colors.orange),
+                            border: Border.all(
+                              width: 1,
+                              color: primaryGradientStart,
+                            ),
                             borderRadius: const BorderRadius.all(
                               Radius.circular(18.0),
                             ),
@@ -67,10 +71,10 @@ class _HomePieceViewState extends ConsumerState<HomePieceView> {
                           ),
                           // 👇 4. 계산된 조각 수를 Text 위젯에 반영
                           child: Text(
-                            "x ${currencyFormat.format(buyablePieces)}",
+                            "${currencyFormat.format(buyablePieces)}개 구매가능",
                             style: TextStyle(
-                              fontSize: context.width(0.05),
-                              color: Colors.orange,
+                              fontSize: context.width(0.04),
+                              color: primaryGradientStart,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -127,10 +131,7 @@ class _HomePieceViewState extends ConsumerState<HomePieceView> {
                           pieceState.recentlyPiece!.vendor!,
                           style: TextStyle(
                             fontSize: context.width(0.04),
-                            color:
-                                Theme.of(context).brightness == Brightness.dark
-                                    ? Colors.white
-                                    : Colors.black,
+                            color: Colors.grey,
                           ),
                         ),
                         Text(
@@ -190,11 +191,6 @@ class _HomePieceViewState extends ConsumerState<HomePieceView> {
                               ),
                             ],
                           ),
-                        ),
-                        SizedBox(height: context.height(0.005)),
-                        const Text(
-                          "*매 일 1번만 획득 가능",
-                          style: TextStyle(color: Colors.grey),
                         ),
                       ],
                     )

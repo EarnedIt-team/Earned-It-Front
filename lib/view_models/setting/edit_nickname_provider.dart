@@ -53,18 +53,20 @@ class NicknameEditViewModel extends AutoDisposeNotifier<NicknameEditState> {
     // --- 유효성 검사 규칙 ---
     if (currentText.isEmpty) {
       error = '닉네임을 입력해주세요.';
-    }
-    // ✨ --- 수정된 부분 시작 --- ✨
-    else if (currentText.length < 2) {
+    } else if (currentText.length < 2) {
       error = '최소 2글자 이상 입력해주세요.';
     }
-    // ✨ --- 수정된 부분 끝 --- ✨
-    else if (RegExp(r'\s').hasMatch(currentText)) {
+    // 유니코드 공백 문자를 포함한 모든 종류의 공백을 검사합니다.
+    else if (RegExp(r'[\s\p{Z}]', unicode: true).hasMatch(currentText)) {
       error = '공백은 사용할 수 없습니다.';
-    } else if (RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch(currentText)) {
+    } else if (RegExp(
+      r'[!@#$%^&*(),.?":{}|=<>\-_;\\/]',
+    ).hasMatch(currentText)) {
       error = '특수문자는 사용할 수 없습니다.';
-    } else if (RegExp(r'^[ㄱ-ㅎㅏ-ㅣ]+$').hasMatch(currentText)) {
-      error = '자음 또는 모음만으로 닉네임을 만들 수 없습니다.';
+    }
+    // ✨ (핵심 수정) 닉네임에 완성되지 않은 자음 또는 모음이 포함되어 있는지 검사합니다.
+    else if (RegExp(r'[ㄱ-ㅎㅏ-ㅣ]').hasMatch(currentText)) {
+      error = '완성되지 않은 자음 또는 모음은 사용할 수 없습니다.';
     }
 
     // 변경 사항이 있는지 확인

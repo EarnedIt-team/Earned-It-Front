@@ -175,9 +175,8 @@ class NavigationView extends ConsumerWidget {
                       height: context.height(0.06),
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: primaryColor,
+                          backgroundColor: primaryGradientEnd,
                         ),
-                        // 👇 2. onPressed에서 ViewModel의 메서드 호출
                         onPressed: () {
                           ref
                               .read(profileImageViewModelProvider)

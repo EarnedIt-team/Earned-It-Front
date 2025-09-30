@@ -7,6 +7,7 @@ import 'package:earned_it/view_models/user/user_provider.dart';
 import 'package:earned_it/view_models/wish/wish_provider.dart';
 import 'package:earned_it/views/home/home_piece_view.dart';
 import 'package:earned_it/views/splash_view.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -77,6 +78,9 @@ class _HomeViewState extends ConsumerState<_HomeViewInternal> {
       } else {
         context.go("/home");
       }
+
+      String? _fcmToken = await FirebaseMessaging.instance.getToken();
+      print("fcm 토큰 :$_fcmToken");
     });
   }
 

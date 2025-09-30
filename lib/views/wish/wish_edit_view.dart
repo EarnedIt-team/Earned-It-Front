@@ -107,19 +107,62 @@ class _WishEditViewState extends ConsumerState<WishEditView> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    Text(
-                      "이미지",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color:
-                            Theme.of(context).brightness == Brightness.dark
-                                ? Colors.white
-                                : Colors.black,
-                      ),
+                    Row(
+                      children: [
+                        Text(
+                          "이미지",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: context.width(0.04),
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? Colors.white
+                                    : Colors.black,
+                          ),
+                        ),
+                        if (wishEditState.itemImage != null) ...[
+                          Spacer(),
+                          TextButton(
+                            style: TextButton.styleFrom(
+                              side: const BorderSide(
+                                width: 1,
+                                color: Colors.blueAccent,
+                              ),
+                            ),
+                            onPressed: () {
+                              wishEditNotifier.pickImage(context);
+                            },
+                            child: const Text(
+                              "변경",
+                              style: TextStyle(color: Colors.blueAccent),
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          TextButton(
+                            style: TextButton.styleFrom(
+                              side: const BorderSide(
+                                width: 1,
+                                color: Colors.red,
+                              ),
+                            ),
+                            onPressed: () {
+                              wishEditNotifier.resetImage();
+                            },
+                            child: const Text(
+                              "초기화",
+                              style: TextStyle(color: Colors.red),
+                            ),
+                          ),
+                        ],
+                      ],
                     ),
                     const SizedBox(height: 8),
                     GestureDetector(
-                      onTap: () => wishEditNotifier.pickImage(context),
+                      onTap:
+                          () =>
+                              wishEditState.itemImage != null
+                                  ? wishEditNotifier.editImage(context)
+                                  : wishEditNotifier.pickImage(context),
                       child: AspectRatio(
                         aspectRatio: 16 / 9,
                         child: Container(
@@ -135,9 +178,9 @@ class _WishEditViewState extends ConsumerState<WishEditView> {
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(12),
                             child:
-                                wishEditState.imageForUpload != null
+                                wishEditState.itemImage != null
                                     ? Image.file(
-                                      File(wishEditState.imageForUpload!.path),
+                                      File(wishEditState.itemImage!.path),
                                       fit: BoxFit.contain,
                                     )
                                     : (wishEditState
@@ -189,6 +232,18 @@ class _WishEditViewState extends ConsumerState<WishEditView> {
                         ),
                       ),
                     ),
+                    if (wishEditState.itemImage != null) ...[
+                      const SizedBox(height: 5),
+                      const Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Text(
+                            "*이미지를 탭하면 수정할 수 있습니다.",
+                            style: TextStyle(color: Colors.grey, fontSize: 12),
+                          ),
+                        ],
+                      ),
+                    ],
                     const SizedBox(height: 24),
                     Text(
                       "이름",

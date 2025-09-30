@@ -104,20 +104,62 @@ class WishAddView extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    Text(
-                      "이미지",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: context.width(0.04),
-                        color:
-                            Theme.of(context).brightness == Brightness.dark
-                                ? Colors.white
-                                : Colors.black,
-                      ),
+                    Row(
+                      children: [
+                        Text(
+                          "이미지",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: context.width(0.04),
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? Colors.white
+                                    : Colors.black,
+                          ),
+                        ),
+                        if (wishAddState.itemImage != null) ...[
+                          Spacer(),
+                          TextButton(
+                            style: TextButton.styleFrom(
+                              side: const BorderSide(
+                                width: 1,
+                                color: Colors.blueAccent,
+                              ),
+                            ),
+                            onPressed: () {
+                              wishAddNotifier.pickImage(context);
+                            },
+                            child: const Text(
+                              "변경",
+                              style: TextStyle(color: Colors.blueAccent),
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          TextButton(
+                            style: TextButton.styleFrom(
+                              side: const BorderSide(
+                                width: 1,
+                                color: Colors.red,
+                              ),
+                            ),
+                            onPressed: () {
+                              wishAddNotifier.deleteImage();
+                            },
+                            child: const Text(
+                              "삭제",
+                              style: TextStyle(color: Colors.red),
+                            ),
+                          ),
+                        ],
+                      ],
                     ),
                     const SizedBox(height: 8),
                     GestureDetector(
-                      onTap: () => wishAddNotifier.pickImage(context),
+                      onTap:
+                          () =>
+                              wishAddState.itemImage != null
+                                  ? wishAddNotifier.editImage(context)
+                                  : wishAddNotifier.pickImage(context),
                       child: AspectRatio(
                         aspectRatio: 16 / 9,
                         child: Container(
@@ -160,6 +202,18 @@ class WishAddView extends ConsumerWidget {
                         ),
                       ),
                     ),
+                    if (wishAddState.itemImage != null) ...[
+                      const SizedBox(height: 5),
+                      const Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Text(
+                            "*이미지를 탭하면 수정할 수 있습니다.",
+                            style: TextStyle(color: Colors.grey, fontSize: 12),
+                          ),
+                        ],
+                      ),
+                    ],
                     const SizedBox(height: 24),
                     Text(
                       "이름",

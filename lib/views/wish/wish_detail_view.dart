@@ -98,7 +98,7 @@ class WishDetailView extends ConsumerWidget {
                         borderRadius: BorderRadius.circular(12),
                         child: Image.network(
                           item.itemImage,
-                          fit: BoxFit.fitWidth,
+                          fit: BoxFit.cover,
                           errorBuilder:
                               (context, error, stackTrace) => const Center(
                                 child: Icon(

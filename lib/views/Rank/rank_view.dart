@@ -71,6 +71,33 @@ class _RankViewState extends ConsumerState<RankView> {
           ],
         ),
         centerTitle: false,
+        actions: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.baseline,
+            textBaseline: TextBaseline.alphabetic,
+            children: [
+              Text(
+                myRank != null
+                    ? "${NumberFormat('#,###').format(myRank.score)}P"
+                    : "...",
+                style: TextStyle(
+                  fontSize: context.width(0.03),
+                  color: Colors.grey,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(width: 3),
+              Text(
+                myRank != null ? "${myRank.rank}등" : "...",
+                style: TextStyle(
+                  fontSize: context.width(0.05),
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+        ],
         actionsPadding: EdgeInsets.symmetric(horizontal: context.width(0.04)),
       ),
       body: SingleChildScrollView(
@@ -79,41 +106,6 @@ class _RankViewState extends ConsumerState<RankView> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(height: context.height(0.01)),
-              // My Rank 섹션 데이터 바인딩
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.baseline,
-                textBaseline: TextBaseline.alphabetic,
-                children: [
-                  Text(
-                    "My Rank",
-                    style: TextStyle(
-                      fontSize: context.width(0.05),
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const Spacer(),
-                  Text(
-                    myRank != null
-                        ? "${NumberFormat('#,###').format(myRank.score)}P"
-                        : "...",
-                    style: TextStyle(
-                      fontSize: context.width(0.03),
-                      color: Colors.grey,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(width: 3),
-                  Text(
-                    myRank != null ? "${myRank.rank}등" : "...",
-                    style: TextStyle(
-                      fontSize: context.width(0.05),
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
               _buildTopRankersPodium(context, top10), // top10 데이터 전달
               SizedBox(height: context.height(0.03)),
               _buildRankList(top10), // top10 데이터 전달
@@ -131,7 +123,7 @@ class _RankViewState extends ConsumerState<RankView> {
 
     // 1. 시상대의 최대/최소 높이를 미리 정의합니다.
     final maxPodiumHeight = screenHeight * 0.22; // 1등이 차지할 최대 높이
-    final minPodiumHeight = screenHeight * 0.03; // 점수가 0점에 가까울 때의 최소 높이
+    final minPodiumHeight = screenHeight * 0.01; // 점수가 0점에 가까울 때의 최소 높이
 
     // 2. 랭킹 1위의 점수를 최대 점수로 설정합니다. (리스트가 비어있을 경우 에러 방지)
     final maxScore = top10.isNotEmpty ? top10[0].score : 1;

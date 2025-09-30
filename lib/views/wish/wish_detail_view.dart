@@ -128,6 +128,7 @@ class WishDetailView extends ConsumerWidget {
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: context.width(0.045),
+                      fontWeight: FontWeight.w500,
                       height: 1.5,
                     ),
                   ),

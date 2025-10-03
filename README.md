@@ -213,6 +213,8 @@ Earned-It-Front/
 | `fluttertoast`      | 팝업 메세지       | `^8.2.12` |
 | `logger`      | 로그 관리       | `^2.6.1` |
 | `build_runner`      | Code Generation & Build      | `^2.5.4` |
+| `firebase_messaging`      | firebase cloud message      | `^16.0.2` |
+| `flutter_local_notifications`      | 로컬 푸시 알림      | `^19.4.2` |
 
 </div>
 
@@ -234,14 +236,18 @@ Earned-It-Front/
 ![Piece Widget](https://github.com/user-attachments/assets/1a9d0309-8a34-4753-84f3-26727f87b760)
 ![Daily Modal](https://github.com/user-attachments/assets/2bbc3fea-92ef-48f3-9593-99df78c78f3c)
 
+### FCM (Firebase Cloud Message)
+![FCM](https://github.com/user-attachments/assets/3e41b79a-c481-4a7e-878d-3d92568c4a17)
+
 ### WishList View
 ![WishList View](https://github.com/user-attachments/assets/af2bc3b8-723a-4600-913f-ddfd4e1c57b1)
 ![WishList View](https://github.com/user-attachments/assets/ef106a19-b413-4b72-a8f3-e07a4df500c7)
 ![WishList View](https://github.com/user-attachments/assets/ce84367b-9a58-4866-b0bd-787bc53c7e91)
 
-### Add & Delete WishList
+### Add & Delete WishList (네이버 쇼핑몰 API)
 ![Add & Delete WishList](https://github.com/user-attachments/assets/fae858d8-4e80-46e9-a8a1-1a4756530390)
 ![Add & Delete WishList](https://github.com/user-attachments/assets/a8716186-7c0c-4896-a241-c1326b3c2e4f)
+![Add & Delete WishList](https://github.com/user-attachments/assets/115dc352-1e71-4daf-9937-f0ccb4a56e6b)
 
 ### Puzzle View
 ![Puzzle View](https://github.com/user-attachments/assets/fba6452b-e651-4afa-9009-b219ae5a797d)
@@ -251,8 +257,8 @@ Earned-It-Front/
 ![Rank & Profile View](https://github.com/user-attachments/assets/e0f690aa-bbdf-4675-8987-eb3401b54728)
 ![Rank & Profile View](https://github.com/user-attachments/assets/b81ea8a2-6d5a-424b-84c0-4567602e0965)
 
-### Showcase View
-![Showcase View](https://github.com/user-attachments/assets/6d1d217d-c6df-42d1-ae30-028f856fbc26)
+### Tutorial View
+![Tutorial View](https://github.com/user-attachments/assets/6d1d217d-c6df-42d1-ae30-028f856fbc26)
 
 ### Setting View (Dark Mode)
 ![Setting View](https://github.com/user-attachments/assets/265a7a03-97e8-46f0-9e0e-dbec4e1af544)

@@ -6,7 +6,8 @@ part 'wish_add_state.freezed.dart';
 @freezed
 abstract class WishAddState with _$WishAddState {
   const factory WishAddState({
-    XFile? itemImage,
+    XFile? originalImageSource, // 원본 이미지
+    XFile? itemImage, // 수정된 이미지
     @Default(false) bool isTop5,
     @Default(false) bool canSubmit,
     @Default("") String priceError,

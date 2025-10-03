@@ -592,6 +592,7 @@ class _HomeViewState extends ConsumerState<_HomeViewInternal> {
                       ? () => _launchURL(item.url, item.name)
                       : null,
               child: Row(
+                spacing: 5,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(
@@ -604,11 +605,8 @@ class _HomeViewState extends ConsumerState<_HomeViewInternal> {
                             : Colors.grey,
                     size: context.width(0.04),
                   ),
-                  const SizedBox(width: 8),
                   Text(
-                    item.url.isEmpty && displayInfo.progress >= 1.0
-                        ? '${displayInfo.timeText} ( 다나와 )'
-                        : displayInfo.timeText,
+                    displayInfo.timeText,
                     style: TextStyle(
                       color:
                           displayInfo.progress >= 1.0
@@ -618,6 +616,14 @@ class _HomeViewState extends ConsumerState<_HomeViewInternal> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
+                  if (item.url.isEmpty && displayInfo.progress >= 1.0)
+                    Text(
+                      "( 다나와 )",
+                      style: TextStyle(
+                        color: Colors.grey,
+                        fontSize: context.width(0.03),
+                      ),
+                    ),
                 ],
               ),
             ),

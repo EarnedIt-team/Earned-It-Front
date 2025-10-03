@@ -2,7 +2,7 @@ name: earned_it
 description: "A new Flutter project."
 publish_to: 'none'
 
-version: 1.4.0+3
+version: 1.4.1+2
 
 environment:
   sdk: ^3.7.0

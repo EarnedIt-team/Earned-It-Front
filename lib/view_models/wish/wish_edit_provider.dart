@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:earned_it/config/exception.dart';
 import 'package:earned_it/config/toastMessage.dart';
@@ -11,11 +12,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
-import 'package:path_provider/path_provider.dart'; // path_provider 패키지 import
+import 'package:path_provider/path_provider.dart';
 
-// 2. 로직을 처리하는 Notifier(ViewModel) 클래스
+// Provider 정의
+final wishEditViewModelProvider =
+    NotifierProvider.autoDispose<WishEditViewModel, WishEditState>(
+      WishEditViewModel.new,
+    );
+
+// 로직을 처리하는 Notifier(ViewModel) 클래스
 class WishEditViewModel extends AutoDisposeNotifier<WishEditState> {
   late final TextEditingController nameController;
   late final TextEditingController vendorController;
@@ -25,15 +33,16 @@ class WishEditViewModel extends AutoDisposeNotifier<WishEditState> {
   final ImagePicker _picker = ImagePicker();
   final _storage = const FlutterSecureStorage();
   late final LoginService _loginService;
+  final ImageCropper _cropper = ImageCropper();
 
   @override
   WishEditState build() {
     _wishService = ref.read(wishServiceProvider);
+    _loginService = ref.read(loginServiceProvider);
     nameController = TextEditingController();
     vendorController = TextEditingController();
     priceController = TextEditingController();
     urlController = TextEditingController();
-    _loginService = ref.read(loginServiceProvider);
 
     nameController.addListener(_updateCanSubmit);
     vendorController.addListener(_updateCanSubmit);
@@ -62,10 +71,14 @@ class WishEditViewModel extends AutoDisposeNotifier<WishEditState> {
     priceController.text = wishItem.price.toString();
     urlController.text = wishItem.url;
 
-    // 👇 4. 기존 이미지 URL을 파일로 다운로드하여 상태에 저장
     if (wishItem.itemImage.isNotEmpty) {
       final imageFile = await _urlToXFile(wishItem.itemImage);
-      state = state.copyWith(imageForUpload: imageFile);
+      // 다운로드한 파일을 원본과 편집본 둘 다에 설정
+      state = state.copyWith(
+        originalImageSource: imageFile,
+        itemImage: imageFile,
+        imageHasChanged: false, // 아직 변경되지 않음
+      );
     }
     _updateCanSubmit();
   }
@@ -76,7 +89,12 @@ class WishEditViewModel extends AutoDisposeNotifier<WishEditState> {
       final response = await http.get(Uri.parse(imageUrl));
       if (response.statusCode == 200) {
         final tempDir = await getTemporaryDirectory();
-        final fileName = imageUrl.split('/').last;
+        final fileName = imageUrl
+            .split('/')
+            .lastWhere(
+              (e) => e.isNotEmpty,
+              orElse: () => '${DateTime.now().millisecondsSinceEpoch}.jpg',
+            );
         final file = File('${tempDir.path}/$fileName');
         await file.writeAsBytes(response.bodyBytes);
         return XFile(file.path);
@@ -87,11 +105,11 @@ class WishEditViewModel extends AutoDisposeNotifier<WishEditState> {
     return null;
   }
 
+  // 버튼 활성화 여부를 결정하는 함수
   void _updateCanSubmit() {
     final initial = state.initialWish;
     if (initial == null) return;
 
-    // 1. 금액 유효성 검사
     final priceText = priceController.text;
     final priceValue = int.tryParse(priceText.replaceAll(',', '')) ?? 0;
     String currentPriceError = "";
@@ -99,58 +117,159 @@ class WishEditViewModel extends AutoDisposeNotifier<WishEditState> {
       currentPriceError = '금액은 1원 이상 입력해주세요.';
     }
 
-    // 2. 폼 전체 유효성 검사 (필수 필드 + 이미지 + 금액 에러)
     final isFormValid =
         nameController.text.isNotEmpty &&
         vendorController.text.isNotEmpty &&
         priceController.text.isNotEmpty &&
-        state.imageForUpload != null &&
+        state.itemImage != null &&
         currentPriceError.isEmpty;
 
-    // 3. 변경 사항 감지 (이미지 변경 포함)
+    // 이미지가 변경되었는지 여부 확인
+    final imageHasChanged =
+        state.originalImageSource?.path != state.itemImage?.path;
+
     final hasChanges =
         nameController.text != initial.name ||
         vendorController.text != initial.vendor ||
         priceController.text.replaceAll(',', '') != initial.price.toString() ||
         urlController.text != initial.url ||
         state.isTop5 != initial.starred ||
-        (state.imageForUpload?.path !=
-            state.initialWish?.itemImage); // 이미지 변경 여부 확인
+        imageHasChanged;
 
-    // 4. 최종 상태 업데이트
     state = state.copyWith(
       canSubmit: isFormValid && hasChanges,
       priceError: currentPriceError,
     );
   }
 
-  // 이미지 선택 로직
+  /// 갤러리에서 이미지를 선택하고 편집하는 함수
   Future<void> pickImage(BuildContext context) async {
     try {
-      final pickedImage = await _picker.pickImage(
+      final pickedFile = await _picker.pickImage(
         source: ImageSource.gallery,
-        imageQuality: 50,
+        imageQuality: 80,
       );
-      if (pickedImage != null) {
-        final imageSize = await pickedImage.length();
-        const maxSizeInBytes = 5 * 1024 * 1024; // 5MB
+      if (pickedFile == null || !context.mounted) return;
 
-        if (imageSize > maxSizeInBytes) {
-          if (context.mounted) {
-            toastMessage(
-              context,
-              '이미지 크기는 최대 5MB 이하입니다.',
-              type: ToastmessageType.errorType,
-            );
-          }
-          return;
-        }
-        state = state.copyWith(imageForUpload: pickedImage);
-        _updateCanSubmit();
+      final croppedFile = await _cropper.cropImage(
+        sourcePath: pickedFile.path,
+        uiSettings: [
+          AndroidUiSettings(
+            toolbarTitle: '이미지 편집',
+            toolbarColor: Theme.of(context).primaryColor,
+            toolbarWidgetColor: Colors.white,
+            initAspectRatio: CropAspectRatioPreset.original,
+            lockAspectRatio: false,
+          ),
+          IOSUiSettings(
+            title: '이미지 편집',
+            aspectRatioLockEnabled: false,
+            doneButtonTitle: '완료',
+            cancelButtonTitle: '취소',
+          ),
+        ],
+      );
+      if (croppedFile == null || !context.mounted) return;
+
+      const maxSizeInBytes = 5 * 1024 * 1024;
+      final imageFile = File(croppedFile.path);
+      final imageSize = await imageFile.length();
+      if (imageSize > maxSizeInBytes) {
+        toastMessage(
+          context,
+          '이미지는 최대 5MB 이하로 등록 가능합니다.',
+          type: ToastmessageType.errorType,
+        );
+        return;
       }
+
+      // 선택한 파일을 원본으로, 잘린 파일을 편집본으로 각각 저장하고 변경 플래그 설정
+      final finalXFile = XFile(croppedFile.path);
+      state = state.copyWith(
+        originalImageSource: pickedFile,
+        itemImage: finalXFile,
+        imageHasChanged: true,
+      );
+      _updateCanSubmit();
     } catch (e) {
-      debugPrint('Image picking error: $e');
+      debugPrint('Image processing error: $e');
+      if (context.mounted) {
+        toastMessage(
+          context,
+          '이미지 처리 중 오류가 발생했습니다.',
+          type: ToastmessageType.errorType,
+        );
+      }
     }
+  }
+
+  /// 현재 이미지를 (원본 기준으로) 다시 편집하는 함수
+  Future<void> editImage(BuildContext context) async {
+    if (state.originalImageSource == null) {
+      toastMessage(
+        context,
+        '편집할 원본 이미지가 없습니다.',
+        type: ToastmessageType.errorType,
+      );
+      return;
+    }
+
+    try {
+      final croppedFile = await _cropper.cropImage(
+        sourcePath: state.originalImageSource!.path,
+        uiSettings: [
+          AndroidUiSettings(
+            toolbarTitle: '이미지 편집',
+            toolbarColor: Theme.of(context).primaryColor,
+            toolbarWidgetColor: Colors.white,
+            initAspectRatio: CropAspectRatioPreset.original,
+            lockAspectRatio: false,
+          ),
+          IOSUiSettings(
+            title: '이미지 편집',
+            aspectRatioLockEnabled: false,
+            doneButtonTitle: '완료',
+            cancelButtonTitle: '취소',
+          ),
+        ],
+      );
+      if (croppedFile == null || !context.mounted) return;
+
+      const maxSizeInBytes = 5 * 1024 * 1024;
+      final imageFile = File(croppedFile.path);
+      final imageSize = await imageFile.length();
+      if (imageSize > maxSizeInBytes) {
+        toastMessage(
+          context,
+          '이미지는 최대 5MB 이하로 등록 가능합니다.',
+          type: ToastmessageType.errorType,
+        );
+        return;
+      }
+
+      // 편집된 이미지를 imageForUpload에만 업데이트하고 변경 플래그 설정
+      final finalXFile = XFile(croppedFile.path);
+      state = state.copyWith(itemImage: finalXFile, imageHasChanged: true);
+      _updateCanSubmit();
+    } catch (e) {
+      debugPrint('Image editing error: $e');
+      if (context.mounted) {
+        toastMessage(
+          context,
+          '이미지 편집 중 오류가 발생했습니다.',
+          type: ToastmessageType.errorType,
+        );
+      }
+    }
+  }
+
+  /// 현재 선택된 이미지를 초기화 하는 함수
+  Future<void> resetImage() async {
+    state = state.copyWith(
+      itemImage: state.originalImageSource,
+      imageHasChanged: false, // 이미지 삭제도 변경사항으로 간주
+    );
+    _updateCanSubmit();
   }
 
   // TOP5 체크박스 토글 로직
@@ -175,19 +294,20 @@ class WishEditViewModel extends AutoDisposeNotifier<WishEditState> {
         starred: state.isTop5,
       );
 
-      // 👇 5. imageForUpload를 전달 (null이 아님을 보장)
+      // 이미지가 변경되었을 때만 newImage 파라미터에 값을 전달
+      final imageHasChanged =
+          state.originalImageSource?.path != state.itemImage?.path;
+
       await _wishService.editWishItem(
         accessToken: accessToken!,
         wishId: updatedWish.wishId,
         updatedWish: updatedWish,
-        newImage: state.imageForUpload, // nullable로 전달
+        newImage: imageHasChanged ? state.itemImage : null,
       );
 
-      // 로컬 업데이트
       ref
           .read(wishViewModelProvider.notifier)
           .updateWishItemLocally(updatedWish);
-
       await ref.read(wishViewModelProvider.notifier).loadStarWish();
       await ref.read(wishViewModelProvider.notifier).loadHighLightWish();
 
@@ -200,7 +320,7 @@ class WishEditViewModel extends AutoDisposeNotifier<WishEditState> {
     } catch (e) {
       if (context.mounted) _handleGeneralError(context, e);
     } finally {
-      if (context.mounted) {
+      if (ref.exists(wishEditViewModelProvider)) {
         state = state.copyWith(isLoading: false);
       }
     }
@@ -232,9 +352,3 @@ class WishEditViewModel extends AutoDisposeNotifier<WishEditState> {
     );
   }
 }
-
-// Provider 정의
-final wishEditViewModelProvider =
-    NotifierProvider.autoDispose<WishEditViewModel, WishEditState>(
-      WishEditViewModel.new,
-    );

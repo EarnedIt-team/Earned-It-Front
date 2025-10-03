@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:earned_it/config/design.dart';
+import 'package:earned_it/models/wish/wish_search_state.dart';
 import 'package:earned_it/services/wish_service.dart';
 import 'package:earned_it/view_models/wish/wish_add_provider.dart';
 import 'package:earned_it/view_models/wish/wish_provider.dart';
@@ -7,20 +8,39 @@ import 'package:earned_it/views/loading_overlay_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 // 커스텀 포맷터는 그대로 유지
 class NumberInputFormatter extends TextInputFormatter {
   final NumberFormat _formatter = NumberFormat.decimalPattern('ko_KR');
+
   @override
   TextEditingValue formatEditUpdate(
     TextEditingValue oldValue,
     TextEditingValue newValue,
   ) {
-    if (newValue.text.isEmpty) return newValue.copyWith(text: '');
-    final plainNumber = newValue.text.replaceAll(',', '');
+    if (newValue.text.isEmpty) {
+      return newValue.copyWith(text: '');
+    }
+
+    // 1. 쉼표를 제거하여 순수 숫자 문자열을 얻습니다.
+    String plainNumber = newValue.text.replaceAll(',', '');
+
+    // 순수 숫자의 길이가 12자를 초과하는지 확인합니다.
+    if (plainNumber.length > 12) {
+      // 12자를 초과하면, 이전 값(oldValue)을 그대로 반환하여 입력을 막습니다.
+      // 이렇게 하면 13번째 문자가 입력되지 않습니다.
+      return oldValue;
+    }
+
+    // 3. 순수 숫자를 정수로 변환합니다.
     final number = int.tryParse(plainNumber) ?? 0;
-    final formatted = _formatter.format(number);
+
+    // 4. 쉼표를 포함하여 포맷팅합니다.
+    final String formatted = _formatter.format(number);
+
+    // 5. 포맷팅된 텍스트와 올바른 커서 위치를 포함하여 새로운 값을 반환합니다.
     return newValue.copyWith(
       text: formatted,
       selection: TextSelection.collapsed(offset: formatted.length),
@@ -53,6 +73,29 @@ class WishAddView extends ConsumerWidget {
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
               centerTitle: false,
+              actions: <Widget>[
+                IconButton(
+                  onPressed: () async {
+                    // 1. '/simpleAddWish' 경로로 이동하고, ProductModel 타입의 결과를 기다립니다.
+                    final result = await context.push<ProductModel>(
+                      '/simpleAddWish',
+                    );
+
+                    // 2. 결과가 null이 아니고 (사용자가 상품을 선택했고),
+                    //    현재 위젯이 화면에 아직 있다면 ViewModel 함수를 호출합니다.
+                    if (result != null && context.mounted) {
+                      ref
+                          .read(wishAddViewModelProvider.notifier)
+                          .populateFromProduct(result);
+                    }
+                  },
+                  icon: const Icon(Icons.search),
+                  tooltip: "간편 위시아이템 추가",
+                ),
+              ],
+              actionsPadding: EdgeInsets.symmetric(
+                horizontal: context.middlePadding / 2,
+              ),
             ),
             body: Padding(
               padding: EdgeInsets.symmetric(horizontal: context.middlePadding),
@@ -61,27 +104,67 @@ class WishAddView extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    Text(
-                      "이미지",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: context.width(0.04),
-                        color:
-                            Theme.of(context).brightness == Brightness.dark
-                                ? Colors.white
-                                : Colors.black,
-                      ),
+                    Row(
+                      children: [
+                        Text(
+                          "이미지",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: context.width(0.04),
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? Colors.white
+                                    : Colors.black,
+                          ),
+                        ),
+                        if (wishAddState.itemImage != null) ...[
+                          Spacer(),
+                          TextButton(
+                            style: TextButton.styleFrom(
+                              side: const BorderSide(
+                                width: 1,
+                                color: Colors.blueAccent,
+                              ),
+                            ),
+                            onPressed: () {
+                              wishAddNotifier.pickImage(context);
+                            },
+                            child: const Text(
+                              "변경",
+                              style: TextStyle(color: Colors.blueAccent),
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          TextButton(
+                            style: TextButton.styleFrom(
+                              side: const BorderSide(
+                                width: 1,
+                                color: Colors.red,
+                              ),
+                            ),
+                            onPressed: () {
+                              wishAddNotifier.deleteImage();
+                            },
+                            child: const Text(
+                              "삭제",
+                              style: TextStyle(color: Colors.red),
+                            ),
+                          ),
+                        ],
+                      ],
                     ),
                     const SizedBox(height: 8),
                     GestureDetector(
-                      onTap: () => wishAddNotifier.pickImage(context),
+                      onTap:
+                          () =>
+                              wishAddState.itemImage != null
+                                  ? wishAddNotifier.editImage(context)
+                                  : wishAddNotifier.pickImage(context),
                       child: AspectRatio(
                         aspectRatio: 16 / 9,
                         child: Container(
                           decoration: BoxDecoration(
-                            color: Theme.of(
-                              context,
-                            ).colorScheme.secondary.withValues(alpha: 0.1),
+                            color: Colors.transparent,
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
                               color: Theme.of(
@@ -98,18 +181,18 @@ class WishAddView extends ConsumerWidget {
                                       fit: BoxFit.contain,
                                     ),
                                   )
-                                  : const Center(
+                                  : Center(
                                     child: Column(
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
                                       children: [
                                         Icon(
                                           Icons.add_photo_alternate_outlined,
-                                          size: 40,
-                                          color: Colors.grey,
+                                          size: context.width(0.12),
+                                          color: primaryGradientEnd,
                                         ),
-                                        SizedBox(height: 10),
-                                        Text(
+                                        const SizedBox(height: 10),
+                                        const Text(
                                           "탭하여 이미지 추가",
                                           style: TextStyle(color: Colors.grey),
                                         ),
@@ -119,6 +202,18 @@ class WishAddView extends ConsumerWidget {
                         ),
                       ),
                     ),
+                    if (wishAddState.itemImage != null) ...[
+                      const SizedBox(height: 5),
+                      const Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Text(
+                            "*이미지를 탭하면 수정할 수 있습니다.",
+                            style: TextStyle(color: Colors.grey, fontSize: 12),
+                          ),
+                        ],
+                      ),
+                    ],
                     const SizedBox(height: 24),
                     Text(
                       "이름",
@@ -132,13 +227,23 @@ class WishAddView extends ConsumerWidget {
                       ),
                     ),
                     TextField(
-                      maxLength: 20,
+                      maxLength: 50,
                       textAlign: TextAlign.end,
                       controller: wishAddNotifier.nameController,
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         hintText: '제품명을 입력하세요.',
-                        hintStyle: TextStyle(color: Colors.grey),
+                        hintStyle: const TextStyle(color: Colors.grey),
+                        counterText:
+                            '${wishAddNotifier.nameController.text.replaceAll(',', '').length}/50',
+                        counterStyle: const TextStyle(
+                          fontSize: 12.0,
+                          color: Color.fromARGB(255, 136, 136, 136),
+                        ),
                       ),
+                      inputFormatters: [
+                        // 첫 글자로 공백이 오는 것을 막음 (정규식: ^ -> 시작, \s -> 공백)
+                        FilteringTextInputFormatter.deny(RegExp(r'^\s')),
+                      ],
                     ),
                     const SizedBox(height: 24),
                     Text(
@@ -153,7 +258,7 @@ class WishAddView extends ConsumerWidget {
                       ),
                     ),
                     TextField(
-                      maxLength: 12,
+                      // maxLength: 12,
                       textAlign: TextAlign.end,
                       controller: wishAddNotifier.priceController,
                       keyboardType: TextInputType.number,
@@ -179,6 +284,12 @@ class WishAddView extends ConsumerWidget {
                                     !wishAddState.canSubmit
                                 ? wishAddState.priceError
                                 : null,
+                        counterText:
+                            '${wishAddNotifier.priceController.text.replaceAll(',', '').length}/12',
+                        counterStyle: const TextStyle(
+                          fontSize: 12.0,
+                          color: Color.fromARGB(255, 136, 136, 136),
+                        ),
                       ),
                     ),
                     const SizedBox(height: 24),
@@ -194,12 +305,18 @@ class WishAddView extends ConsumerWidget {
                       ),
                     ),
                     TextField(
-                      maxLength: 12,
+                      maxLength: 20,
                       textAlign: TextAlign.end,
                       controller: wishAddNotifier.vendorController,
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         hintText: '브랜드나 제조사를 입력하세요.',
-                        hintStyle: TextStyle(color: Colors.grey),
+                        hintStyle: const TextStyle(color: Colors.grey),
+                        counterText:
+                            '${wishAddNotifier.vendorController.text.replaceAll(',', '').length}/20',
+                        counterStyle: const TextStyle(
+                          fontSize: 12.0,
+                          color: Color.fromARGB(255, 136, 136, 136),
+                        ),
                       ),
                     ),
                     const SizedBox(height: 24),
@@ -242,8 +359,8 @@ class WishAddView extends ConsumerWidget {
                               color:
                                   Theme.of(context).brightness ==
                                           Brightness.dark
-                                      ? Colors.white
-                                      : Colors.black,
+                                      ? primaryColor
+                                      : const Color.fromARGB(255, 216, 155, 50),
                             ),
                           ),
                           subtitle: Text(

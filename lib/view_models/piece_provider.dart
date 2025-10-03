@@ -150,6 +150,8 @@ class PieceNotifier extends Notifier<PieceState> {
   /// 선택한 조각을 메인으로 고정하도록 서버에 요청합니다.
   Future<void> pinPieceToMain(BuildContext context, int pieceId) async {
     try {
+      context.pop();
+      state = state.copyWith(isLoading: true);
       final accessToken = await _storage.read(key: 'accessToken');
       if (accessToken == null) throw Exception("로그인이 필요합니다.");
 
@@ -161,12 +163,15 @@ class PieceNotifier extends Notifier<PieceState> {
 
       if (context.mounted) {
         toastMessage(context, '메인 조각으로 고정되었습니다.');
-        context.pop();
       }
     } on DioException catch (e) {
       if (context.mounted) _handleGeneralError(context, e);
     } catch (e) {
       if (context.mounted) _handleGeneralError(context, e);
+    } finally {
+      if (ref.exists(pieceServiceProvider)) {
+        state = state.copyWith(isLoading: false);
+      }
     }
   }
 

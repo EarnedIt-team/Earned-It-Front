@@ -9,7 +9,10 @@ part 'wish_edit_state.freezed.dart';
 abstract class WishEditState with _$WishEditState {
   const factory WishEditState({
     WishModel? initialWish, // 수정 전 원본 데이터
-    XFile? imageForUpload, // 새로 선택했거나, 기존 이미지를 다운로드한 파일
+
+    XFile? originalImageSource, // 편집의 기준이 될 원본 이미지
+    XFile? itemImage, // 화면에 표시되고 최종 업로드될 이미지 (편집 결과물)
+    @Default(false) bool imageHasChanged, // 이미지가 변경되었는지 여부
     @Default(false) bool isTop5,
     @Default(false) bool canSubmit,
     @Default("") String priceError,

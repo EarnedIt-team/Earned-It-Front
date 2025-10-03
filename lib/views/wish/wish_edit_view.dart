@@ -12,15 +12,33 @@ import 'package:intl/intl.dart';
 // 커스텀 포맷터
 class NumberInputFormatter extends TextInputFormatter {
   final NumberFormat _formatter = NumberFormat.decimalPattern('ko_KR');
+
   @override
   TextEditingValue formatEditUpdate(
     TextEditingValue oldValue,
     TextEditingValue newValue,
   ) {
-    if (newValue.text.isEmpty) return newValue.copyWith(text: '');
-    final plainNumber = newValue.text.replaceAll(',', '');
+    if (newValue.text.isEmpty) {
+      return newValue.copyWith(text: '');
+    }
+
+    // 1. 쉼표를 제거하여 순수 숫자 문자열을 얻습니다.
+    String plainNumber = newValue.text.replaceAll(',', '');
+
+    // 순수 숫자의 길이가 12자를 초과하는지 확인합니다.
+    if (plainNumber.length > 12) {
+      // 12자를 초과하면, 이전 값(oldValue)을 그대로 반환하여 입력을 막습니다.
+      // 이렇게 하면 13번째 문자가 입력되지 않습니다.
+      return oldValue;
+    }
+
+    // 3. 순수 숫자를 정수로 변환합니다.
     final number = int.tryParse(plainNumber) ?? 0;
-    final formatted = _formatter.format(number);
+
+    // 4. 쉼표를 포함하여 포맷팅합니다.
+    final String formatted = _formatter.format(number);
+
+    // 5. 포맷팅된 텍스트와 올바른 커서 위치를 포함하여 새로운 값을 반환합니다.
     return newValue.copyWith(
       text: formatted,
       selection: TextSelection.collapsed(offset: formatted.length),
@@ -89,26 +107,67 @@ class _WishEditViewState extends ConsumerState<WishEditView> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    Text(
-                      "이미지",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color:
-                            Theme.of(context).brightness == Brightness.dark
-                                ? Colors.white
-                                : Colors.black,
-                      ),
+                    Row(
+                      children: [
+                        Text(
+                          "이미지",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: context.width(0.04),
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? Colors.white
+                                    : Colors.black,
+                          ),
+                        ),
+                        if (wishEditState.itemImage != null) ...[
+                          Spacer(),
+                          TextButton(
+                            style: TextButton.styleFrom(
+                              side: const BorderSide(
+                                width: 1,
+                                color: Colors.blueAccent,
+                              ),
+                            ),
+                            onPressed: () {
+                              wishEditNotifier.pickImage(context);
+                            },
+                            child: const Text(
+                              "변경",
+                              style: TextStyle(color: Colors.blueAccent),
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          TextButton(
+                            style: TextButton.styleFrom(
+                              side: const BorderSide(
+                                width: 1,
+                                color: Colors.red,
+                              ),
+                            ),
+                            onPressed: () {
+                              wishEditNotifier.resetImage();
+                            },
+                            child: const Text(
+                              "초기화",
+                              style: TextStyle(color: Colors.red),
+                            ),
+                          ),
+                        ],
+                      ],
                     ),
                     const SizedBox(height: 8),
                     GestureDetector(
-                      onTap: () => wishEditNotifier.pickImage(context),
+                      onTap:
+                          () =>
+                              wishEditState.itemImage != null
+                                  ? wishEditNotifier.editImage(context)
+                                  : wishEditNotifier.pickImage(context),
                       child: AspectRatio(
                         aspectRatio: 16 / 9,
                         child: Container(
                           decoration: BoxDecoration(
-                            color: Theme.of(
-                              context,
-                            ).colorScheme.secondary.withOpacity(0.1),
+                            color: Colors.transparent,
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
                               color: Theme.of(
@@ -119,9 +178,9 @@ class _WishEditViewState extends ConsumerState<WishEditView> {
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(12),
                             child:
-                                wishEditState.imageForUpload != null
+                                wishEditState.itemImage != null
                                     ? Image.file(
-                                      File(wishEditState.imageForUpload!.path),
+                                      File(wishEditState.itemImage!.path),
                                       fit: BoxFit.contain,
                                     )
                                     : (wishEditState
@@ -149,17 +208,42 @@ class _WishEditViewState extends ConsumerState<WishEditView> {
                                                 ),
                                               ),
                                     )
-                                    : const Center(
-                                      child: Icon(
-                                        Icons.add_photo_alternate_outlined,
-                                        size: 40,
-                                        color: Colors.grey,
+                                    : Center(
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Icon(
+                                            Icons.add_photo_alternate_outlined,
+                                            size: context.width(0.12),
+                                            color: primaryGradientEnd,
+                                          ),
+                                          const SizedBox(height: 10),
+                                          const Text(
+                                            "탭하여 이미지 추가",
+                                            style: TextStyle(
+                                              color: Colors.grey,
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
                           ),
                         ),
                       ),
                     ),
+                    if (wishEditState.itemImage != null) ...[
+                      const SizedBox(height: 5),
+                      const Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Text(
+                            "*이미지를 탭하면 수정할 수 있습니다.",
+                            style: TextStyle(color: Colors.grey, fontSize: 12),
+                          ),
+                        ],
+                      ),
+                    ],
                     const SizedBox(height: 24),
                     Text(
                       "이름",
@@ -173,13 +257,23 @@ class _WishEditViewState extends ConsumerState<WishEditView> {
                       ),
                     ),
                     TextField(
-                      maxLength: 20,
+                      maxLength: 50,
                       textAlign: TextAlign.end,
                       controller: wishEditNotifier.nameController,
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         hintText: '제품명을 입력하세요.',
-                        hintStyle: TextStyle(color: Colors.grey),
+                        hintStyle: const TextStyle(color: Colors.grey),
+                        counterText:
+                            '${wishEditNotifier.nameController.text.replaceAll(',', '').length}/50',
+                        counterStyle: const TextStyle(
+                          fontSize: 12.0,
+                          color: Color.fromARGB(255, 136, 136, 136),
+                        ),
                       ),
+                      inputFormatters: [
+                        // 첫 글자로 공백이 오는 것을 막음 (정규식: ^ -> 시작, \s -> 공백)
+                        FilteringTextInputFormatter.deny(RegExp(r'^\s')),
+                      ],
                     ),
                     const SizedBox(height: 24),
                     Text(
@@ -194,7 +288,7 @@ class _WishEditViewState extends ConsumerState<WishEditView> {
                       ),
                     ),
                     TextField(
-                      maxLength: 12,
+                      // maxLength: 12,
                       textAlign: TextAlign.end,
                       controller: wishEditNotifier.priceController,
                       keyboardType: TextInputType.number,
@@ -220,6 +314,12 @@ class _WishEditViewState extends ConsumerState<WishEditView> {
                                     !wishEditState.canSubmit
                                 ? wishEditState.priceError
                                 : null,
+                        counterText:
+                            '${wishEditNotifier.priceController.text.replaceAll(',', '').length}/12',
+                        counterStyle: const TextStyle(
+                          fontSize: 12.0,
+                          color: Color.fromARGB(255, 136, 136, 136),
+                        ),
                       ),
                     ),
                     const SizedBox(height: 24),
@@ -235,12 +335,18 @@ class _WishEditViewState extends ConsumerState<WishEditView> {
                       ),
                     ),
                     TextField(
-                      maxLength: 12,
+                      maxLength: 20,
                       textAlign: TextAlign.end,
                       controller: wishEditNotifier.vendorController,
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         hintText: '브랜드나 제조사를 입력하세요.',
-                        hintStyle: TextStyle(color: Colors.grey),
+                        hintStyle: const TextStyle(color: Colors.grey),
+                        counterText:
+                            '${wishEditNotifier.vendorController.text.replaceAll(',', '').length}/20',
+                        counterStyle: const TextStyle(
+                          fontSize: 12.0,
+                          color: Color.fromARGB(255, 136, 136, 136),
+                        ),
                       ),
                     ),
                     const SizedBox(height: 24),
@@ -284,8 +390,8 @@ class _WishEditViewState extends ConsumerState<WishEditView> {
                               color:
                                   Theme.of(context).brightness ==
                                           Brightness.dark
-                                      ? Colors.white
-                                      : Colors.black,
+                                      ? primaryColor
+                                      : const Color.fromARGB(255, 216, 155, 50),
                             ),
                           ),
                           subtitle: Text(

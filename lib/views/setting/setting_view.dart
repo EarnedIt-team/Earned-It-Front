@@ -370,6 +370,7 @@ class _SettingViewState extends ConsumerState<SettingView> {
                   context.push('/setSalary');
                 },
               ),
+            const SizedBox(height: 10),
             // --- 앱 설정 섹션 ---
             _buildSectionHeader("앱 설정"),
             ListTile(
@@ -392,12 +393,19 @@ class _SettingViewState extends ConsumerState<SettingView> {
                           : Colors.black,
                 ),
               ),
-              trailing: Text(
-                _themeModeToString(currentThemeMode),
-                style: TextStyle(
-                  fontSize: context.width(0.035),
-                  color: primaryGradientEnd,
-                ),
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    _themeModeToString(currentThemeMode),
+                    style: TextStyle(
+                      fontSize: context.width(0.035),
+                      fontWeight: FontWeight.bold,
+                      color: primaryGradientStart,
+                    ),
+                  ),
+                  const Icon(Icons.chevron_right, color: primaryGradientEnd),
+                ],
               ),
               onTap: () {
                 showDialog(
@@ -441,6 +449,7 @@ class _SettingViewState extends ConsumerState<SettingView> {
                 );
               },
             ),
+            const SizedBox(height: 10),
             // --- 계정 섹션 ---
             _buildSectionHeader("계정"),
             ListTile(
@@ -593,7 +602,7 @@ class _SettingViewState extends ConsumerState<SettingView> {
       padding: EdgeInsets.only(
         left: context.middlePadding / 2,
         top: context.middlePadding / 2,
-        bottom: context.middlePadding,
+        bottom: context.middlePadding / 2,
       ),
       child: Text(
         title,
@@ -613,7 +622,7 @@ class _SettingViewState extends ConsumerState<SettingView> {
       case ThemeMode.dark:
         return '다크 모드';
       default:
-        return '시스템 설정 따름';
+        return '시스템 설정';
     }
   }
 }

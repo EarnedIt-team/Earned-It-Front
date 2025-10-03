@@ -1,8 +1,11 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:earned_it/config/exception.dart';
 import 'package:earned_it/config/toastMessage.dart';
 import 'package:earned_it/models/wish/wish_add_state.dart';
 import 'package:earned_it/models/wish/wish_model.dart';
+import 'package:earned_it/models/wish/wish_search_state.dart';
 import 'package:earned_it/services/auth/login_service.dart';
 import 'package:earned_it/services/wish_service.dart';
 import 'package:earned_it/view_models/wish/wish_provider.dart';
@@ -10,7 +13,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
 
 final wishAddViewModelProvider =
     NotifierProvider.autoDispose<WishAddViewModel, WishAddState>(
@@ -27,6 +33,7 @@ class WishAddViewModel extends AutoDisposeNotifier<WishAddState> {
   late final WishService _wishService;
 
   final ImagePicker _picker = ImagePicker();
+  final ImageCropper _cropper = ImageCropper();
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
 
   @override
@@ -39,14 +46,13 @@ class WishAddViewModel extends AutoDisposeNotifier<WishAddState> {
     _loginService = ref.read(loginServiceProvider);
     _wishService = ref.read(wishServiceProvider);
 
-    // 👇 1. '회사' 컨트롤러에도 리스너 추가
     nameController.addListener(_updateCanSubmit);
     vendorController.addListener(_updateCanSubmit);
     priceController.addListener(_updateCanSubmit);
 
     ref.onDispose(() {
       nameController.removeListener(_updateCanSubmit);
-      vendorController.removeListener(_updateCanSubmit); // 리스너 제거
+      vendorController.removeListener(_updateCanSubmit);
       priceController.removeListener(_updateCanSubmit);
       nameController.dispose();
       vendorController.dispose();
@@ -57,69 +63,191 @@ class WishAddViewModel extends AutoDisposeNotifier<WishAddState> {
     return const WishAddState();
   }
 
+  /// 검색된 ProductModel로 위시 아이템 추가 필드를 채웁니다.
+  Future<void> populateFromProduct(ProductModel product) async {
+    nameController.text = product.name;
+    vendorController.text = product.maker ?? '';
+    priceController.text = product.price.toInt().toString();
+    urlController.text = product.url;
+
+    final imageFile = await _urlToXFile(product.imageUrl);
+    if (imageFile != null) {
+      // 다운로드한 이미지를 원본과 최종 이미지 둘 다에 설정
+      state = state.copyWith(
+        originalImageSource: imageFile,
+        itemImage: imageFile,
+      );
+    }
+    _updateCanSubmit();
+  }
+
+  // URL을 XFile 객체로 변환하는 헬퍼 메서드
+  Future<XFile?> _urlToXFile(String imageUrl) async {
+    try {
+      final response = await http.get(Uri.parse(imageUrl));
+      if (response.statusCode == 200) {
+        final tempDir = await getTemporaryDirectory();
+        final fileName = imageUrl
+            .split('/')
+            .lastWhere(
+              (e) => e.isNotEmpty,
+              orElse: () => '${DateTime.now().millisecondsSinceEpoch}.jpg',
+            );
+        final file = File('${tempDir.path}/$fileName');
+        await file.writeAsBytes(response.bodyBytes);
+        return XFile(file.path);
+      }
+    } catch (e) {
+      debugPrint("이미지 다운로드 실패: $e");
+    }
+    return null;
+  }
+
   void _updateCanSubmit() {
     final priceText = priceController.text;
     final priceValue = int.tryParse(priceText.replaceAll(',', '')) ?? 0;
-    // 👇 1. (핵심 수정) 타입을 String? -> String으로 변경하고, 기본값을 ""로 설정
     String currentPriceError = "";
     if (priceText.isNotEmpty && priceValue == 0) {
       currentPriceError = '금액은 1원 이상 입력해주세요.';
     }
-    // else는 필요 없습니다. 에러가 없으면 ""가 유지됩니다.
 
     final canSubmit =
         nameController.text.isNotEmpty &&
         vendorController.text.isNotEmpty &&
         priceController.text.isNotEmpty &&
-        state.itemImage != null &&
-        currentPriceError.isEmpty; // 👈 에러 메시지가 비어있는지 확인
+        state.itemImage != null && // 최종 이미지가 있는지 확인
+        currentPriceError.isEmpty;
 
-    state = state.copyWith(
-      canSubmit: canSubmit,
-      priceError: currentPriceError, // 👈 이제 항상 String 타입이 전달됩니다.
-    );
+    state = state.copyWith(canSubmit: canSubmit, priceError: currentPriceError);
   }
 
+  /// 갤러리에서 이미지를 선택하고 편집합니다.
   Future<void> pickImage(BuildContext context) async {
     try {
-      final pickedImage = await _picker.pickImage(
+      final pickedFile = await _picker.pickImage(
         source: ImageSource.gallery,
-        // 이미지 품질을 50%로 설정
-        imageQuality: 50,
-        requestFullMetadata: false,
+        imageQuality: 80,
       );
+      if (pickedFile == null || !context.mounted) return;
 
-      if (pickedImage != null) {
-        // 이미지 크기 검사
-        final imageSize = await pickedImage.length();
-        const maxSizeInBytes = 5 * 1024 * 1024; // 5MB
+      final croppedFile = await _cropper.cropImage(
+        sourcePath: pickedFile.path,
+        uiSettings: [
+          AndroidUiSettings(
+            toolbarTitle: '이미지 편집',
+            toolbarColor: Theme.of(context).primaryColor,
+            toolbarWidgetColor: Colors.white,
+            initAspectRatio: CropAspectRatioPreset.original,
+            lockAspectRatio: false,
+          ),
+          IOSUiSettings(
+            title: '이미지 편집',
+            aspectRatioLockEnabled: false,
+            doneButtonTitle: '완료',
+            cancelButtonTitle: '취소',
+          ),
+        ],
+      );
+      if (croppedFile == null || !context.mounted) return;
 
-        if (imageSize > maxSizeInBytes) {
-          // 크기 초과 시 사용자에게 알림
-          if (context.mounted) {
-            toastMessage(
-              context,
-              '이미지 크기는 최대 5MB 이하입니다.',
-              type: ToastmessageType.errorType,
-            );
-          }
-          return; // 이미지 설정을 중단
-        }
-
-        // 유효한 이미지일 경우 상태 업데이트
-        state = state.copyWith(itemImage: pickedImage);
-        _updateCanSubmit(); // 버튼 활성화 상태 재검사
+      const maxSizeInBytes = 5 * 1024 * 1024;
+      final imageFile = File(croppedFile.path);
+      final imageSize = await imageFile.length();
+      if (imageSize > maxSizeInBytes) {
+        toastMessage(
+          context,
+          '이미지는 최대 5MB 이하로 등록 가능합니다.',
+          type: ToastmessageType.errorType,
+        );
+        return;
       }
+
+      // 선택한 이미지를 원본으로, 잘린 이미지를 최종본으로 각각 저장
+      final finalXFile = XFile(croppedFile.path);
+      state = state.copyWith(
+        originalImageSource: pickedFile,
+        itemImage: finalXFile,
+      );
+      _updateCanSubmit();
     } catch (e) {
-      debugPrint('Image picking error: $e');
+      debugPrint('Image processing error: $e');
       if (context.mounted) {
         toastMessage(
           context,
-          '이미지를 불러오는 중 오류가 발생했습니다.',
+          '이미지 처리 중 오류가 발생했습니다.',
           type: ToastmessageType.errorType,
         );
       }
     }
+  }
+
+  /// 현재 선택된 이미지를 (원본 기준으로) 다시 편집합니다.
+  Future<void> editImage(BuildContext context) async {
+    // 편집할 원본 이미지가 있는지 확인
+    if (state.originalImageSource == null) {
+      toastMessage(
+        context,
+        '편집할 원본 이미지가 없습니다.',
+        type: ToastmessageType.errorType,
+      );
+      return;
+    }
+
+    try {
+      // 원본 이미지 경로를 사용하여 편집기 실행
+      final croppedFile = await _cropper.cropImage(
+        sourcePath: state.originalImageSource!.path,
+        uiSettings: [
+          AndroidUiSettings(
+            toolbarTitle: '이미지 편집',
+            toolbarColor: Theme.of(context).primaryColor,
+            toolbarWidgetColor: Colors.white,
+            initAspectRatio: CropAspectRatioPreset.original,
+            lockAspectRatio: false,
+          ),
+          IOSUiSettings(
+            title: '이미지 편집',
+            aspectRatioLockEnabled: false,
+            doneButtonTitle: '완료',
+            cancelButtonTitle: '취소',
+          ),
+        ],
+      );
+      if (croppedFile == null || !context.mounted) return;
+
+      const maxSizeInBytes = 5 * 1024 * 1024;
+      final imageFile = File(croppedFile.path);
+      final imageSize = await imageFile.length();
+      if (imageSize > maxSizeInBytes) {
+        toastMessage(
+          context,
+          '이미지는 최대 5MB 이하로 등록 가능합니다.',
+          type: ToastmessageType.errorType,
+        );
+        return;
+      }
+
+      // 편집된 이미지를 itemImage에만 업데이트 (원본은 그대로 유지)
+      final finalXFile = XFile(croppedFile.path);
+      state = state.copyWith(itemImage: finalXFile);
+      _updateCanSubmit();
+    } catch (e) {
+      debugPrint('Image editing error: $e');
+      if (context.mounted) {
+        toastMessage(
+          context,
+          '이미지 편집 중 오류가 발생했습니다.',
+          type: ToastmessageType.errorType,
+        );
+      }
+    }
+  }
+
+  /// 현재 선택된 이미지를 삭제합니다.
+  Future<void> deleteImage() async {
+    // 원본과 최종 이미지를 모두 null로 초기화
+    state = state.copyWith(itemImage: null, originalImageSource: null);
+    _updateCanSubmit();
   }
 
   void toggleIsTop5(bool? value) {
@@ -133,10 +261,7 @@ class WishAddViewModel extends AutoDisposeNotifier<WishAddState> {
 
     try {
       final String? accessToken = await _storage.read(key: 'accessToken');
-
       final String currentTime = DateTime.now().toIso8601String();
-
-      // 1. UI 데이터로 WishModel 객체 생성
       final newWishItem = WishModel(
         name: nameController.text,
         vendor: vendorController.text,
@@ -144,14 +269,13 @@ class WishAddViewModel extends AutoDisposeNotifier<WishAddState> {
         url: urlController.text,
         starred: state.isTop5,
         createdAt: currentTime,
-        // itemImage 필드는 서버에서 URL을 받아 채워지므로 여기서는 비워둡니다.
       );
 
-      // 2. WishService의 수정된 메서드 호출
+      // 최종 이미지(itemImage)를 서버로 전송
       await _wishService.addWishItem(
         accessToken: accessToken!,
         wishItem: newWishItem,
-        imageXFile: state.itemImage!, // canSubmit 조건으로 인해 null이 아님
+        imageXFile: state.itemImage!,
       );
 
       await ref.read(wishViewModelProvider.notifier).loadStarWish();
@@ -162,13 +286,11 @@ class WishAddViewModel extends AutoDisposeNotifier<WishAddState> {
         context.pop();
       }
     } on DioException catch (e) {
-      print(e);
       if (context.mounted) _handleApiError(context, e);
     } catch (e) {
-      print(e);
       if (context.mounted) _handleGeneralError(context, e);
     } finally {
-      if (context.mounted) {
+      if (ref.exists(wishAddViewModelProvider)) {
         state = state.copyWith(isLoading: false);
       }
     }

@@ -2,8 +2,10 @@ import 'package:earned_it/config/design.dart';
 import 'package:earned_it/view_models/setting/set_Salary_provider.dart';
 import 'package:earned_it/view_models/user/user_provider.dart';
 import 'package:earned_it/views/loading_overlay_view.dart';
+import 'package:earned_it/views/wish/wish_add_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
@@ -164,13 +166,20 @@ class SetSalaryView extends ConsumerWidget {
                       textAlign: TextAlign.end,
                       controller: setSalaryProvider.salaryController,
                       keyboardType: TextInputType.number,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.digitsOnly,
+                        NumberInputFormatter(),
+                      ],
                       decoration: InputDecoration(
                         hintText: '월 급여를 입력하세요.',
                         hintStyle: TextStyle(
                           color:
-                              Theme.of(context).brightness == Brightness.dark
-                                  ? Colors.white
-                                  : Colors.black,
+                              setSalaryProvider.salaryController.text.isNotEmpty
+                                  ? Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? Colors.white
+                                      : Colors.black
+                                  : Colors.grey,
                         ),
                         suffixText:
                             setSalaryProvider.salaryController.text.isNotEmpty
@@ -178,6 +187,12 @@ class SetSalaryView extends ConsumerWidget {
                                 : null,
                         // ViewModel의 에러 메시지를 TextField에 연결
                         errorText: salaryState.salaryErrorText,
+                        counterText:
+                            '${setSalaryProvider.salaryController.text.replaceAll(',', '').length} / 12',
+                        counterStyle: const TextStyle(
+                          fontSize: 12.0,
+                          color: Color.fromARGB(255, 136, 136, 136),
+                        ),
                       ),
                     ),
                     const SizedBox(height: 30),

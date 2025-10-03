@@ -47,6 +47,20 @@ class NicknameEditView extends ConsumerWidget {
                       border: const OutlineInputBorder(),
                     ),
                   ),
+                  const SizedBox(height: 10),
+                  Text(
+                    "*주의사항",
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: context.middleFont / 2,
+                      color: Colors.deepOrange,
+                    ),
+                  ),
+                  SizedBox(height: 5),
+                  const Text(
+                    "상대방을 불쾌하게 하거나 약관에 위배되는 닉네임을 사용할 경우, 별도의 안내 없이 수정되거나 정지될 수 있으니 주의해 주세요.",
+                    style: TextStyle(color: Colors.blueGrey),
+                  ),
                   const Spacer(), // 버튼을 화면 하단으로 밀어냄
                 ],
               ),

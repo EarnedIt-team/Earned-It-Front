@@ -245,6 +245,35 @@ class WishService {
     }
   }
 
+  /// 키워드로 상품을 검색합니다.
+  Future<ApiResponse> searchProductsByKeyword({
+    required String accessToken,
+    required String query,
+    bool useCache = false,
+    bool removeBackground = false,
+    int display = 10,
+  }) async {
+    try {
+      String token = "Bearer $accessToken";
+      // RestClient에 정의한 메서드 호출
+      final ApiResponse response = await _restClient.searchProducts(
+        token,
+        query,
+        useCache,
+        removeBackground,
+        display,
+      );
+      if (response.code != "SUCCESS") {
+        throw Exception(response.message);
+      }
+      return response;
+    } on DioException catch (e) {
+      throw Exception(e.response?.data["message"] ?? "상품 검색 중 에러가 발생했습니다.");
+    } catch (e) {
+      throw Exception("서버에서 에러가 발생했습니다.");
+    }
+  }
+
   /// 특정 조건의 위시리스트를 서버에서 검색합니다.
   Future<ApiResponse> searchWishList({
     required String accessToken,

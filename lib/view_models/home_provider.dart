@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:earned_it/models/home/home_state.dart';
 import 'package:earned_it/view_models/user/user_provider.dart';
@@ -76,7 +77,10 @@ class HomeViewModel extends AutoDisposeNotifier<HomeState> {
         currentEarnedAmount: state.currentEarnedAmount + earningsPerSecond,
       );
 
-      HomeWidget.updateWidget(iOSName: 'EarnedItHomeWidget');
+      // iOS에서만 위젯 업데이트 (Android 위젯이 설정되지 않았으므로)
+      if (Platform.isIOS) {
+        HomeWidget.updateWidget(iOSName: 'EarnedItHomeWidget');
+      }
     });
   }
 }

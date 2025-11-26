@@ -230,7 +230,7 @@ class _HomeViewState extends ConsumerState<_HomeViewInternal> {
     final userState = ref.watch(userProvider);
     final homeState = ref.watch(homeViewModelProvider);
     final decimalFormat = NumberFormat('#,##0.00', 'ko_KR');
-    
+
     return Showcase(
       targetBorderRadius: BorderRadius.all(
         Radius.circular(context.width(0.05)),
@@ -326,6 +326,7 @@ class _HomeViewState extends ConsumerState<_HomeViewInternal> {
                             Theme.of(context).brightness == Brightness.dark
                                 ? Colors.white
                                 : Colors.black,
+                        letterSpacing: 2.0, // 글자 간격을 늘려줌
                       ),
                       enableSeparator: true,
                     ),

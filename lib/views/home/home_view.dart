@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:animated_digit/animated_digit.dart';
 import 'package:animated_toggle_switch/animated_toggle_switch.dart';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -326,7 +328,7 @@ class _HomeViewState extends ConsumerState<_HomeViewInternal> {
                             Theme.of(context).brightness == Brightness.dark
                                 ? Colors.white
                                 : Colors.black,
-                        letterSpacing: 2.0, // 글자 간격을 늘려줌
+                        letterSpacing: Platform.isIOS ? 0.0 : 2.0, // 글자 간격을 늘려줌
                       ),
                       enableSeparator: true,
                     ),

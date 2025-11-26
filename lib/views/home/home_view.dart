@@ -230,7 +230,7 @@ class _HomeViewState extends ConsumerState<_HomeViewInternal> {
     final userState = ref.watch(userProvider);
     final homeState = ref.watch(homeViewModelProvider);
     final decimalFormat = NumberFormat('#,##0.00', 'ko_KR');
-
+    
     return Showcase(
       targetBorderRadius: BorderRadius.all(
         Radius.circular(context.width(0.05)),

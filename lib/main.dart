@@ -52,41 +52,7 @@ void main() async {
   );
 
   // --- FCM 관련 로직을 이곳으로 모으고 순서를 정리합니다 ---
-  // 1. FirebaseMessaging 인스턴스 생성
-  if (Platform.isIOS) {
-    FirebaseMessaging messaging = FirebaseMessaging.instance;
-
-    // 2. (iOS 필수) 사용자에게 알림 권한 요청
-    await messaging.requestPermission(
-      alert: true,
-      announcement: false,
-      badge: true,
-      carPlay: false,
-      criticalAlert: false,
-      provisional: false,
-      sound: true,
-    );
-
-    Future.delayed(Duration(seconds: 2));
-
-    // 3. (iOS 필수) APNs 토큰이 준비될 때까지 기다림
-    await messaging.getAPNSToken();
-
-    // 4. FCM 토큰 가져오기
-    // final fcmToken = await messaging.getToken();
-    // print('FCM Token: $fcmToken');
-  }
-
-  // 5. 모든 준비가 끝난 후 토픽 구독
-  try {
-    await FirebaseMessaging.instance.subscribeToTopic('global_notifications');
-    print('Successfully subscribed to topic: global_notifications');
-  } catch (e) {
-    print('Failed to subscribe to topic: $e');
-  }
-  // --- FCM 로직 정리 끝 ---
-
-  // 안드로이드 포그라운드 알림을 위한 로컬 알림 설정
+  // 1. 로컬 알림 플러그인 초기화 (권한 요청 전에 필요)
   channel = const AndroidNotificationChannel(
     'high_importance_channel',
     'High Importance Notifications',
@@ -96,6 +62,7 @@ void main() async {
 
   flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
+  // Android 알림 채널 생성
   await flutterLocalNotificationsPlugin
       .resolvePlatformSpecificImplementation<
         AndroidFlutterLocalNotificationsPlugin
@@ -115,6 +82,55 @@ void main() async {
     iOS: initializationSettingsIOS,
   );
   await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+
+  // 2. FirebaseMessaging 인스턴스 생성
+  FirebaseMessaging messaging = FirebaseMessaging.instance;
+  
+  // 3. 플랫폼별 알림 권한 요청
+  if (Platform.isIOS) {
+    // iOS 알림 권한 요청
+    await messaging.requestPermission(
+      alert: true,
+      announcement: false,
+      badge: true,
+      carPlay: false,
+      criticalAlert: false,
+      provisional: false,
+      sound: true,
+    );
+
+    Future.delayed(Duration(seconds: 2));
+
+    // APNs 토큰이 준비될 때까지 기다림
+    await messaging.getAPNSToken();
+  } else if (Platform.isAndroid) {
+    // Android 알림 권한 요청 (Android 13+)
+    final androidImplementation = flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>();
+    
+    if (androidImplementation != null) {
+      final granted = await androidImplementation.requestNotificationsPermission();
+      if (granted == true) {
+        print('Android notification permission granted');
+      } else {
+        print('Android notification permission denied');
+      }
+    }
+  }
+
+  // 4. FCM 토큰 가져오기 (iOS와 Android 모두)
+  final fcmToken = await messaging.getToken();
+  print('FCM Token: $fcmToken');
+
+  // 5. 모든 준비가 끝난 후 토픽 구독
+  try {
+    await FirebaseMessaging.instance.subscribeToTopic('global_notifications');
+    print('Successfully subscribed to topic: global_notifications');
+  } catch (e) {
+    print('Failed to subscribe to topic: $e');
+  }
+  // --- FCM 로직 정리 끝 ---
 
   // 포그라운드 메시지 리스너
   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
